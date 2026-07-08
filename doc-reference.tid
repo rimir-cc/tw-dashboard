@@ -37,7 +37,7 @@ rdt.section: Reference
 
 A tile with `role: group` is a container: its body is a nested `.rr-dash-canvas` enumerating the tiles whose `dash-parent` is this group's title. Because membership is a single field forming a tree, groups nest recursively with no depth limit. A group is positioned, dragged and resized like any tile; the ▸/▾ header control toggles `collapsed`, and its ＋ control adds a nested group. Removing a group re-homes its direct children to the group's own parent (they are not deleted).
 
-Tiles — including whole groups — are re-parented by ''dragging'' them onto another container: on release the drop point is hit-tested for the topmost `.rr-dash-canvas`, and if it differs from the tile's current container (and is the same dashboard, and not the tile's own descendant) the tile's `dash-parent`, position and `z` are rewritten.
+Tiles — including whole groups — are re-parented by ''dragging'' them onto another container: on release the drop point is hit-tested for the topmost `.rr-dash-canvas`, and if it differs from the tile's current container (and is the same dashboard, and not the tile's own descendant) the tile's `dash-parent`, position and `z` are rewritten. Holding ''Ctrl''/''Cmd'' at the start of the drag ''duplicates'' a content tile instead of moving it — a new tile with the same `target` is created at the drop point and the original is left untouched, so a tiddler may appear on any number of tiles.
 
 !! Tile title scheme
 
@@ -63,6 +63,7 @@ The positioning/interaction widget (used internally by the canvas body).
 |`dash-id` |The dashboard id — re-parenting is only allowed within the same dashboard |
 |`actions` |Action string invoked on a move/resize release //within the same container//, with variables `<<new-x>>` `<<new-y>>` `<<new-w>>` `<<new-h>>` |
 |`reparent-actions` |Action string invoked when a move ends over a //different// container, with the above plus `<<new-parent>>` (the target container's id) |
+|`copy-actions` |Action string invoked instead of moving when Ctrl/Cmd is held at the start of a move — same variables as `reparent-actions`. Creates a duplicate tile; the original snaps back. Only content tiles set this (groups are not duplicated) |
 |`open-actions` |Action string invoked on a click (no drag) |
 
 Recognised regions inside the box: `.rr-dash-handle` (move surface for window and group tiles), `.rr-dash-resize` (resize grip), `.rr-dash-no-drag` (never starts a drag — buttons, controls, the group-name input). Each `.rr-dash-canvas` carries `data-dash-parent` (its container id) and `data-dash-id` so the widget can hit-test drop targets.

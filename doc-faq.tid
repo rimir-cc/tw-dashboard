@@ -20,6 +20,10 @@ A tile transcludes the target tiddler's body. Tiddlers whose visible display com
 
 Clicking a tile ''navigates'' to the target in the story river (leaving the dashboard view). The ⧉ //show contents// control instead opens the target in a centered popup ''on top of'' the dashboard, rendered through the default ViewTemplate — so you can read the full tiddler (title, tags, fields and body) without losing your place. Close it with × or by clicking the backdrop.
 
+!! Can the same tiddler appear on more than one tile?
+
+Yes. A tile is just a tiddler with a `target` field, so nothing stops several tiles — anywhere on the dashboard or across its groups — from pointing at the same target. The quickest way to make one is to hold ''Ctrl'' (or ''Cmd'') while you start dragging a tile: that drops a copy where you release instead of moving the original.
+
 !! How do I put tiles into a group, and nest groups?
 
 Press ''Add group'' for a container tile, then either drop tiddlers from the wiki onto its canvas or drag existing tiles into it. A group's ＋ control adds a group //inside// it, and you can also drag a whole group into another — nesting is recursive with no depth limit. Drag a tile (or group) back onto the root canvas to take it out again.

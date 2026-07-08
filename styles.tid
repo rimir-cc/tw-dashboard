@@ -67,6 +67,12 @@ tags: $:/tags/Stylesheet
 	opacity: .96;
 }
 
+/* Ctrl/Cmd-drag duplicates the tile — show the copy affordance during the drag */
+.rr-dash-box.rr-dash-copying,
+.rr-dash-box.rr-dash-copying * {
+	cursor: copy;
+}
+
 .rr-dash-handle {
 	display: flex;
 	align-items: center;

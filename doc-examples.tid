@@ -100,6 +100,7 @@ Give a child the title of a //group// (via `dash-parent`) and that group renders
 * ''Group / ungroup by dragging'' — drag a tile onto a group to move it inside; drag it back onto the root canvas (or another group) to re-home it. Whole groups move with their contents.
 * ''Collapse / expand'' — the ▸/▾ control on a group hides or shows its contents; the header shows the child count and an editable name.
 * ''Open'' — click (without dragging) to open the target in the story river.
+* ''Duplicate'' — hold ''Ctrl'' (or ''Cmd'') as you start dragging a content tile to drop a copy of it where you release — in the same container or another one. The original stays put, and both tiles point at the same target tiddler.
 * ''Show contents'' — the ⧉ control opens the target in a centered popup rendered through the default ViewTemplate, without leaving the dashboard. Close it with × or by clicking the backdrop.
 * ''Remove'' — the × control on a content tile deletes that tile tiddler only; the target tiddler is untouched. The × on a group removes the group and promotes its contents to the parent container.
 

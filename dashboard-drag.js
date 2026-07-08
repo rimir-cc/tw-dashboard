@@ -31,6 +31,11 @@ target canvas. Otherwise the ordinary `actions` (geometry) commit runs.
 
 `fit-height="yes"` renders the box at auto height (used for collapsed group
 tiles, whose stored `h` is preserved but not applied).
+
+Holding Ctrl/Cmd when a move starts on a tile that has `copy-actions` turns the
+drag into a DUPLICATE: on release the `copy-actions` string is invoked (creating
+a new tile at the drop location/container) and the original snaps back to its
+start — so a tiddler can appear on the dashboard any number of times.
 \*/
 "use strict";
 
@@ -64,6 +69,7 @@ DashboardDragWidget.prototype.execute = function() {
 	this.tileTitle = this.getAttribute("tile");
 	this.dragActions = this.getAttribute("actions","");
 	this.reparentActions = this.getAttribute("reparent-actions","");
+	this.copyActions = this.getAttribute("copy-actions","");
 	this.openActions = this.getAttribute("open-actions","");
 	this.boxClass = this.getAttribute("class","rr-dash-box");
 	this.moveSelector = this.getAttribute("move-selector","");
@@ -125,6 +131,11 @@ DashboardDragWidget.prototype.handlePointerDown = function(event) {
 	this.startGeoW = this.geoW;
 	this.startGeoH = this.geoH;
 	$tw.utils.addClass(this.domNode,"rr-dash-dragging");
+	// Ctrl/Cmd at grab-start on a copyable (content) tile → duplicate instead of move
+	this.copyDrag = (mode === "grab") && !!this.copyActions && !!(event.ctrlKey || event.metaKey);
+	if(this.copyDrag) {
+		$tw.utils.addClass(this.domNode,"rr-dash-copying");
+	}
 	this.domNode.style.zIndex = "9999";
 	var self = this;
 	this._onMove = function(e){ self.handlePointerMove(e); };
@@ -166,6 +177,7 @@ DashboardDragWidget.prototype.handlePointerUp = function(event) {
 	var mode = this.dragMode;
 	this.dragMode = null;
 	$tw.utils.removeClass(this.domNode,"rr-dash-dragging");
+	$tw.utils.removeClass(this.domNode,"rr-dash-copying");
 	this.domNode.removeEventListener("pointermove",this._onMove,false);
 	this.domNode.removeEventListener("pointerup",this._onUp,false);
 	this.domNode.removeEventListener("pointercancel",this._onUp,false);
@@ -175,6 +187,24 @@ DashboardDragWidget.prototype.handlePointerUp = function(event) {
 		if(this.openActions) {
 			this.invokeActionString(this.openActions,this,event,{});
 		}
+		return;
+	}
+	// Ctrl/Cmd-drag on a content tile duplicates it at the drop location and
+	// leaves the original untouched (a tile may target the same tiddler freely)
+	if(mode === "grab" && this.moved && this.copyDrag && this.copyActions) {
+		var dropCanvas = this.hitTestCanvas(event);
+		var sameDash = dropCanvas && dropCanvas.dashId === this.dashId;
+		this.invokeActionString(this.copyActions,this,event,{
+			"new-parent": sameDash ? dropCanvas.parent : this.containerId,
+			"new-x": String(sameDash ? dropCanvas.x : this.geoX),
+			"new-y": String(sameDash ? dropCanvas.y : this.geoY),
+			"new-w": String(this.geoW),
+			"new-h": String(this.geoH)
+		});
+		// the original was only moved visually during the drag — snap it back
+		this.geoX = this.startGeoX;
+		this.geoY = this.startGeoY;
+		this.applyGeometry();
 		return;
 	}
 	// A move (grab + motion) or a resize: try reparenting first, else commit geometry
@@ -240,8 +270,9 @@ DashboardDragWidget.prototype.hitTestCanvas = function(event) {
 DashboardDragWidget.prototype.refresh = function(changedTiddlers) {
 	var changed = this.computeAttributes();
 	if(changed.tile || changed["class"] || changed["move-selector"] || changed.actions ||
-			changed["reparent-actions"] || changed["open-actions"] || changed["min-width"] ||
-			changed["min-height"] || changed.container || changed["dash-id"] || changed["fit-height"]) {
+			changed["reparent-actions"] || changed["copy-actions"] || changed["open-actions"] ||
+			changed["min-width"] || changed["min-height"] || changed.container || changed["dash-id"] ||
+			changed["fit-height"]) {
 		this.refreshSelf();
 		return true;
 	}

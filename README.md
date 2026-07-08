@@ -11,6 +11,7 @@ A TiddlyWiki 5 plugin (`$:/plugins/rimir/dashboard`) that turns any tiddler into
 - **Two styles** per tile: a *window* tile with a title bar, or a *bare* tile that is just the resizable content.
 - **Group (meta) tiles** — *Add group* creates a container tile that is itself a mini-canvas: drop tiddlers into it, drag existing tiles in and out, and nest groups inside groups recursively. Collapse to a header bar with ▸/▾, rename inline, and see the child count. Removing a group promotes its contents to the parent container.
 - **Click to open** — a click (not a drag) opens the tile's target tiddler in the story river.
+- **Ctrl-drag to duplicate** — hold Ctrl (or Cmd) as you start dragging a tile to drop a *copy* of it elsewhere (even into another group), leaving the original in place. The same tiddler can appear on as many tiles as you like.
 - **Show contents in a popup** — the ⧉ control opens the target in a centered popup rendered through TiddlyWiki's default ViewTemplate (title, tags, fields and body), without leaving the dashboard. Close it with the × button or by clicking the backdrop.
 - **Kind-aware** — when a tile's target is a [`rimir/kind`](https://github.com/rimir-cc/tw-kind) instance, the window tile shows the type's icon (with the type name as hover text) before the caption. Degrades silently when kind isn't installed.
 
