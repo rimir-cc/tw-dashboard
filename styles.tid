@@ -28,6 +28,12 @@ tags: $:/tags/Stylesheet
 	min-width: 8em;
 }
 
+.rr-dash-filter-input {
+	flex: 1 1 18em;
+	min-width: 10em;
+	font-family: monospace;
+}
+
 .rr-dash-hint {
 	color: rgba(128,128,128,0.9);
 	font-style: italic;

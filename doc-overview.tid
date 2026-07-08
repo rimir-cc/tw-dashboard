@@ -21,6 +21,7 @@ Tag a tiddler with <<tag "$:/tags/rimir/dashboard">> and a view-template body ca
 !! Key features
 
 * ''Drop to add'' — drag any tiddler from the wiki onto the canvas and it becomes a tile. Or type a title and press //Add tile//.
+* ''Batch-add by filter'' — type any filter above the canvas and press //Add matching// to add a tile for each tiddler it selects, laid out in a grid.
 * ''Free-form layout'' — absolute pixel positioning; drag a tile to move, drag its bottom-right corner to resize. Geometry is saved on release.
 * ''Bring-to-front z-order'' — interacting with a tile raises it above the others; the stacking order persists.
 * ''Two tile styles'' — a //window// tile with a title bar and controls, or a //bare// tile that is just the resizable content.

@@ -92,6 +92,16 @@ h: 140
 
 Give a child the title of a //group// (via `dash-parent`) and that group renders inside its parent — nesting is recursive. In practice you rarely edit these by hand: type a name in the add box and press ''Add group'' (the text becomes the group's `caption`), drop tiddlers into it, and use the group's ＋ control to add a nested group. You can rename a group inline from its header at any time.
 
+!! Batch-add by filter
+
+The filter box above the canvas adds a tile for every tiddler a filter selects. For example, to tile every open task:
+
+```
+[tag[Task]!tag[Done]]
+```
+
+or every tiddler linking to the current project, every image, every member of a list — anything valid in a `<$list>` works (it is evaluated with `subfilter`). The matches are laid out in a grid (three columns) and the box is cleared afterwards. Tiles are always added; a matching tiddler that already has a tile simply gets another (see //Duplicate// below), so narrow the filter if you want to avoid repeats.
+
 !! Interacting
 
 * ''Move'' — drag the title bar (window / group) or anywhere on the tile (bare).

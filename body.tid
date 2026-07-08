@@ -162,6 +162,18 @@ Add tile
 Add group
 </$button>
 </div>
+<div class="rr-dash-toolbar rr-dash-no-drag">
+<$edit-text tiddler="$:/state/rimir/dashboard/add-filter" tag="input" default="" placeholder="Filter — add every matching tiddler as a tile…" class="rr-dash-filter-input tc-edit-texteditor"/>
+<$button tooltip="Add a tile for every tiddler matching the filter above (laid out in a grid)" aria-label="Add matching tiles">
+<$list filter="[{$:/state/rimir/dashboard/add-filter}!is[blank]]" variable="ignore">
+<$list filter="[subfilter{$:/state/rimir/dashboard/add-filter}]" counter="n">
+<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" dashboard=<<dashId>> target=<<currentTiddler>> x={{{ [<n>subtract[1]remainder[3]multiply[336]add[24]] }}} y={{{ [<n>subtract[1]divide[3]floor[]multiply[236]add[24]] }}} w="320" h="220" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]] ~[[0]] +[add<n>] }}}/>
+</$list>
+<$action-setfield $tiddler="$:/state/rimir/dashboard/add-filter" text=""/>
+</$list>
+Add matching
+</$button>
+</div>
 <$transclude $variable="dash-canvas" containerId="" $mode="block"/>
 <<dash-popup>>
 </div>
