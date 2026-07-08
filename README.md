@@ -7,6 +7,7 @@ A TiddlyWiki 5 plugin (`$:/plugins/rimir/dashboard`) that turns any tiddler into
 - Tag a tiddler with `$:/tags/rimir/dashboard` and its body becomes a canvas.
 - **Add tiles** by dragging tiddlers onto the canvas from anywhere in the wiki, or by typing a title and pressing *Add tile*.
 - **Batch-add by filter** — type a filter in the box above the canvas and press *Add matching* to drop a tile for every tiddler it selects, arranged in a grid.
+- **Clean** — remove tiles in one go (with a confirmation). Leave the clean filter empty to clear the whole dashboard, or give a filter to remove only the tiles whose target it selects.
 - **Move** a tile by dragging its title bar; **resize** it from the bottom-right corner. Geometry is saved on release.
 - **Bring-to-front** — interacting with a tile raises it; the `z`-order persists.
 - **Two styles** per tile: a *window* tile with a title bar, or a *bare* tile that is just the resizable content.

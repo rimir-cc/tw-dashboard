@@ -102,6 +102,15 @@ The filter box above the canvas adds a tile for every tiddler a filter selects. 
 
 or every tiddler linking to the current project, every image, every member of a list — anything valid in a `<$list>` works (it is evaluated with `subfilter`). The matches are laid out in a grid (three columns) and the box is cleared afterwards. Tiles are always added; a matching tiddler that already has a tile simply gets another (see //Duplicate// below), so narrow the filter if you want to avoid repeats.
 
+!! Clean the dashboard
+
+The ''Clean'' button removes tiles after a confirmation that shows how many will go. The box next to it scopes what is removed:
+
+* ''empty'' → every tile on the dashboard, including groups.
+* ''a filter'' → only the tiles whose `target` the filter selects. For example `[tag[Archived]]` removes the tiles pointing at archived tiddlers and leaves the rest (groups, having no target, are never matched by a target filter). The filter is evaluated with `subfilter`, so any list filter works.
+
+The underlying tiddlers are never touched — only the tiles (the dashboard's references to them).
+
 !! Interacting
 
 * ''Move'' — drag the title bar (window / group) or anywhere on the tile (bare).

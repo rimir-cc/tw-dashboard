@@ -73,6 +73,38 @@ title: $:/plugins/rimir/dashboard/body
 </$reveal>
 \end
 
+\procedure dash-clean-body()
+<span class="rr-dash-clean-msg">Remove&#32;<$count filter=<<delFilter>>/>&#32;tile(s)&#32;<<delLabel>>? This cannot be undone.</span>
+<$button class="rr-dash-clean-go" aria-label="Confirm removal">
+<$list filter=<<delFilter>> variable="delTile">
+<$action-deletetiddler $tiddler=<<delTile>>/>
+</$list>
+<$action-setfield $tiddler="$:/state/rimir/dashboard/clean-confirm" text=""/>
+<$action-setfield $tiddler="$:/state/rimir/dashboard/clean-filter" text=""/>
+Remove
+</$button>
+<$button class="rr-dash-clean-cancel" aria-label="Cancel removal">
+<$action-setfield $tiddler="$:/state/rimir/dashboard/clean-confirm" text=""/>
+Cancel
+</$button>
+\end
+
+\procedure dash-clean-confirm()
+<$reveal type="match" state="$:/state/rimir/dashboard/clean-confirm" text="yes">
+<div class="rr-dash-clean-confirm rr-dash-no-drag">
+<%if [{$:/state/rimir/dashboard/clean-filter}!is[blank]] %>
+<$let delFilter="""[subfilter{$:/state/rimir/dashboard/clean-filter}] :map:flat[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>field:target<currentTiddler>]""" delLabel="matching the filter">
+<<dash-clean-body>>
+</$let>
+<%else%>
+<$let delFilter="""[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>]""" delLabel="on the whole dashboard">
+<<dash-clean-body>>
+</$let>
+<%endif%>
+</div>
+</$reveal>
+\end
+
 \procedure dash-content-tile()
 <$let tileStyle={{{ [{!!style}match[bare]then[bare]] ~[[window]] }}}>
 <%if [<tileStyle>match[bare]] %>
@@ -176,6 +208,14 @@ Add group
 </$list>
 Add matching
 </$button>
+</div>
+<div class="rr-dash-toolbar rr-dash-no-drag">
+<$edit-text tiddler="$:/state/rimir/dashboard/clean-filter" tag="input" default="" placeholder="Optional filter — which targets to remove (empty = all tiles)…" class="rr-dash-filter-input tc-edit-texteditor"/>
+<$button class="rr-dash-clean-btn" tooltip="Remove tiles from this dashboard — all of them, or only those whose target matches the filter" aria-label="Clean dashboard">
+<$action-setfield $tiddler="$:/state/rimir/dashboard/clean-confirm" text="yes"/>
+Clean
+</$button>
+<<dash-clean-confirm>>
 </div>
 <$transclude $variable="dash-canvas" containerId="" $mode="block"/>
 <<dash-popup>>

@@ -1,6 +1,7 @@
 title: $:/plugins/rimir/dashboard/changelog
 
 |!Version |!Date |!Changes |
+|0.0.10 |2026-07-08 |Added a ''Clean'' button that removes tiles from the dashboard after a confirmation showing the exact count. An optional filter box scopes it: empty removes every tile (content //and// groups); a filter removes only tiles whose target it selects |
 |0.0.9 |2026-07-08 |Expanding a group now brings it to the front (highest `z`), so its contents are no longer hidden behind other tiles. Collapsing leaves the stacking order alone |
 |0.0.8 |2026-07-08 |Added a ''filter'' box above the canvas: type any filter and press //Add matching// to add a tile for every tiddler it selects, laid out in a grid. The filter is interpreted with `subfilter`, so anything valid in a `<$list>` works |
 |0.0.7 |2026-07-08 |A collapsed group now shrinks to fit its header (auto width //and// height) instead of keeping its full width; expanding restores the previous width and height (both are preserved while collapsed) |

@@ -84,6 +84,8 @@ so there is no hard dependency on the kind plugin's own functions — the icon s
 |`$:/config/ViewTemplateBodyFilters/rimir-dashboard` |Body-cascade step that swaps a dashboard's body for the canvas |
 |`$:/state/rimir/dashboard/add-target` |Transient input backing the //Add tile// box (also used as a new group's name by //Add group//) |
 |`$:/state/rimir/dashboard/add-filter` |Transient input backing the //Add matching// filter box; its text is evaluated with `subfilter` and a tile is created per result |
+|`$:/state/rimir/dashboard/clean-filter` |Transient input backing the //Clean// filter box; empty removes all tiles, otherwise removes tiles whose target the filter selects |
+|`$:/state/rimir/dashboard/clean-confirm` |`yes` while the //Clean// confirmation is showing |
 |`$:/state/rimir/dashboard/popup` |Transient title of the tiddler shown in the //show contents// popup; empty when the popup is closed |
 
 </$fill>

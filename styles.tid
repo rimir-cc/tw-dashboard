@@ -34,6 +34,44 @@ tags: $:/tags/Stylesheet
 	font-family: monospace;
 }
 
+.rr-dash-clean-btn {
+	color: #b03535;
+	border-color: rgba(176,53,53,0.5);
+}
+
+.rr-dash-clean-confirm {
+	display: flex;
+	align-items: center;
+	gap: .5em;
+	flex-wrap: wrap;
+	padding: 4px 8px;
+	border: 1px solid rgba(176,53,53,0.5);
+	border-radius: 6px;
+	background-color: rgba(176,53,53,0.10);
+}
+
+.rr-dash-clean-msg {
+	font-weight: 600;
+}
+
+.rr-dash-clean-go {
+	color: #fff;
+	background-color: #b03535;
+	border: none;
+	border-radius: 4px;
+	padding: 2px 10px;
+	cursor: pointer;
+}
+
+.rr-dash-clean-cancel {
+	background: transparent;
+	border: 1px solid rgba(128,128,128,0.4);
+	border-radius: 4px;
+	padding: 2px 10px;
+	cursor: pointer;
+	color: inherit;
+}
+
 .rr-dash-hint {
 	color: rgba(128,128,128,0.9);
 	font-style: italic;
