@@ -10,6 +10,7 @@ A TiddlyWiki 5 plugin (`$:/plugins/rimir/dashboard`) that turns any tiddler into
 - **Bring-to-front** — interacting with a tile raises it; the `z`-order persists.
 - **Two styles** per tile: a *window* tile with a title bar, or a *bare* tile that is just the resizable content.
 - **Click to open** — a click (not a drag) opens the tile's target tiddler in the story river.
+- **Kind-aware** — when a tile's target is a [`rimir/kind`](https://github.com/rimir-cc/tw-kind) instance, the window tile shows the type's icon (with the type name as hover text) before the caption. Degrades silently when kind isn't installed.
 
 ## Quick start
 

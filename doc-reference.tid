@@ -53,6 +53,16 @@ The positioning/interaction widget (used internally by the canvas body).
 
 Recognised regions inside the box: `.rr-dash-handle` (move surface for window tiles), `.rr-dash-resize` (resize grip), `.rr-dash-no-drag` (never starts a drag — buttons, controls).
 
+!! Kind integration (optional)
+
+When [[rimir/kind|$:/plugins/rimir/kind]] is installed and a window tile's `target` is a kind instance (a tiddler with a `kind.type` field), the title bar prefixes the caption with the type's `kind.icon`, using the type's `kind.caption` as hover text. The type definition is located generically with
+
+```
+[all[shadows+tiddlers]has[kind.fields]field:kind.type<typeKey>has[kind.icon]]
+```
+
+so there is no hard dependency on the kind plugin's own functions — the icon simply does not appear when kind (or the type's icon) is absent. Bare tiles have no title bar and therefore show no icon.
+
 !! Configuration tiddlers
 
 |!Tiddler |!Purpose |

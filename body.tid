@@ -19,6 +19,19 @@ title: $:/plugins/rimir/dashboard/body
 </$tiddler>
 \end
 
+\procedure dash-title()
+<$let target={{!!target}}>
+<%if [<target>has[kind.type]] %>
+<$let typeKey={{{ [<target>get[kind.type]] }}}>
+<$list filter="[all[shadows+tiddlers]has[kind.fields]field:kind.type<typeKey>has[kind.icon]]" variable="typeTid">
+<span class="rr-dash-kind-icon" title={{{ [<typeTid>get[kind.caption]!is[blank]] ~[<typeKey>] }}}><$text text={{{ [<typeTid>get[kind.icon]] }}}/></span>
+</$list>
+</$let>
+<%endif%>
+<$text text={{{ [<target>get[caption]!is[blank]] ~[<target>] ~[[(empty)]] }}}/>
+</$let>
+\end
+
 \procedure dash-tile()
 <$let tileStyle={{{ [{!!style}match[bare]then[bare]] ~[[window]] }}}>
 <%if [<tileStyle>match[bare]] %>
@@ -30,7 +43,7 @@ title: $:/plugins/rimir/dashboard/body
 <%else%>
 <$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} move-selector=".rr-dash-handle" class="rr-dash-box" actions=<<dashGeomActions>> open-actions=<<dashOpenActions>>>
 <div class="rr-dash-handle">
-<span class="rr-dash-title"><$text text={{{ [{!!target}get[caption]] ~[{!!target}] ~[[(empty)]] }}}/></span>
+<span class="rr-dash-title"><<dash-title>></span>
 <span class="rr-dash-controls"><<dash-controls>></span>
 </div>
 <div class="rr-dash-body"><<dash-tile-body>></div>

@@ -88,6 +88,11 @@ tags: $:/tags/Stylesheet
 	font-weight: 600;
 }
 
+.rr-dash-kind-icon {
+	margin-right: 4px;
+	cursor: help;
+}
+
 .rr-dash-controls {
 	display: flex;
 	gap: 1px;

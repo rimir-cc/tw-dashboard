@@ -7,20 +7,23 @@ Turn any tiddler into a //dashboard//: a free-form canvas onto which you drop ot
 !! What it does
 
 * Tag a tiddler with <<tag "$:/tags/rimir/dashboard">> and its body becomes a canvas.
-* **Add tiles** by dragging tiddlers onto the canvas from anywhere in the wiki, or by typing a title and pressing //Add tile//.
-* **Move** a tile by dragging its title bar; **resize** it from the bottom-right corner. Positions are saved immediately.
-* Each tile transcludes its target tiddler's body.
+* ''Add tiles'' by dragging tiddlers onto the canvas from anywhere in the wiki, or by typing a title and pressing //Add tile//.
+* ''Move'' a tile by dragging its title bar, ''resize'' it from the bottom-right corner — geometry is saved on release.
+* ''Bring-to-front'' — interacting with a tile raises it above the others, and the stacking order persists.
+* ''Two tile styles'' — a //window// tile with a title bar and controls, or a //bare// tile that is just the resizable content. Toggle with the ⊟ control.
+* ''Click to open'' — a click (as opposed to a drag) opens the tile's target tiddler in the story river.
+* ''Kind-aware'' — when a tile's target is a [[rimir/kind|$:/plugins/rimir/kind]] instance, the window tile shows the type's icon (with the type name as hover text) before the caption. Degrades silently when kind is not installed.
 
 !! Quick start
 
 # Click //New dashboard// in the page controls (right sidebar → Tools), or tag any tiddler <<tag "$:/tags/rimir/dashboard">>.
 # Drag a few tiddlers onto the canvas.
-# Rearrange them however you like.
+# Move, resize, and restyle them; click one to open it.
 
 !! How it is stored
 
-Each tile is its own small tiddler tagged <<tag "$:/tags/rimir/dashboard/tile">> with a `dashboard` field (the parent dashboard) and `target` / `x` / `y` / `w` / `h` fields. No JSON blobs — deleting a dashboard's tiles is just deleting those tiddlers.
+Each tile is its own tiddler tagged <<tag "$:/tags/rimir/dashboard/tile">>, stored under `$:/config/rimir/dashboard/<dashboard-id>/tiles/…` with plain fields (`target` / `x` / `y` / `w` / `h` / `z` / `style`). No JSON blobs — every move, resize or restyle is an ordinary `$action-setfield`.
 
 !! Prerequisites
 
-TiddlyWiki >= 5.4.0. No other plugin dependencies.
+TiddlyWiki >= 5.4.0. No hard dependencies. Optional: [[rimir/kind|$:/plugins/rimir/kind]] (type icons on tiles) and [[rimir/doc-template|$:/plugins/rimir/doc-template]] (branded documentation).

@@ -32,6 +32,10 @@ In the tile tiddlers under `$:/config/rimir/dashboard/<dashId>/tiles/…`. They 
 
 You can point a tile at another dashboard tiddler; it will render that dashboard's canvas inside the tile. Deeply nested dashboards are untested — treat as an edge case.
 
+!! Can a tile show the kind type icon?
+
+Yes — automatically. If a window tile's target is a [[rimir/kind|$:/plugins/rimir/kind]] instance, the type's icon appears before the caption with the type name as hover text. It requires nothing beyond having kind installed and a `kind.icon` on the type; without kind, the icon is simply omitted. (Bare tiles have no title bar, so no icon is shown there.)
+
 !! Nothing happens when I drag — the tile just gets selected/dragged as text.
 
 That is a sign the drag region isn't arming (for example an element accidentally marked `.rr-dash-no-drag`). Move starts only on the handle (window) or the box (bare); resize only on the corner grip.

@@ -1,6 +1,6 @@
 {
     "name": "tw-dashboard",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "TiddlyWiki plugin: free-form dashboards — drop tiddlers on a canvas and arrange them freely",
     "repository": {
         "type": "git",
