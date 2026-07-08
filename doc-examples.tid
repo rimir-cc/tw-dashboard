@@ -58,14 +58,50 @@ z: 2
 
 You can flip any tile between //window// and //bare// live with the ⊟ control (in the title bar for window tiles, in the hover corner for bare tiles).
 
+!! A group (meta) tile
+
+Press ''Add group'' to create a container tile. A group has `role: group`, no `target`, and its body is a canvas for other tiles:
+
+```
+title: $:/config/rimir/dashboard/my-board/tiles/group
+tags: $:/tags/rimir/dashboard/tile
+role: group
+dashboard: my-board
+caption: Research
+collapsed: no
+x: 40
+y: 40
+w: 360
+h: 300
+z: 1
+```
+
+A tile belongs to a group when its `dash-parent` field holds the group's title:
+
+```
+title: $:/config/rimir/dashboard/my-board/tiles/tile-in-group
+tags: $:/tags/rimir/dashboard/tile
+dashboard: my-board
+dash-parent: $:/config/rimir/dashboard/my-board/tiles/group
+target: A Source
+x: 16
+y: 16
+w: 220
+h: 140
+```
+
+Give a child the title of a //group// (via `dash-parent`) and that group renders inside its parent — nesting is recursive. In practice you rarely edit these by hand: press ''Add group'', drop tiddlers into it, and use the group's ＋ control to add a nested group.
+
 !! Interacting
 
-* ''Move'' — drag the title bar (window) or anywhere on the tile (bare).
+* ''Move'' — drag the title bar (window / group) or anywhere on the tile (bare).
 * ''Resize'' — drag the bottom-right corner.
 * ''Bring to front'' — any move or resize raises the tile and persists its `z`.
+* ''Group / ungroup by dragging'' — drag a tile onto a group to move it inside; drag it back onto the root canvas (or another group) to re-home it. Whole groups move with their contents.
+* ''Collapse / expand'' — the ▸/▾ control on a group hides or shows its contents; the header shows the child count and an editable name.
 * ''Open'' — click (without dragging) to open the target in the story river.
 * ''Show contents'' — the ⧉ control opens the target in a centered popup rendered through the default ViewTemplate, without leaving the dashboard. Close it with × or by clicking the backdrop.
-* ''Remove'' — the × control deletes the tile tiddler only; the target tiddler is untouched.
+* ''Remove'' — the × control on a content tile deletes that tile tiddler only; the target tiddler is untouched. The × on a group removes the group and promotes its contents to the parent container.
 
 !! Housekeeping filters
 

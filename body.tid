@@ -17,6 +17,20 @@ title: $:/plugins/rimir/dashboard/body
 </$button>
 \end
 
+\procedure dash-group-controls()
+<$button class="rr-dash-ctl rr-dash-no-drag" tooltip="Add a nested group inside this one" aria-label="Add nested group">
+<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" role="group" dashboard=<<dashId>> dash-parent=<<currentTiddler>> collapsed="no" x="24" y="24" w="280" h="200" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>
+＋
+</$button>
+<$button class="rr-dash-ctl rr-dash-no-drag" tooltip="Remove this group; its contents move up to the parent container" aria-label="Remove group">
+<$list filter="[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>field:dash-parent<currentTiddler>]" variable="dashChild">
+<$action-setfield $tiddler=<<dashChild>> dash-parent={{!!dash-parent}}/>
+</$list>
+<$action-deletetiddler $tiddler=<<currentTiddler>>/>
+×
+</$button>
+\end
+
 \procedure dash-tile-body()
 <$tiddler tiddler={{!!target}}>
 <$transclude $mode="block"/>
@@ -59,16 +73,16 @@ title: $:/plugins/rimir/dashboard/body
 </$reveal>
 \end
 
-\procedure dash-tile()
+\procedure dash-content-tile()
 <$let tileStyle={{{ [{!!style}match[bare]then[bare]] ~[[window]] }}}>
 <%if [<tileStyle>match[bare]] %>
-<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} move-selector="" class="rr-dash-box rr-dash-bare" actions=<<dashGeomActions>> open-actions=<<dashOpenActions>>>
+<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} move-selector="" class="rr-dash-box rr-dash-bare" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> open-actions=<<dashOpenActions>>>
 <div class="rr-dash-controls rr-dash-no-drag"><<dash-controls>></div>
 <div class="rr-dash-body"><<dash-tile-body>></div>
 <div class="rr-dash-resize"></div>
 </$dashboard-drag>
 <%else%>
-<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} move-selector=".rr-dash-handle" class="rr-dash-box" actions=<<dashGeomActions>> open-actions=<<dashOpenActions>>>
+<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} move-selector=".rr-dash-handle" class="rr-dash-box" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> open-actions=<<dashOpenActions>>>
 <div class="rr-dash-handle">
 <span class="rr-dash-title"><<dash-title>></span>
 <span class="rr-dash-controls"><<dash-controls>></span>
@@ -80,10 +94,57 @@ title: $:/plugins/rimir/dashboard/body
 </$let>
 \end
 
+\procedure dash-group-tile()
+<$let collapsed={{{ [{!!collapsed}match[yes]then[yes]] }}}>
+<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} move-selector=".rr-dash-handle" class="rr-dash-box rr-dash-group" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> fit-height={{{ [<collapsed>match[yes]then[yes]] }}}>
+<div class="rr-dash-handle">
+<span class="rr-dash-title">
+<$button class="rr-dash-ctl rr-dash-no-drag" tooltip="Expand / collapse this group" aria-label="Expand or collapse group">
+<$action-setfield $tiddler=<<currentTiddler>> collapsed={{{ [<collapsed>match[yes]then[no]] ~[[yes]] }}}/>
+<%if [<collapsed>match[yes]] %>▸<%else%>▾<%endif%>
+</$button>
+<$edit-text tiddler=<<currentTiddler>> field="caption" tag="input" default="" placeholder="Group" class="rr-dash-group-name rr-dash-no-drag tc-edit-texteditor"/>
+<span class="rr-dash-count">(<$count filter="[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>field:dash-parent<currentTiddler>]"/>)</span>
+</span>
+<span class="rr-dash-controls"><<dash-group-controls>></span>
+</div>
+<%if [<collapsed>match[yes]] %>
+<%else%>
+<div class="rr-dash-body rr-dash-group-body"><$transclude $variable="dash-canvas" containerId=<<currentTiddler>> $mode="block"/></div>
+<div class="rr-dash-resize"></div>
+<%endif%>
+</$dashboard-drag>
+</$let>
+\end
+
+\procedure dash-tile()
+<%if [{!!role}match[group]] %>
+<<dash-group-tile>>
+<%else%>
+<<dash-content-tile>>
+<%endif%>
+\end
+
+\procedure dash-canvas(containerId)
+<$droppable tag="div" class="rr-dash-canvas" data-dash-parent=<<containerId>> data-dash-id=<<dashId>> actions="""<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" dashboard=<<dashId>> dash-parent=<<containerId>> target=<<actionTiddler>> x="24" y="24" w="320" h="220" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>""">
+<%if [<containerId>is[blank]] %>
+<$list filter="[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>!has[dash-parent]nsort[z]]" variable="currentTiddler" emptyMessage=<<dashEmptyHint>>>
+<<dash-tile>>
+</$list>
+<%else%>
+<$list filter="[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>field:dash-parent<containerId>nsort[z]]" variable="currentTiddler" emptyMessage=<<dashEmptyHint>>>
+<<dash-tile>>
+</$list>
+<%endif%>
+</$droppable>
+\end
+
 <$let
 	dashId={{{ [<currentTiddler>get[dashboard-id]] ~[<currentTiddler>] }}}
 	dashGeomActions="""<$action-setfield $tiddler=<<currentTiddler>> x=<<new-x>> y=<<new-y>> w=<<new-w>> h=<<new-h>> z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/>"""
+	dashReparentActions="""<$action-setfield $tiddler=<<currentTiddler>> dash-parent=<<new-parent>> x=<<new-x>> y=<<new-y>> w=<<new-w>> h=<<new-h>> z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/>"""
 	dashOpenActions="""<$action-navigate $to={{!!target}}/>"""
+	dashEmptyHint="""<div class="rr-dash-hint">Empty. Drop tiddlers here from the wiki, or drag a tile in from another container.</div>"""
 >
 <div class="rr-dash-root">
 <div class="rr-dash-toolbar rr-dash-no-drag">
@@ -95,12 +156,12 @@ title: $:/plugins/rimir/dashboard/body
 </$list>
 Add tile
 </$button>
+<$button tooltip="Add an empty group tile to organise other tiles into" aria-label="Add group">
+<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" role="group" dashboard=<<dashId>> collapsed="no" x="24" y="24" w="300" h="240" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>
+Add group
+</$button>
 </div>
-<$droppable tag="div" class="rr-dash-canvas" actions="""<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" dashboard=<<dashId>> target=<<actionTiddler>> x="24" y="24" w="320" h="220" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>""">
-<$list filter="[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>nsort[z]]" variable="currentTiddler" emptyMessage="""<div class="rr-dash-hint">Empty dashboard. Drag tiddlers here from anywhere in the wiki, or type a title above and press //Add tile//. Drag a tile to move it, its corner to resize, and click it to open the tiddler.</div>""">
-<<dash-tile>>
-</$list>
-</$droppable>
+<$transclude $variable="dash-canvas" containerId="" $mode="block"/>
 <<dash-popup>>
 </div>
 </$let>

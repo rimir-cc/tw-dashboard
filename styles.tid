@@ -163,6 +163,63 @@ tags: $:/tags/Stylesheet
 	background: linear-gradient(135deg, transparent 50%, rgba(128,128,128,0.55) 50%);
 }
 
+/* Group (meta) tiles: a container tile whose body is itself a canvas of child
+   tiles. Distinguished by a dashed frame; collapse hides the inner canvas. */
+.rr-dash-group {
+	border-style: dashed;
+}
+
+.rr-dash-group-name {
+	flex: 0 1 auto;
+	min-width: 4em;
+	max-width: 14em;
+	border: none;
+	background: transparent;
+	color: inherit;
+	font-weight: 600;
+	padding: 0 2px;
+}
+
+.rr-dash-group-name:focus {
+	background-color: <<colour tiddler-background>>;
+	outline: 1px solid rgba(128,128,128,0.45);
+	border-radius: 3px;
+}
+
+.rr-dash-count {
+	opacity: .55;
+	font-weight: 400;
+	margin-left: 3px;
+	white-space: nowrap;
+}
+
+/* The group's body is a nested canvas; strip the padding and let the canvas
+   fill it. A <p> may sneak in from the block transclusion — collapse it. */
+.rr-dash-group > .rr-dash-body {
+	padding: 0;
+	overflow: hidden;
+}
+
+.rr-dash-group > .rr-dash-body > p {
+	display: contents;
+}
+
+.rr-dash-group .rr-dash-canvas {
+	min-height: 100%;
+	height: 100%;
+	border: none;
+	border-radius: 0;
+	background-color: transparent;
+}
+
+/* Group title bar allows the name field to shrink without clipping controls. */
+.rr-dash-group > .rr-dash-handle .rr-dash-title {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+	min-width: 0;
+}
+
 /* Popup overlay: a fixed viewport-covering layer so it escapes the tile's
    overflow clipping. The target tiddler is rendered through the default
    ViewTemplate inside the modal. */

@@ -36,6 +36,34 @@ The canvas enumerates its tiles with:
 
 Rendering in `z` order means DOM order and `z-index` agree.
 
+!! Groups and recursion
+
+A group (meta) tile is an ordinary tile with `role: group` and no `target`. Its body is a nested canvas. Membership is a single plain field: a tile's `dash-parent` holds the title of the group it lives in, and top-level tiles simply have no `dash-parent`. That makes the tiles of one dashboard a //tree//, and the canvas renders it with one recursive procedure:
+
+```
+dash-canvas(containerId)  →  lists tiles in that container  →  dash-tile
+dash-tile (role=group)    →  header + dash-canvas(thisGroupTitle)   ← recurses
+```
+
+Each container is enumerated by the same shape of filter, differing only in the membership test — top-level uses `!has[dash-parent]`, a group uses `field:dash-parent<groupTitle>`:
+
+```
+[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>!has[dash-parent]nsort[z]]
+[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>field:dash-parent<containerId>nsort[z]]
+```
+
+Because a child positions itself absolutely within its group's own `.rr-dash-canvas` (which is `position: relative`), the existing pixel-geometry model works unchanged at every level of nesting. Collapsing a group is just a `collapsed` field: when set, the body (and thus the whole subtree) is not rendered and the box is drawn at auto height. Removing a group re-homes its direct children to the group's own `dash-parent` — no recursive delete, no orphans.
+
+!! Re-parenting by drag
+
+Tiles (and whole groups) move between containers by dragging. The pointer-based tile drag is independent of the HTML5 drop used for adding tiddlers from the wiki, so the two never collide. On release after a move, the widget hit-tests the drop:
+
+# it captures the tile's on-screen rectangle, then hides itself with `visibility: hidden` so `document.elementFromPoint` reports the canvas //beneath// the tile rather than the tile itself;
+# it walks up from that element to the nearest `.rr-dash-canvas`, reading its `data-dash-parent` (the target container id) and `data-dash-id`;
+# if the target differs from the tile's current container, belongs to the same dashboard, and is not the tile's own descendant, it invokes `reparent-actions` with `<<new-parent>>` plus coordinates recomputed relative to the target canvas. Otherwise it commits geometry in place.
+
+Hiding the tile during the hit-test also gives cycle-safety for free: a group dropped onto its own contents resolves to the canvas behind it — its current container — so it simply does not reparent.
+
 !! The `<$dashboard-drag>` widget
 
 Free-form pointer dragging is the one thing wikitext cannot express, so a single JS widget owns it. It renders an absolutely-positioned box from `x`/`y`/`w`/`h`/`z` attributes and handles pointer interaction:
@@ -46,7 +74,7 @@ Free-form pointer dragging is the one thing wikitext cannot express, so a single
 
 During a drag the DOM node is moved directly for smoothness. The geometry is written back exactly once, on pointer release, by invoking the `actions` string — a plain `$action-setfield` on the tile tiddler. Committing on release rather than on every pointermove avoids the async write races that come from saving on each interaction event.
 
-A pointerdown+up with no motion beyond a small threshold is treated as a ''click'' and invokes `open-actions` instead (used to navigate the target into the story river). Move and resize commits also recompute `z = max(sibling z) + 1`, giving bring-to-front behaviour.
+A pointerdown+up with no motion beyond a small threshold is treated as a ''click'' and invokes `open-actions` instead (used to navigate the target into the story river). Move and resize commits also recompute `z = max(sibling z) + 1`, giving bring-to-front behaviour. When a move ends over a different container the widget invokes `reparent-actions` instead of `actions` (see //Re-parenting by drag// above), and `fit-height="yes"` makes it render at auto height for collapsed groups.
 
 !! The contents popup
 

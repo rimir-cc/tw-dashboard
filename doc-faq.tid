@@ -20,6 +20,18 @@ A tile transcludes the target tiddler's body. Tiddlers whose visible display com
 
 Clicking a tile ''navigates'' to the target in the story river (leaving the dashboard view). The ⧉ //show contents// control instead opens the target in a centered popup ''on top of'' the dashboard, rendered through the default ViewTemplate — so you can read the full tiddler (title, tags, fields and body) without losing your place. Close it with × or by clicking the backdrop.
 
+!! How do I put tiles into a group, and nest groups?
+
+Press ''Add group'' for a container tile, then either drop tiddlers from the wiki onto its canvas or drag existing tiles into it. A group's ＋ control adds a group //inside// it, and you can also drag a whole group into another — nesting is recursive with no depth limit. Drag a tile (or group) back onto the root canvas to take it out again.
+
+!! What happens to the tiles inside a group when I delete the group?
+
+They are not deleted. Removing a group (its × control) promotes its direct children up to the group's own container — so a group at the top level spills its contents onto the dashboard, and a nested group spills into its parent group. Delete the child tiles individually if you want them gone.
+
+!! Why did my tile snap to a new position when I dragged it into a group?
+
+Positions are relative to the container. When a tile moves into (or out of) a group its coordinates are recomputed relative to the new canvas, so it keeps roughly the on-screen spot where you dropped it rather than its old numbers.
+
 !! How do I switch a tile between window and bare?
 
 Use the ⊟ control — in the title bar of a window tile, or the hover-corner cluster of a bare tile. It toggles the tile's `style` field.

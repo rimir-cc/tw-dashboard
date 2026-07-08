@@ -20,6 +20,17 @@ A pointerdown+up on a move surface with no motion beyond DRAG_THRESHOLD is a
 CLICK: it invokes `open-actions` instead (used to open the tile's target in the
 story river). Geometry commits also carry a fresh `z` so the tile comes to the
 front; the widget renders `z-index` from the `z` attribute.
+
+Reparenting: on release after a MOVE, the drop point is hit-tested against the
+`.rr-dash-canvas` elements (the widget hides itself with visibility:hidden so
+elementFromPoint sees the canvas beneath). If the topmost canvas under the
+pointer differs from the tile's current container — and belongs to the same
+dashboard and is not the tile's own descendant — the `reparent-actions` string
+is invoked with the extra `new-parent` variable and coordinates relative to the
+target canvas. Otherwise the ordinary `actions` (geometry) commit runs.
+
+`fit-height="yes"` renders the box at auto height (used for collapsed group
+tiles, whose stored `h` is preserved but not applied).
 \*/
 "use strict";
 
@@ -52,9 +63,13 @@ DashboardDragWidget.prototype.render = function(parent,nextSibling) {
 DashboardDragWidget.prototype.execute = function() {
 	this.tileTitle = this.getAttribute("tile");
 	this.dragActions = this.getAttribute("actions","");
+	this.reparentActions = this.getAttribute("reparent-actions","");
 	this.openActions = this.getAttribute("open-actions","");
 	this.boxClass = this.getAttribute("class","rr-dash-box");
 	this.moveSelector = this.getAttribute("move-selector","");
+	this.containerId = this.getAttribute("container","");
+	this.dashId = this.getAttribute("dash-id","");
+	this.fitHeight = (this.getAttribute("fit-height","") === "yes");
 	this.geoX = this.num(this.getAttribute("x"),0);
 	this.geoY = this.num(this.getAttribute("y"),0);
 	this.geoW = this.num(this.getAttribute("w"),320);
@@ -76,7 +91,7 @@ DashboardDragWidget.prototype.applyGeometry = function() {
 	s.left = this.geoX + "px";
 	s.top = this.geoY + "px";
 	s.width = this.geoW + "px";
-	s.height = this.geoH + "px";
+	s.height = this.fitHeight ? "" : (this.geoH + "px");
 };
 
 DashboardDragWidget.prototype.applyZ = function() {
@@ -160,7 +175,25 @@ DashboardDragWidget.prototype.handlePointerUp = function(event) {
 		if(this.openActions) {
 			this.invokeActionString(this.openActions,this,event,{});
 		}
-	} else if(this.dragActions) {
+		return;
+	}
+	// A move (grab + motion) or a resize: try reparenting first, else commit geometry
+	var reparented = false;
+	if(mode === "grab" && this.moved && this.reparentActions) {
+		var target = this.hitTestCanvas(event);
+		if(target && target.dashId === this.dashId && target.parent !== this.containerId &&
+				!this.domNode.contains(target.canvas)) {
+			this.invokeActionString(this.reparentActions,this,event,{
+				"new-parent": target.parent,
+				"new-x": String(target.x),
+				"new-y": String(target.y),
+				"new-w": String(this.geoW),
+				"new-h": String(this.geoH)
+			});
+			reparented = true;
+		}
+	}
+	if(!reparented && this.dragActions) {
 		this.invokeActionString(this.dragActions,this,event,{
 			"new-x": String(this.geoX),
 			"new-y": String(this.geoY),
@@ -170,10 +203,45 @@ DashboardDragWidget.prototype.handlePointerUp = function(event) {
 	}
 };
 
+/*
+Find the .rr-dash-canvas under the pointer, if any, returning its container id,
+dashboard id, and the tile's position relative to that canvas. The widget hides
+itself (and thus its whole subtree) so elementFromPoint reports the canvas
+beneath rather than the tile being dragged — which also means a group dropped
+onto its own contents resolves to its current container and does not reparent.
+*/
+DashboardDragWidget.prototype.hitTestCanvas = function(event) {
+	var doc = this.document;
+	if(!doc || !doc.elementFromPoint) {
+		return null; // fake document (CLI render) has no hit-testing
+	}
+	var tileRect = this.domNode.getBoundingClientRect();
+	var prevVisibility = this.domNode.style.visibility;
+	this.domNode.style.visibility = "hidden";
+	var el = doc.elementFromPoint(event.clientX,event.clientY);
+	this.domNode.style.visibility = prevVisibility;
+	if(!el || !el.closest) {
+		return null;
+	}
+	var canvas = el.closest(".rr-dash-canvas");
+	if(!canvas) {
+		return null;
+	}
+	var canvasRect = canvas.getBoundingClientRect();
+	return {
+		canvas: canvas,
+		parent: canvas.getAttribute("data-dash-parent") || "",
+		dashId: canvas.getAttribute("data-dash-id") || "",
+		x: Math.max(0,Math.round(tileRect.left - canvasRect.left + canvas.scrollLeft)),
+		y: Math.max(0,Math.round(tileRect.top - canvasRect.top + canvas.scrollTop))
+	};
+};
+
 DashboardDragWidget.prototype.refresh = function(changedTiddlers) {
 	var changed = this.computeAttributes();
 	if(changed.tile || changed["class"] || changed["move-selector"] || changed.actions ||
-			changed["open-actions"] || changed["min-width"] || changed["min-height"]) {
+			changed["reparent-actions"] || changed["open-actions"] || changed["min-width"] ||
+			changed["min-height"] || changed.container || changed["dash-id"] || changed["fit-height"]) {
 		this.refreshSelf();
 		return true;
 	}
