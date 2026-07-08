@@ -90,7 +90,7 @@ w: 220
 h: 140
 ```
 
-Give a child the title of a //group// (via `dash-parent`) and that group renders inside its parent — nesting is recursive. In practice you rarely edit these by hand: press ''Add group'', drop tiddlers into it, and use the group's ＋ control to add a nested group.
+Give a child the title of a //group// (via `dash-parent`) and that group renders inside its parent — nesting is recursive. In practice you rarely edit these by hand: type a name in the add box and press ''Add group'' (the text becomes the group's `caption`), drop tiddlers into it, and use the group's ＋ control to add a nested group. You can rename a group inline from its header at any time.
 
 !! Interacting
 
