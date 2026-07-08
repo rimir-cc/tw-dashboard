@@ -1,0 +1,4 @@
+title: $:/plugins/rimir/dashboard/icon
+type: image/svg+xml
+
+<svg class="tc-image-dashboard tc-image-button" width="22pt" height="22pt" viewBox="0 0 24 24"><g fill="currentColor" fill-rule="evenodd"><rect x="3" y="3" width="8" height="5" rx="1"/><rect x="3" y="10" width="8" height="11" rx="1"/><rect x="13" y="3" width="8" height="11" rx="1"/><rect x="13" y="16" width="8" height="5" rx="1"/></g></svg>

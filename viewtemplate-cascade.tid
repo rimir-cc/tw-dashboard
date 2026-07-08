@@ -1,0 +1,5 @@
+title: $:/config/ViewTemplateBodyFilters/rimir-dashboard
+tags: $:/tags/ViewTemplateBodyFilter
+list-before: $:/config/ViewTemplateBodyFilters/default
+
+[tag[$:/tags/rimir/dashboard]then[$:/plugins/rimir/dashboard/body]]

@@ -1,0 +1,63 @@
+title: $:/plugins/rimir/dashboard/doc/reference
+type: text/vnd.tiddlywiki
+rdt.order: 4
+rdt.plugin-key: dashboard
+rdt.plugin-name: dashboard
+rdt.section: Reference
+
+<$transclude $tiddler="$:/plugins/rimir/doc-template/templates/page">
+<$fill $name="body">
+
+!! Tags
+
+|!Tag |!Applied to |
+|<<tag "$:/tags/rimir/dashboard">> |A dashboard tiddler (its body becomes the canvas) |
+|<<tag "$:/tags/rimir/dashboard/tile">> |A tile tiddler |
+
+!! Dashboard fields
+
+|!Field |!Meaning |
+|`dashboard-id` |Stable id used to group tiles and build their titles. Optional — falls back to the dashboard title |
+
+!! Tile fields
+
+|!Field |!Meaning |
+|`dashboard` |The owning dashboard's id (or title) |
+|`target` |Title of the tiddler shown inside the tile |
+|`x` / `y` |Top-left position in pixels, relative to the canvas |
+|`w` / `h` |Width / height in pixels |
+|`z` |Stacking order (higher = in front); set to `max+1` on interaction |
+|`style` |`window` (default) or `bare` |
+
+!! Tile title scheme
+
+```
+$:/config/rimir/dashboard/<dashId>/tiles/<uid>
+```
+
+Tiles live under `$:/config/…`, so they sync to disk but stay out of the default tiddler lists.
+
+!! `<$dashboard-drag>` widget
+
+The positioning/interaction widget (used internally by the canvas body).
+
+|!Attribute |!Meaning |
+|`tile` |Title of the tile tiddler |
+|`x` `y` `w` `h` |Initial geometry in pixels |
+|`z` |Initial `z-index` |
+|`class` |Class(es) for the box element |
+|`move-selector` |CSS selector that starts a move; empty = the whole box |
+|`min-width` `min-height` |Resize floor (default 120 / 80) |
+|`actions` |Action string invoked on move/resize release, with variables `<<new-x>>` `<<new-y>>` `<<new-w>>` `<<new-h>>` |
+|`open-actions` |Action string invoked on a click (no drag) |
+
+Recognised regions inside the box: `.rr-dash-handle` (move surface for window tiles), `.rr-dash-resize` (resize grip), `.rr-dash-no-drag` (never starts a drag — buttons, controls).
+
+!! Configuration tiddlers
+
+|!Tiddler |!Purpose |
+|`$:/config/ViewTemplateBodyFilters/rimir-dashboard` |Body-cascade step that swaps a dashboard's body for the canvas |
+|`$:/state/rimir/dashboard/add-target` |Transient input backing the //Add tile// box |
+
+</$fill>
+</$transclude>

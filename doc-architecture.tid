@@ -1,0 +1,56 @@
+title: $:/plugins/rimir/dashboard/doc/architecture
+type: text/vnd.tiddlywiki
+rdt.order: 2
+rdt.plugin-key: dashboard
+rdt.plugin-name: dashboard
+rdt.section: Architecture
+
+<$transclude $tiddler="$:/plugins/rimir/doc-template/templates/page">
+<$fill $name="body">
+
+!! The body-cascade swap
+
+A dashboard is an ordinary tiddler tagged <<tag "$:/tags/rimir/dashboard">>. The plugin ships a `ViewTemplateBodyFilter` step, `$:/config/ViewTemplateBodyFilters/rimir-dashboard`, ordered `list-before` the `default` step:
+
+```
+[tag[$:/tags/rimir/dashboard]then[$:/plugins/rimir/dashboard/body]]
+```
+
+So when a dashboard tiddler is viewed, its body renders `$:/plugins/rimir/dashboard/body` — the canvas — while its title, tags and fields render through the normal ViewTemplate. Nothing else about the tiddler is special.
+
+!! Tiles are tiddlers
+
+Each tile is its own tiddler tagged <<tag "$:/tags/rimir/dashboard/tile">>, stored under a system-tiddler prefix:
+
+```
+$:/config/rimir/dashboard/<dashId>/tiles/<uid>
+```
+
+`<dashId>` is the dashboard's `dashboard-id` field (auto-generated for dashboards made with the //New dashboard// button) or, as a fallback, the dashboard's title. Tiles carry plain fields — `dashboard`, `target`, `x`, `y`, `w`, `h`, `z`, `style` — so every operation is a plain `$action-createtiddler` / `$action-setfield` / `$action-deletetiddler`. There is no JSON serialisation to parse or rebuild, and the compact numeric fields keep the tiddlers in single-file `.tid` form.
+
+The canvas enumerates its tiles with:
+
+```
+[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>nsort[z]]
+```
+
+Rendering in `z` order means DOM order and `z-index` agree.
+
+!! The `<$dashboard-drag>` widget
+
+Free-form pointer dragging is the one thing wikitext cannot express, so a single JS widget owns it. It renders an absolutely-positioned box from `x`/`y`/`w`/`h`/`z` attributes and handles pointer interaction:
+
+* ''move'' starts on a `.rr-dash-handle` descendant (window tiles) or anywhere on the box when `move-selector` is empty (bare tiles);
+* ''resize'' starts on a `.rr-dash-resize` descendant;
+* elements marked `.rr-dash-no-drag` (buttons, the controls cluster) never start a drag.
+
+During a drag the DOM node is moved directly for smoothness. The geometry is written back exactly once, on pointer release, by invoking the `actions` string — a plain `$action-setfield` on the tile tiddler. Committing on release rather than on every pointermove avoids the async write races that come from saving on each interaction event.
+
+A pointerdown+up with no motion beyond a small threshold is treated as a ''click'' and invokes `open-actions` instead (used to navigate the target into the story river). Move and resize commits also recompute `z = max(sibling z) + 1`, giving bring-to-front behaviour.
+
+!! Division of labour
+
+Everything except the pointer maths is wikitext and CSS: the cascade entry, the canvas body, the tile chrome, drop-to-add via the core `<$droppable>` widget, and the action strings that mutate tile fields. The widget is deliberately thin — it computes geometry and delegates all state writes back to wikitext.
+
+</$fill>
+</$transclude>

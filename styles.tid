@@ -1,0 +1,159 @@
+title: $:/plugins/rimir/dashboard/styles
+tags: $:/tags/Stylesheet
+
+\rules except dash
+
+.rr-dash-root {
+	display: flex;
+	flex-direction: column;
+}
+
+/* Core's ViewTemplate body transcludes in inline mode, wrapping our root in a
+   <p>. Collapse that wrapper so it contributes no stray margins (see the
+   flibbles/graph <p>-cascade fix). */
+.tc-tiddler-body > p:has(> .rr-dash-root) {
+	display: contents;
+}
+
+.rr-dash-toolbar {
+	display: flex;
+	gap: .5em;
+	align-items: center;
+	flex-wrap: wrap;
+	margin-bottom: .5em;
+}
+
+.rr-dash-add-input {
+	flex: 1 1 12em;
+	min-width: 8em;
+}
+
+.rr-dash-hint {
+	color: rgba(128,128,128,0.9);
+	font-style: italic;
+	padding: 1em;
+}
+
+.rr-dash-canvas {
+	position: relative;
+	min-height: 70vh;
+	overflow: auto;
+	border: 1px solid rgba(128,128,128,0.35);
+	border-radius: 6px;
+	background-color: <<colour tiddler-background>>;
+	background-image:
+		linear-gradient(rgba(128,128,128,0.10) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(128,128,128,0.10) 1px, transparent 1px);
+	background-size: 24px 24px;
+}
+
+.rr-dash-canvas.tc-dragover {
+	outline: 2px dashed rgba(80,140,220,0.8);
+	outline-offset: -4px;
+}
+
+.rr-dash-box {
+	display: flex;
+	flex-direction: column;
+	background-color: <<colour tiddler-background>>;
+	border: 1px solid rgba(128,128,128,0.35);
+	border-radius: 6px;
+	box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+	overflow: hidden;
+}
+
+.rr-dash-box.rr-dash-dragging {
+	box-shadow: 0 6px 18px rgba(0,0,0,0.30);
+	opacity: .96;
+}
+
+.rr-dash-handle {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: .5em;
+	padding: 2px 4px 2px 8px;
+	cursor: move;
+	background-color: rgba(128,128,128,0.14);
+	border-bottom: 1px solid rgba(128,128,128,0.30);
+	user-select: none;
+	touch-action: none;
+	font-size: .8em;
+}
+
+.rr-dash-title {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-weight: 600;
+}
+
+.rr-dash-controls {
+	display: flex;
+	gap: 1px;
+	align-items: center;
+	flex: 0 0 auto;
+}
+
+.rr-dash-ctl {
+	border: none;
+	background: transparent;
+	cursor: pointer;
+	color: inherit;
+	opacity: .55;
+	padding: 0 4px;
+	line-height: 1;
+	font-size: 1.05em;
+}
+
+.rr-dash-ctl:hover {
+	opacity: 1;
+}
+
+.rr-dash-body {
+	flex: 1;
+	overflow: auto;
+	padding: 4px 10px;
+}
+
+/* Bare tiles: no header, the whole box is the move/open surface, content is a
+   non-interactive preview. Controls float in the corner and appear on hover. */
+.rr-dash-bare {
+	cursor: grab;
+}
+
+.rr-dash-bare.rr-dash-dragging {
+	cursor: grabbing;
+}
+
+.rr-dash-bare > .rr-dash-body {
+	pointer-events: none;
+	height: 100%;
+}
+
+.rr-dash-bare > .rr-dash-controls {
+	position: absolute;
+	top: 2px;
+	right: 2px;
+	z-index: 2;
+	background: rgba(128,128,128,0.20);
+	border-radius: 4px;
+	opacity: 0;
+	transition: opacity .1s ease;
+}
+
+.rr-dash-bare:hover > .rr-dash-controls {
+	opacity: 1;
+}
+
+.rr-dash-resize {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	width: 16px;
+	height: 16px;
+	cursor: se-resize;
+	user-select: none;
+	touch-action: none;
+	background: linear-gradient(135deg, transparent 50%, rgba(128,128,128,0.55) 50%);
+}

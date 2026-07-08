@@ -1,0 +1,65 @@
+title: $:/plugins/rimir/dashboard/body
+
+\whitespace trim
+
+\procedure dash-controls()
+<$button class="rr-dash-ctl rr-dash-no-drag" tooltip="Toggle tile style (window / bare)" aria-label="Toggle tile style">
+<$action-setfield $tiddler=<<currentTiddler>> style={{{ [{!!style}match[bare]then[window]] ~[[bare]] }}}/>
+⊟
+</$button>
+<$button class="rr-dash-ctl rr-dash-no-drag" tooltip="Remove this tile from the dashboard" aria-label="Remove tile">
+<$action-deletetiddler $tiddler=<<currentTiddler>>/>
+×
+</$button>
+\end
+
+\procedure dash-tile-body()
+<$tiddler tiddler={{!!target}}>
+<$transclude $mode="block"/>
+</$tiddler>
+\end
+
+\procedure dash-tile()
+<$let tileStyle={{{ [{!!style}match[bare]then[bare]] ~[[window]] }}}>
+<%if [<tileStyle>match[bare]] %>
+<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} move-selector="" class="rr-dash-box rr-dash-bare" actions=<<dashGeomActions>> open-actions=<<dashOpenActions>>>
+<div class="rr-dash-controls rr-dash-no-drag"><<dash-controls>></div>
+<div class="rr-dash-body"><<dash-tile-body>></div>
+<div class="rr-dash-resize"></div>
+</$dashboard-drag>
+<%else%>
+<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} move-selector=".rr-dash-handle" class="rr-dash-box" actions=<<dashGeomActions>> open-actions=<<dashOpenActions>>>
+<div class="rr-dash-handle">
+<span class="rr-dash-title"><$text text={{{ [{!!target}get[caption]] ~[{!!target}] ~[[(empty)]] }}}/></span>
+<span class="rr-dash-controls"><<dash-controls>></span>
+</div>
+<div class="rr-dash-body"><<dash-tile-body>></div>
+<div class="rr-dash-resize"></div>
+</$dashboard-drag>
+<%endif%>
+</$let>
+\end
+
+<$let
+	dashId={{{ [<currentTiddler>get[dashboard-id]] ~[<currentTiddler>] }}}
+	dashGeomActions="""<$action-setfield $tiddler=<<currentTiddler>> x=<<new-x>> y=<<new-y>> w=<<new-w>> h=<<new-h>> z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/>"""
+	dashOpenActions="""<$action-navigate $to={{!!target}}/>"""
+>
+<div class="rr-dash-root">
+<div class="rr-dash-toolbar rr-dash-no-drag">
+<$edit-text tiddler="$:/state/rimir/dashboard/add-target" tag="input" default="" placeholder="Tiddler title to add as a tile…" class="rr-dash-add-input tc-edit-texteditor"/>
+<$button tooltip="Add a tile for the tiddler named above" aria-label="Add tile">
+<$list filter="[{$:/state/rimir/dashboard/add-target}!is[blank]]" variable="ignore">
+<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" dashboard=<<dashId>> target={{$:/state/rimir/dashboard/add-target}} x="24" y="24" w="320" h="220" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>
+<$action-setfield $tiddler="$:/state/rimir/dashboard/add-target" text=""/>
+</$list>
+Add tile
+</$button>
+</div>
+<$droppable tag="div" class="rr-dash-canvas" actions="""<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" dashboard=<<dashId>> target=<<actionTiddler>> x="24" y="24" w="320" h="220" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>""">
+<$list filter="[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>nsort[z]]" variable="currentTiddler" emptyMessage="""<div class="rr-dash-hint">Empty dashboard. Drag tiddlers here from anywhere in the wiki, or type a title above and press //Add tile//. Drag a tile to move it, its corner to resize, and click it to open the tiddler.</div>""">
+<<dash-tile>>
+</$list>
+</$droppable>
+</div>
+</$let>

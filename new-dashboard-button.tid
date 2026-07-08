@@ -1,0 +1,17 @@
+title: $:/plugins/rimir/dashboard/new-dashboard-button
+tags: $:/tags/PageControls
+caption: New dashboard
+description: Create a new dashboard
+
+\whitespace trim
+<$button tooltip="Create a new dashboard" aria-label="New dashboard" class=<<tv-config-toolbar-class>>>
+<$action-createtiddler $basetitle="New Dashboard" tags="$:/tags/rimir/dashboard" dashboard-id={{{ [<now "[UTC]YYYY0MM0DD0hh0mm0ss0XXX">] }}}>
+<$action-navigate $to=<<createTiddler-title>>/>
+</$action-createtiddler>
+<%if [<tv-config-toolbar-icons>match[yes]] %>
+{{$:/plugins/rimir/dashboard/icon}}
+<%endif%>
+<%if [<tv-config-toolbar-text>match[yes]] %>
+<span class="tc-btn-text">New dashboard</span>
+<%endif%>
+</$button>

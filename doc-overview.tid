@@ -1,0 +1,39 @@
+title: $:/plugins/rimir/dashboard/doc/overview
+type: text/vnd.tiddlywiki
+rdt.hub-category: interface
+rdt.hub-category-name: Interface
+rdt.hub-order: 3
+rdt.order: 1
+rdt.plugin-key: dashboard
+rdt.plugin-name: dashboard
+rdt.plugin-subtitle: Free-form dashboards — drop tiddlers on a canvas and arrange them freely
+rdt.section: Overview
+
+<$transclude $tiddler="$:/plugins/rimir/doc-template/templates/page">
+<$fill $name="body">
+
+!! What it does
+
+Turn any tiddler into a //dashboard//: a free-form canvas onto which you drop other tiddlers as freely arrangeable tiles. Each tile transcludes a target tiddler; you move it, resize it, restyle it, and click it to open the underlying tiddler in the story river.
+
+Tag a tiddler with <<tag "$:/tags/rimir/dashboard">> and a view-template body cascade entry swaps its body for the dashboard canvas — no special editor, no separate app.
+
+!! Key features
+
+* ''Drop to add'' — drag any tiddler from the wiki onto the canvas and it becomes a tile. Or type a title and press //Add tile//.
+* ''Free-form layout'' — absolute pixel positioning; drag a tile to move, drag its bottom-right corner to resize. Geometry is saved on release.
+* ''Bring-to-front z-order'' — interacting with a tile raises it above the others; the stacking order persists.
+* ''Two tile styles'' — a //window// tile with a title bar and controls, or a //bare// tile that is just the resizable content.
+* ''Click to open'' — a click (as opposed to a drag) opens the tile's target tiddler in the story river.
+* ''Plain-field storage'' — every tile is its own system tiddler with ordinary editable fields (`x`, `y`, `w`, `h`, `z`, `target`, `style`). No JSON blobs.
+
+!! Quick start
+
+# Click ''New dashboard'' in the page controls (right sidebar → Tools), or tag any tiddler <<tag "$:/tags/rimir/dashboard">>.
+# Drag a few tiddlers onto the canvas.
+# Move, resize, and restyle them; click one to open it.
+
+See the ''Examples'' tab for concrete recipes and ''Reference'' for the full field and tag list.
+
+</$fill>
+</$transclude>

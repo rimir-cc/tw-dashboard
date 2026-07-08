@@ -1,0 +1,90 @@
+title: $:/plugins/rimir/dashboard/doc/examples
+type: text/vnd.tiddlywiki
+rdt.order: 3
+rdt.plugin-key: dashboard
+rdt.plugin-name: dashboard
+rdt.section: Examples
+
+<$transclude $tiddler="$:/plugins/rimir/doc-template/templates/page">
+<$fill $name="body">
+
+!! Create a dashboard
+
+Either click ''New dashboard'' in the sidebar Tools, or tag any existing tiddler:
+
+```
+title: My Board
+tags: $:/tags/rimir/dashboard
+dashboard-id: my-board
+```
+
+The `dashboard-id` is optional; without it the dashboard's title is used to group its tiles. The //New dashboard// button generates a timestamp id automatically.
+
+!! Add a tile by hand
+
+Tiles are plain tiddlers. This is exactly what //Add tile// and drop-to-add create:
+
+```
+title: $:/config/rimir/dashboard/my-board/tiles/tile
+tags: $:/tags/rimir/dashboard/tile
+dashboard: my-board
+target: Some Interesting Tiddler
+style: window
+x: 32
+y: 32
+w: 340
+h: 220
+z: 1
+```
+
+`dashboard` must match the dashboard's `dashboard-id` (or title). `target` is the tiddler the tile shows.
+
+!! A bare tile
+
+Set `style: bare` for a chrome-less tile — no title bar, the whole box is the drag/open surface, and the content is shown as a non-interactive preview:
+
+```
+title: $:/config/rimir/dashboard/my-board/tiles/tile-1
+tags: $:/tags/rimir/dashboard/tile
+dashboard: my-board
+target: A Chart Or Image
+style: bare
+x: 400
+y: 90
+w: 320
+h: 240
+z: 2
+```
+
+You can flip any tile between //window// and //bare// live with the ⊟ control (in the title bar for window tiles, in the hover corner for bare tiles).
+
+!! Interacting
+
+* ''Move'' — drag the title bar (window) or anywhere on the tile (bare).
+* ''Resize'' — drag the bottom-right corner.
+* ''Bring to front'' — any move or resize raises the tile and persists its `z`.
+* ''Open'' — click (without dragging) to open the target in the story river.
+* ''Remove'' — the × control deletes the tile tiddler only; the target tiddler is untouched.
+
+!! Housekeeping filters
+
+List every dashboard:
+
+```
+[tag[$:/tags/rimir/dashboard]]
+```
+
+List a dashboard's tiles (highest on top last):
+
+```
+[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard[my-board]nsort[z]]
+```
+
+Find orphaned tiles whose target no longer exists:
+
+```
+[tag[$:/tags/rimir/dashboard/tile]get[target]] :filter[!is[tiddler]]
+```
+
+</$fill>
+</$transclude>

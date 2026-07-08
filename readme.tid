@@ -1,0 +1,26 @@
+title: $:/plugins/rimir/dashboard/readme
+
+! Dashboard
+
+Turn any tiddler into a //dashboard//: a free-form canvas onto which you drop other tiddlers as freely-arrangeable tiles.
+
+!! What it does
+
+* Tag a tiddler with <<tag "$:/tags/rimir/dashboard">> and its body becomes a canvas.
+* **Add tiles** by dragging tiddlers onto the canvas from anywhere in the wiki, or by typing a title and pressing //Add tile//.
+* **Move** a tile by dragging its title bar; **resize** it from the bottom-right corner. Positions are saved immediately.
+* Each tile transcludes its target tiddler's body.
+
+!! Quick start
+
+# Click //New dashboard// in the page controls (right sidebar → Tools), or tag any tiddler <<tag "$:/tags/rimir/dashboard">>.
+# Drag a few tiddlers onto the canvas.
+# Rearrange them however you like.
+
+!! How it is stored
+
+Each tile is its own small tiddler tagged <<tag "$:/tags/rimir/dashboard/tile">> with a `dashboard` field (the parent dashboard) and `target` / `x` / `y` / `w` / `h` fields. No JSON blobs — deleting a dashboard's tiles is just deleting those tiddlers.
+
+!! Prerequisites
+
+TiddlyWiki >= 5.4.0. No other plugin dependencies.

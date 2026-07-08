@@ -1,0 +1,4 @@
+title: $:/plugins/rimir/dashboard/changelog
+
+|!Version |!Date |!Changes |
+|0.0.1 |2026-07-08 |Initial release: free-form dashboard canvas via `$:/tags/rimir/dashboard`; drop-to-add and //Add tile//; drag-to-move and drag-to-resize (commit on release); persistent `z`-order with bring-to-front; per-tile system-tiddler storage under `$:/config/rimir/dashboard/<id>/tiles/`; //window// and //bare// tile styles with live toggle; click-to-open target in the story river; doc-template documentation |

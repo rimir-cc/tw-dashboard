@@ -1,0 +1,10 @@
+{
+    "title": "$:/plugins/rimir/dashboard",
+    "name": "dashboard",
+    "description": "Free-form dashboards: drop tiddlers onto a canvas and arrange them freely",
+    "author": "rimir",
+    "version": "0.0.1",
+    "core-version": ">=5.4.0",
+    "plugin-type": "plugin",
+    "list": "readme documentation settings changelog license"
+}

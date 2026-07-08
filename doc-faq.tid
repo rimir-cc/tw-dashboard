@@ -1,0 +1,40 @@
+title: $:/plugins/rimir/dashboard/doc/faq
+type: text/vnd.tiddlywiki
+rdt.order: 5
+rdt.plugin-key: dashboard
+rdt.plugin-name: dashboard
+rdt.section: FAQ
+
+<$transclude $tiddler="$:/plugins/rimir/doc-template/templates/page">
+<$fill $name="body">
+
+!! Does the layout reflow on small screens?
+
+No. Tiles use absolute pixel coordinates, so a free-form dashboard is desktop-first and does not reflow to narrow viewports. This is inherent to the free-form model.
+
+!! A tile shows nothing / only raw text — why?
+
+A tile transcludes the target tiddler's body. Tiddlers whose visible display comes from ViewTemplate //segments// rather than their body — and stream-typed tiddlers, whose `text` field is empty — render thin in a tile. Point the tile at a tiddler with body content, or use a transclusion-bearing wrapper as the target.
+
+!! How do I switch a tile between window and bare?
+
+Use the ⊟ control — in the title bar of a window tile, or the hover-corner cluster of a bare tile. It toggles the tile's `style` field.
+
+!! Clicking a bare tile opens the tiddler instead of interacting with its content — is that expected?
+
+Yes. Bare tiles are previews: their content is non-interactive (`pointer-events: none`) so the whole box reliably acts as move / open surface. Use a window tile when you need to interact with the content.
+
+!! Where is my dashboard's layout stored?
+
+In the tile tiddlers under `$:/config/rimir/dashboard/<dashId>/tiles/…`. They sync to disk like any `$:/config` tiddler. Deleting a dashboard does not delete its tiles automatically — remove them by prefix if you want them gone.
+
+!! Do dashboards nest?
+
+You can point a tile at another dashboard tiddler; it will render that dashboard's canvas inside the tile. Deeply nested dashboards are untested — treat as an edge case.
+
+!! Nothing happens when I drag — the tile just gets selected/dragged as text.
+
+That is a sign the drag region isn't arming (for example an element accidentally marked `.rr-dash-no-drag`). Move starts only on the handle (window) or the box (bare); resize only on the corner grip.
+
+</$fill>
+</$transclude>

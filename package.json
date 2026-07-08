@@ -1,0 +1,10 @@
+{
+    "name": "tw-dashboard",
+    "version": "0.0.1",
+    "description": "TiddlyWiki plugin: free-form dashboards — drop tiddlers on a canvas and arrange them freely",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/rimir-cc/tw-dashboard"
+    },
+    "license": "MIT"
+}

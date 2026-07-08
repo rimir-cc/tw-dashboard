@@ -1,0 +1,21 @@
+title: $:/plugins/rimir/dashboard/settings
+
+! Dashboard settings
+
+This plugin is convention-driven; there are no global settings yet.
+
+!! Marking a dashboard
+
+Tag a tiddler with <<tag "$:/tags/rimir/dashboard">>. A view-template body cascade entry (`$:/config/ViewTemplateBodyFilters/rimir-dashboard`, ordered before `default`) swaps its body to the dashboard canvas.
+
+!! Tile tiddlers
+
+Tiles are tiddlers tagged <<tag "$:/tags/rimir/dashboard/tile">> with these fields:
+
+|!Field |!Meaning |
+|`dashboard` |Title of the dashboard this tile belongs to |
+|`target` |Title of the tiddler shown inside the tile |
+|`x` / `y` |Top-left position in pixels, relative to the canvas |
+|`w` / `h` |Width / height in pixels |
+
+Geometry is written by a small `<$dashboard-drag>` widget on pointer release via a plain `$action-setfield` — the values are ordinary editable fields.
