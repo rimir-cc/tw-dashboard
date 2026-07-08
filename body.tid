@@ -101,6 +101,9 @@ title: $:/plugins/rimir/dashboard/body
 <span class="rr-dash-title">
 <$button class="rr-dash-ctl rr-dash-no-drag" tooltip="Expand / collapse this group" aria-label="Expand or collapse group">
 <$action-setfield $tiddler=<<currentTiddler>> collapsed={{{ [<collapsed>match[yes]then[no]] ~[[yes]] }}}/>
+<$list filter="[<collapsed>match[yes]]" variable="ignore">
+<$action-setfield $tiddler=<<currentTiddler>> z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>
+</$list>
 <%if [<collapsed>match[yes]] %>▸<%else%>▾<%endif%>
 </$button>
 <$edit-text tiddler=<<currentTiddler>> field="caption" tag="input" default="" placeholder="Group" class="rr-dash-group-name rr-dash-no-drag tc-edit-texteditor"/>

@@ -28,6 +28,10 @@ Yes. A tile is just a tiddler with a `target` field, so nothing stops several ti
 
 Press ''Add group'' for a container tile, then either drop tiddlers from the wiki onto its canvas or drag existing tiles into it. A group's ＋ control adds a group //inside// it, and you can also drag a whole group into another — nesting is recursive with no depth limit. Drag a tile (or group) back onto the root canvas to take it out again.
 
+!! I expanded a group but another tile covers it — how do I keep it on top?
+
+Expanding a group already raises it to the front (its `z` becomes the highest on the dashboard), so its contents sit above the other tiles. If you later move or resize a //different// tile, that tile comes to the front in turn and may overlap the group again — just click the group's ▾/▸ toggle (or move it) to raise it back.
+
 !! What happens to the tiles inside a group when I delete the group?
 
 They are not deleted. Removing a group (its × control) promotes its direct children up to the group's own container — so a group at the top level spills its contents onto the dashboard, and a nested group spills into its parent group. Delete the child tiles individually if you want them gone.

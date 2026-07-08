@@ -52,7 +52,7 @@ Each container is enumerated by the same shape of filter, differing only in the 
 [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>field:dash-parent<containerId>nsort[z]]
 ```
 
-Because a child positions itself absolutely within its group's own `.rr-dash-canvas` (which is `position: relative`), the existing pixel-geometry model works unchanged at every level of nesting. Collapsing a group is just a `collapsed` field: when set, the body (and thus the whole subtree) is not rendered and the box is drawn at auto width //and// height, so it shrinks to its header; the stored `w`/`h` are preserved and reapplied on expand. Removing a group re-homes its direct children to the group's own `dash-parent` — no recursive delete, no orphans.
+Because a child positions itself absolutely within its group's own `.rr-dash-canvas` (which is `position: relative`), the existing pixel-geometry model works unchanged at every level of nesting. Collapsing a group is just a `collapsed` field: when set, the body (and thus the whole subtree) is not rendered and the box is drawn at auto width //and// height, so it shrinks to its header; the stored `w`/`h` are preserved and reapplied on expand. Expanding also bumps the group's `z` to the front (guarded on the pre-toggle state) so its contents are not hidden behind sibling tiles. Removing a group re-homes its direct children to the group's own `dash-parent` — no recursive delete, no orphans.
 
 !! Re-parenting by drag
 
