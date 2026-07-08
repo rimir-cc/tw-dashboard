@@ -132,6 +132,8 @@ tags: $:/tags/Stylesheet
 }
 
 .rr-dash-title {
+	flex: 1 1 auto;
+	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -148,6 +150,24 @@ tags: $:/tags/Stylesheet
 	gap: 1px;
 	align-items: center;
 	flex: 0 0 auto;
+}
+
+/* Caption-bar controls (window and group tiles): hidden until the tile is
+   hovered, and floated over the caption — like the bare-tile controls — so the
+   caption gets the full width and never has to be shortened to fit the buttons. */
+.rr-dash-handle > .rr-dash-controls {
+	position: absolute;
+	top: 2px;
+	right: 2px;
+	z-index: 2;
+	background: rgba(128,128,128,0.20);
+	border-radius: 4px;
+	opacity: 0;
+	transition: opacity .1s ease;
+}
+
+.rr-dash-box:hover .rr-dash-handle > .rr-dash-controls {
+	opacity: 1;
 }
 
 .rr-dash-ctl {
