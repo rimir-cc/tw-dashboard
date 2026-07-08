@@ -25,6 +25,7 @@ Tag a tiddler with <<tag "$:/tags/rimir/dashboard">> and a view-template body ca
 * ''Bring-to-front z-order'' — interacting with a tile raises it above the others; the stacking order persists.
 * ''Two tile styles'' — a //window// tile with a title bar and controls, or a //bare// tile that is just the resizable content.
 * ''Click to open'' — a click (as opposed to a drag) opens the tile's target tiddler in the story river.
+* ''Show contents in a popup'' — the ⧉ control opens the target in a centered popup rendered through the default ViewTemplate (title, tags, fields and body), without leaving the dashboard.
 * ''Kind-aware'' — when a tile's target is a [[rimir/kind|$:/plugins/rimir/kind]] instance, the window tile shows the type's icon (with the type name as hover text) before the caption. Silently absent when kind is not installed.
 * ''Plain-field storage'' — every tile is its own system tiddler with ordinary editable fields (`x`, `y`, `w`, `h`, `z`, `target`, `style`). No JSON blobs.
 

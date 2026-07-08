@@ -12,6 +12,7 @@ Turn any tiddler into a //dashboard//: a free-form canvas onto which you drop ot
 * ''Bring-to-front'' — interacting with a tile raises it above the others, and the stacking order persists.
 * ''Two tile styles'' — a //window// tile with a title bar and controls, or a //bare// tile that is just the resizable content. Toggle with the ⊟ control.
 * ''Click to open'' — a click (as opposed to a drag) opens the tile's target tiddler in the story river.
+* ''Show contents in a popup'' — the ⧉ control opens the target in a centered popup rendered through TiddlyWiki's default ViewTemplate (title, tags, fields and body), without leaving the dashboard. Close it with the × button or by clicking the backdrop.
 * ''Kind-aware'' — when a tile's target is a [[rimir/kind|$:/plugins/rimir/kind]] instance, the window tile shows the type's icon (with the type name as hover text) before the caption. Degrades silently when kind is not installed.
 
 !! Quick start

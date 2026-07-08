@@ -162,3 +162,48 @@ tags: $:/tags/Stylesheet
 	touch-action: none;
 	background: linear-gradient(135deg, transparent 50%, rgba(128,128,128,0.55) 50%);
 }
+
+/* Popup overlay: a fixed viewport-covering layer so it escapes the tile's
+   overflow clipping. The target tiddler is rendered through the default
+   ViewTemplate inside the modal. */
+.rr-dash-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 10000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.rr-dash-overlay-backdrop {
+	position: absolute;
+	inset: 0;
+	margin: 0;
+	padding: 0;
+	border: none;
+	cursor: pointer;
+	background: rgba(0,0,0,0.4);
+}
+
+.rr-dash-modal {
+	position: relative;
+	z-index: 1;
+	width: min(760px, 90vw);
+	max-height: 85vh;
+	overflow: auto;
+	padding: 0 24px 24px;
+	background-color: <<colour tiddler-background>>;
+	border: 1px solid rgba(128,128,128,0.35);
+	border-radius: 8px;
+	box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+}
+
+.rr-dash-modal-bar {
+	position: sticky;
+	top: 0;
+	display: flex;
+	justify-content: flex-end;
+	padding-top: 6px;
+	background-color: <<colour tiddler-background>>;
+	z-index: 2;
+}

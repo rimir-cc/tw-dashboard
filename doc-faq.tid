@@ -16,6 +16,10 @@ No. Tiles use absolute pixel coordinates, so a free-form dashboard is desktop-fi
 
 A tile transcludes the target tiddler's body. Tiddlers whose visible display comes from ViewTemplate //segments// rather than their body — and stream-typed tiddlers, whose `text` field is empty — render thin in a tile. Point the tile at a tiddler with body content, or use a transclusion-bearing wrapper as the target.
 
+!! What is the difference between the ⧉ popup and clicking a tile to open it?
+
+Clicking a tile ''navigates'' to the target in the story river (leaving the dashboard view). The ⧉ //show contents// control instead opens the target in a centered popup ''on top of'' the dashboard, rendered through the default ViewTemplate — so you can read the full tiddler (title, tags, fields and body) without losing your place. Close it with × or by clicking the backdrop.
+
 !! How do I switch a tile between window and bare?
 
 Use the ⊟ control — in the title bar of a window tile, or the hover-corner cluster of a bare tile. It toggles the tile's `style` field.

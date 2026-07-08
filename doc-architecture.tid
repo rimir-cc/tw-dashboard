@@ -48,6 +48,18 @@ During a drag the DOM node is moved directly for smoothness. The geometry is wri
 
 A pointerdown+up with no motion beyond a small threshold is treated as a ''click'' and invokes `open-actions` instead (used to navigate the target into the story river). Move and resize commits also recompute `z = max(sibling z) + 1`, giving bring-to-front behaviour.
 
+!! The contents popup
+
+The ⧉ tile control writes the target's title into `$:/state/rimir/dashboard/popup`. A single `<$reveal>` — rendered once at the canvas root, not per tile — watches that state and, when it is non-empty, shows a fixed-position overlay containing the target rendered through the default `$:/core/ui/ViewTemplate`:
+
+```
+<$tiddler tiddler={{$:/state/rimir/dashboard/popup}}>
+<$transclude $tiddler="$:/core/ui/ViewTemplate" $mode="block"/>
+</$tiddler>
+```
+
+The overlay is `position: fixed` so it escapes the tile's `overflow` clipping and sits above every tile (whose `z-index` tops out at 9999 during a drag). The backdrop and the × button both clear the state tiddler to close. Because the state lives under `$:/state`, it is transient and never written to disk.
+
 !! Division of labour
 
 Everything except the pointer maths is wikitext and CSS: the cascade entry, the canvas body, the tile chrome, drop-to-add via the core `<$droppable>` widget, and the action strings that mutate tile fields. The widget is deliberately thin — it computes geometry and delegates all state writes back to wikitext.

@@ -1,5 +1,6 @@
 title: $:/plugins/rimir/dashboard/changelog
 
 |!Version |!Date |!Changes |
+|0.0.3 |2026-07-08 |Added a ⧉ //show contents// control to each tile that opens the target tiddler in a centered popup, rendered through TiddlyWiki's default ViewTemplate (full title, tags, fields and body). Closes on backdrop click or the × button; popup state is a transient `$:/state` tiddler |
 |0.0.2 |2026-07-08 |Kind-aware tiles: a window tile whose target is a `rimir/kind` instance shows the type's `kind.icon` (with the type name as hover text) before the caption; degrades silently without kind. Refreshed the readme to cover z-order, tile styles and click-to-open |
 |0.0.1 |2026-07-08 |Initial release: free-form dashboard canvas via `$:/tags/rimir/dashboard`; drop-to-add and //Add tile//; drag-to-move and drag-to-resize (commit on release); persistent `z`-order with bring-to-front; per-tile system-tiddler storage under `$:/config/rimir/dashboard/<id>/tiles/`; //window// and //bare// tile styles with live toggle; click-to-open target in the story river; doc-template documentation |

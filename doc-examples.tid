@@ -64,6 +64,7 @@ You can flip any tile between //window// and //bare// live with the ⊟ control 
 * ''Resize'' — drag the bottom-right corner.
 * ''Bring to front'' — any move or resize raises the tile and persists its `z`.
 * ''Open'' — click (without dragging) to open the target in the story river.
+* ''Show contents'' — the ⧉ control opens the target in a centered popup rendered through the default ViewTemplate, without leaving the dashboard. Close it with × or by clicking the backdrop.
 * ''Remove'' — the × control deletes the tile tiddler only; the target tiddler is untouched.
 
 !! Housekeeping filters

@@ -68,6 +68,7 @@ so there is no hard dependency on the kind plugin's own functions — the icon s
 |!Tiddler |!Purpose |
 |`$:/config/ViewTemplateBodyFilters/rimir-dashboard` |Body-cascade step that swaps a dashboard's body for the canvas |
 |`$:/state/rimir/dashboard/add-target` |Transient input backing the //Add tile// box |
+|`$:/state/rimir/dashboard/popup` |Transient title of the tiddler shown in the //show contents// popup; empty when the popup is closed |
 
 </$fill>
 </$transclude>

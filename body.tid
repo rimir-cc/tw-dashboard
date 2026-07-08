@@ -3,6 +3,10 @@ title: $:/plugins/rimir/dashboard/body
 \whitespace trim
 
 \procedure dash-controls()
+<$button class="rr-dash-ctl rr-dash-no-drag" tooltip="Show the tiddler's contents in a popup" aria-label="Show contents">
+<$action-setfield $tiddler="$:/state/rimir/dashboard/popup" text={{!!target}}/>
+⧉
+</$button>
 <$button class="rr-dash-ctl rr-dash-no-drag" tooltip="Toggle tile style (window / bare)" aria-label="Toggle tile style">
 <$action-setfield $tiddler=<<currentTiddler>> style={{{ [{!!style}match[bare]then[window]] ~[[bare]] }}}/>
 ⊟
@@ -30,6 +34,29 @@ title: $:/plugins/rimir/dashboard/body
 <%endif%>
 <$text text={{{ [<target>get[caption]!is[blank]] ~[<target>] ~[[(empty)]] }}}/>
 </$let>
+\end
+
+\procedure dash-popup()
+<$reveal type="nomatch" state="$:/state/rimir/dashboard/popup" text="">
+<div class="rr-dash-overlay rr-dash-no-drag">
+<$button class="rr-dash-overlay-backdrop" tooltip="Close" aria-label="Close popup">
+<$action-setfield $tiddler="$:/state/rimir/dashboard/popup" text=""/>
+</$button>
+<div class="rr-dash-modal">
+<div class="rr-dash-modal-bar">
+<$button class="rr-dash-ctl" tooltip="Close" aria-label="Close popup">
+<$action-setfield $tiddler="$:/state/rimir/dashboard/popup" text=""/>
+×
+</$button>
+</div>
+<div class="rr-dash-modal-body">
+<$tiddler tiddler={{$:/state/rimir/dashboard/popup}}>
+<$transclude $tiddler="$:/core/ui/ViewTemplate" $mode="block"/>
+</$tiddler>
+</div>
+</div>
+</div>
+</$reveal>
 \end
 
 \procedure dash-tile()
@@ -74,5 +101,6 @@ Add tile
 <<dash-tile>>
 </$list>
 </$droppable>
+<<dash-popup>>
 </div>
 </$let>
