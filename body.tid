@@ -96,7 +96,7 @@ title: $:/plugins/rimir/dashboard/body
 
 \procedure dash-group-tile()
 <$let collapsed={{{ [{!!collapsed}match[yes]then[yes]] ~[[no]] }}}>
-<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} move-selector=".rr-dash-handle" class="rr-dash-box rr-dash-group" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> fit-height={{{ [<collapsed>match[yes]then[yes]] }}}>
+<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} move-selector=".rr-dash-handle" class="rr-dash-box rr-dash-group" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> fit-width={{{ [<collapsed>match[yes]then[yes]] }}} fit-height={{{ [<collapsed>match[yes]then[yes]] }}}>
 <div class="rr-dash-handle">
 <span class="rr-dash-title">
 <$button class="rr-dash-ctl rr-dash-no-drag" tooltip="Expand / collapse this group" aria-label="Expand or collapse group">

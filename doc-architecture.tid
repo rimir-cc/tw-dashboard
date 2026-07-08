@@ -52,7 +52,7 @@ Each container is enumerated by the same shape of filter, differing only in the 
 [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>field:dash-parent<containerId>nsort[z]]
 ```
 
-Because a child positions itself absolutely within its group's own `.rr-dash-canvas` (which is `position: relative`), the existing pixel-geometry model works unchanged at every level of nesting. Collapsing a group is just a `collapsed` field: when set, the body (and thus the whole subtree) is not rendered and the box is drawn at auto height. Removing a group re-homes its direct children to the group's own `dash-parent` — no recursive delete, no orphans.
+Because a child positions itself absolutely within its group's own `.rr-dash-canvas` (which is `position: relative`), the existing pixel-geometry model works unchanged at every level of nesting. Collapsing a group is just a `collapsed` field: when set, the body (and thus the whole subtree) is not rendered and the box is drawn at auto width //and// height, so it shrinks to its header; the stored `w`/`h` are preserved and reapplied on expand. Removing a group re-homes its direct children to the group's own `dash-parent` — no recursive delete, no orphans.
 
 !! Re-parenting by drag
 
@@ -74,7 +74,7 @@ Free-form pointer dragging is the one thing wikitext cannot express, so a single
 
 During a drag the DOM node is moved directly for smoothness. The geometry is written back exactly once, on pointer release, by invoking the `actions` string — a plain `$action-setfield` on the tile tiddler. Committing on release rather than on every pointermove avoids the async write races that come from saving on each interaction event.
 
-A pointerdown+up with no motion beyond a small threshold is treated as a ''click'' and invokes `open-actions` instead (used to navigate the target into the story river). Move and resize commits also recompute `z = max(sibling z) + 1`, giving bring-to-front behaviour. When a move ends over a different container the widget invokes `reparent-actions` instead of `actions` (see //Re-parenting by drag// above), and `fit-height="yes"` makes it render at auto height for collapsed groups.
+A pointerdown+up with no motion beyond a small threshold is treated as a ''click'' and invokes `open-actions` instead (used to navigate the target into the story river). Move and resize commits also recompute `z = max(sibling z) + 1`, giving bring-to-front behaviour. When a move ends over a different container the widget invokes `reparent-actions` instead of `actions` (see //Re-parenting by drag// above), and `fit-width`/`fit-height="yes"` make it render at auto (shrink-to-fit) size for collapsed groups.
 
 !! The contents popup
 

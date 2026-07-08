@@ -29,8 +29,9 @@ dashboard and is not the tile's own descendant — the `reparent-actions` string
 is invoked with the extra `new-parent` variable and coordinates relative to the
 target canvas. Otherwise the ordinary `actions` (geometry) commit runs.
 
-`fit-height="yes"` renders the box at auto height (used for collapsed group
-tiles, whose stored `h` is preserved but not applied).
+`fit-width="yes"` / `fit-height="yes"` render the box at auto (shrink-to-fit)
+width / height — used for collapsed group tiles, which shrink to their header;
+the stored `w`/`h` are preserved (not applied) and restored on expand.
 
 Holding Ctrl/Cmd when a move starts on a tile that has `copy-actions` turns the
 drag into a DUPLICATE: on release the `copy-actions` string is invoked (creating
@@ -75,6 +76,7 @@ DashboardDragWidget.prototype.execute = function() {
 	this.moveSelector = this.getAttribute("move-selector","");
 	this.containerId = this.getAttribute("container","");
 	this.dashId = this.getAttribute("dash-id","");
+	this.fitWidth = (this.getAttribute("fit-width","") === "yes");
 	this.fitHeight = (this.getAttribute("fit-height","") === "yes");
 	this.geoX = this.num(this.getAttribute("x"),0);
 	this.geoY = this.num(this.getAttribute("y"),0);
@@ -96,7 +98,7 @@ DashboardDragWidget.prototype.applyGeometry = function() {
 	s.position = "absolute";
 	s.left = this.geoX + "px";
 	s.top = this.geoY + "px";
-	s.width = this.geoW + "px";
+	s.width = this.fitWidth ? "" : (this.geoW + "px");
 	s.height = this.fitHeight ? "" : (this.geoH + "px");
 };
 
@@ -272,7 +274,7 @@ DashboardDragWidget.prototype.refresh = function(changedTiddlers) {
 	if(changed.tile || changed["class"] || changed["move-selector"] || changed.actions ||
 			changed["reparent-actions"] || changed["copy-actions"] || changed["open-actions"] ||
 			changed["min-width"] || changed["min-height"] || changed.container || changed["dash-id"] ||
-			changed["fit-height"]) {
+			changed["fit-width"] || changed["fit-height"]) {
 		this.refreshSelf();
 		return true;
 	}

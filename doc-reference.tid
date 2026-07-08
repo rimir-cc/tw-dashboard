@@ -29,7 +29,7 @@ rdt.section: Reference
 |`caption` |Group tiles only — the editable group name shown in its header |
 |`collapsed` |Group tiles only — `yes` shows just the header bar, otherwise the group's canvas is shown |
 |`x` / `y` |Top-left position in pixels, relative to the tile's container canvas |
-|`w` / `h` |Width / height in pixels (`h` is retained but not applied while a group is collapsed) |
+|`w` / `h` |Width / height in pixels (both are retained but not applied while a group is collapsed — it shrinks to its header — and restored on expand) |
 |`z` |Stacking order (higher = in front); set to `max+1` on interaction |
 |`style` |Content tiles only — `window` (default) or `bare` |
 
@@ -58,7 +58,7 @@ The positioning/interaction widget (used internally by the canvas body).
 |`class` |Class(es) for the box element |
 |`move-selector` |CSS selector that starts a move; empty = the whole box |
 |`min-width` `min-height` |Resize floor (default 120 / 80) |
-|`fit-height` |`yes` renders the box at auto height (used for collapsed groups); otherwise `h` is applied |
+|`fit-width` / `fit-height` |`yes` renders the box at auto (shrink-to-fit) width / height (used for collapsed groups, which shrink to their header); otherwise `w` / `h` are applied |
 |`container` |Id of the container this tile currently lives in (the group title, or empty for the root canvas) — used to detect re-parenting |
 |`dash-id` |The dashboard id — re-parenting is only allowed within the same dashboard |
 |`actions` |Action string invoked on a move/resize release //within the same container//, with variables `<<new-x>>` `<<new-y>>` `<<new-w>>` `<<new-h>>` |

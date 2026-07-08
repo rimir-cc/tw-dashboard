@@ -1,6 +1,7 @@
 title: $:/plugins/rimir/dashboard/changelog
 
 |!Version |!Date |!Changes |
+|0.0.7 |2026-07-08 |A collapsed group now shrinks to fit its header (auto width //and// height) instead of keeping its full width; expanding restores the previous width and height (both are preserved while collapsed) |
 |0.0.6 |2026-07-08 |Hold ''Ctrl'' (or ''Cmd'') while starting to drag a content tile to ''duplicate'' it: a new tile pointing at the same target tiddler is dropped where you release (into whichever container), and the original stays put. The same tiddler can now appear any number of times across a dashboard |
 |0.0.5 |2026-07-08 |Fixed two group-tile bugs: //Add group// now uses the text in the add box as the new group's name (and clears the box); and collapsing a group no longer leaves a stray `yes` where its body was (an empty `<%if%>` then-branch was rendering its bound condition variable) |
 |0.0.4 |2026-07-08 |Added expandable/collapsible ''group'' (meta) tiles: a group is itself a free-form canvas of child tiles, and groups nest recursively into each other. //Add group// creates one; the ＋ control adds a nested group; the ▸/▾ control collapses/expands. Tiles (and whole groups) can be dragged between containers — including in and out of the root canvas — to re-home them; the drop target is hit-tested on release. Membership is tracked by a plain `dash-parent` field; group tiles carry `role: group` and an editable `caption`. Removing a group promotes its contents to the parent container |
