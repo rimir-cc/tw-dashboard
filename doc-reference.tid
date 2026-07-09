@@ -28,6 +28,7 @@ rdt.section: Reference
 |`dash-parent` |Title of the group tile this tile lives inside. Empty / absent = top-level (directly on the dashboard canvas) |
 |`role` |`group` for a group (meta) tile; empty / absent for an ordinary content tile |
 |`caption` |Group tiles only — the editable group name shown in its header |
+|`icon` |Group tiles only — an icon shown small before the caption when open; when collapsed //and// set, it becomes the group's whole header (hover shows the caption, click expands). Value is a tiddler title (transcluded) or inline markup. Set/cleared from the group's ⋮ menu |
 |`collapsed` |Group tiles only — `yes` shows just the header bar, otherwise the group's canvas is shown |
 |`x` / `y` |Top-left position in pixels, relative to the tile's container canvas |
 |`w` / `h` |Width / height in pixels (both are retained but not applied while a group is collapsed — it shrinks to its header — and restored on expand) |
@@ -37,7 +38,7 @@ rdt.section: Reference
 
 !! Group (meta) tiles
 
-A tile with `role: group` is a container: its body is a nested `.rr-dash-canvas` enumerating the tiles whose `dash-parent` is this group's title. Because membership is a single field forming a tree, groups nest recursively with no depth limit. A group is positioned, dragged and resized like any tile; the ▸/▾ header control toggles `collapsed`, and its ＋ control adds a nested group. Removing a group re-homes its direct children to the group's own parent (they are not deleted).
+A tile with `role: group` is a container: its body is a nested `.rr-dash-canvas` enumerating the tiles whose `dash-parent` is this group's title. Because membership is a single field forming a tree, groups nest recursively with no depth limit. A group is positioned, dragged and resized like any tile; the ▸/▾ header control toggles `collapsed`, and its ＋ control adds a nested group. Removing a group re-homes its direct children to the group's own parent (they are not deleted). A group may carry an `icon`: it appears small before the caption while open, and — when the group is collapsed — replaces the header entirely (the icon becomes a click-to-expand button whose tooltip is the caption). Same field-value dispatch as tile display (a tiddler title is transcluded, otherwise the value renders as wikitext).
 
 Tiles — including whole groups — are re-parented by ''dragging'' them onto another container: on release the drop point is hit-tested for the topmost `.rr-dash-canvas`, and if it differs from the tile's current container (and is the same dashboard, and not the tile's own descendant) the tile's `dash-parent`, position and `z` are rewritten. Holding ''Ctrl''/''Cmd'' at the start of the drag ''duplicates'' a content tile instead of moving it — a new tile with the same `target` is created at the drop point and the original is left untouched, so a tiddler may appear on any number of tiles.
 

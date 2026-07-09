@@ -28,6 +28,10 @@ Yes. A tile is just a tiddler with a `target` field, so nothing stops several ti
 
 Press ''Add group'' for a container tile, then either drop tiddlers from the wiki onto its canvas or drag existing tiles into it. A group's ＋ control adds a group //inside// it, and you can also drag a whole group into another — nesting is recursive with no depth limit. Drag a tile (or group) back onto the root canvas to take it out again.
 
+!! Can a group have an icon?
+
+Yes. Open the group's ⋮ menu and type an icon under //Icon// — a tiddler title such as `$:/core/images/folder`, or inline markup — and //Clear icon// removes it again. (Equivalently, set the group tile's `icon` field directly.) While the group is open the icon shows small before its name. Collapse a group that has an icon and its header becomes //just// the icon: hover it to see the name, click it to expand the group again. Groups without an icon keep the usual ▸/▾ toggle and name when collapsed.
+
 !! I expanded a group but another tile covers it — how do I keep it on top?
 
 Expanding a group already raises it to the front (its `z` becomes the highest on the dashboard), so its contents sit above the other tiles. If you later move or resize a //different// tile, that tile comes to the front in turn and may overlap the group again — just click the group's ▾/▸ toggle (or move it) to raise it back.

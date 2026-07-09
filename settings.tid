@@ -20,7 +20,7 @@ Geometry is written by a small `<$dashboard-drag>` widget on pointer release via
 
 !! Tile actions menu
 
-Each tile's actions live behind a ⋮ menu in the corner (revealed on hover), opened on hover or keyboard focus: ↗ open-external (when available), ⧉ show-in-popup, ⊟ toggle window/bare, × remove.
+Each tile's actions live behind a ⋮ menu in the corner (revealed on hover), opened on hover or keyboard focus: ↗ open-external (when available), ⧉ show-in-popup, ⊟ toggle window/bare, × remove. Group tiles' ⋮ menu instead offers ＋ add-nested-group, × remove, and an //Icon// input to set or clear the group's icon.
 
 !! What a tile shows
 

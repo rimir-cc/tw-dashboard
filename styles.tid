@@ -487,6 +487,53 @@ tags: $:/tags/Stylesheet
 	white-space: nowrap;
 }
 
+/* Group icon (from the group's `icon` field). Small, before the caption while
+   the group is open; the sole content — a click-to-expand button — while it is
+   collapsed. The <p> a block/inline transclusion may add is collapsed away. */
+.rr-dash-group-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+}
+
+.rr-dash-group-icon > p {
+	display: contents;
+}
+
+.rr-dash-group-icon svg,
+.rr-dash-group-icon img {
+	width: 1.1em;
+	height: 1.1em;
+}
+
+.rr-dash-group-icon-sm {
+	margin-right: 4px;
+}
+
+.rr-dash-group-icononly {
+	display: inline-flex;
+	align-items: center;
+	overflow: visible;
+}
+
+.rr-dash-group-icon-btn {
+	display: inline-flex;
+	align-items: center;
+	border: none;
+	background: transparent;
+	color: inherit;
+	cursor: pointer;
+	padding: 2px 4px;
+	line-height: 1;
+}
+
+.rr-dash-group-icon-lg svg,
+.rr-dash-group-icon-lg img {
+	width: 1.5em;
+	height: 1.5em;
+}
+
 /* The group's body is a nested canvas; strip the padding and let the canvas
    fill it. A <p> may sneak in from the block transclusion — collapse it. */
 .rr-dash-group > .rr-dash-body {
