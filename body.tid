@@ -32,9 +32,19 @@ title: $:/plugins/rimir/dashboard/body
 \end
 
 \procedure dash-tile-body()
-<$tiddler tiddler={{!!target}}>
+<$let tileTarget={{!!target}} dropWork={{{ [<hasFileUpload>match[yes]] :filter[<tileTarget>prefix[work/]] +[first[]] }}}>
+<%if [<dropWork>match[yes]] %>
+<$file-dropzone class="rr-dash-tile-filezone" tabindex="0" location="work" subfolder={{{ [<tileTarget>removeprefix[work/]] }}} actions=<<dashWorkUploadActions>>>
+<$tiddler tiddler=<<tileTarget>>>
 <$transclude $mode="block"/>
 </$tiddler>
+</$file-dropzone>
+<%else%>
+<$tiddler tiddler=<<tileTarget>>>
+<$transclude $mode="block"/>
+</$tiddler>
+<%endif%>
+</$let>
 \end
 
 \procedure dash-title()
@@ -159,8 +169,7 @@ Cancel
 <%endif%>
 \end
 
-\procedure dash-canvas(containerId)
-<$droppable tag="div" class="rr-dash-canvas" data-dash-parent=<<containerId>> data-dash-id=<<dashId>> actions="""<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" dashboard=<<dashId>> dash-parent=<<containerId>> target=<<actionTiddler>> x="24" y="24" w="320" h="220" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>""">
+\procedure dash-tiles(containerId)
 <%if [<containerId>is[blank]] %>
 <$list filter="[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>!has[dash-parent]nsort[z]]" variable="currentTiddler" emptyMessage=<<dashEmptyHint>>>
 <<dash-tile>>
@@ -170,11 +179,30 @@ Cancel
 <<dash-tile>>
 </$list>
 <%endif%>
+\end
+
+\procedure dash-canvas(containerId)
+<$droppable tag="div" class="rr-dash-canvas" data-dash-parent=<<containerId>> data-dash-id=<<dashId>> actions="""<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" dashboard=<<dashId>> dash-parent=<<containerId>> target=<<actionTiddler>> x="24" y="24" w="320" h="220" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>""">
+<%if [<hasFileUpload>match[yes]] %>
+<$file-dropzone class="rr-dash-filezone" tabindex="0" location="files" actions=<<dashUploadActions>>>
+<div class="rr-dash-filehint rr-dash-no-drag">Drop an image here, or click and paste (Ctrl+V), to add it as a tile</div>
+<$transclude $variable="dash-tiles" containerId=<<containerId>> $mode="block"/>
+</$file-dropzone>
+<%else%>
+<$transclude $variable="dash-tiles" containerId=<<containerId>> $mode="block"/>
+<%endif%>
 </$droppable>
 \end
 
 <$let
 	dashId={{{ [<currentTiddler>get[dashboard-id]] ~[<currentTiddler>] }}}
+	hasFileUpload={{{ [[$:/plugins/rimir/file-upload]!is[missing]then[yes]] }}}
+	dashUploadActions="""<$action-createtiddler $basetitle=<<filename>> _canonical_uri=<<canonical-uri>> _thumbnail_uri=<<generated-uri>> _content_hash=<<content-hash>> type=<<type>>>
+<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" dashboard=<<dashId>> dash-parent=<<containerId>> target=<<createTiddler-title>> x="24" y="24" w="320" h="220" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>
+</$action-createtiddler>"""
+	dashWorkUploadActions="""<$action-createtiddler $basetitle={{{ [<tileTarget>addsuffix[/]addsuffix<filename>] }}} _canonical_uri=<<canonical-uri>> _thumbnail_uri=<<generated-uri>> _content_hash=<<content-hash>> type=<<type>>>
+<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" dashboard=<<dashId>> dash-parent=<<containerId>> target=<<createTiddler-title>> x="24" y="24" w="320" h="220" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>
+</$action-createtiddler>"""
 	dashGeomActions="""<$action-setfield $tiddler=<<currentTiddler>> x=<<new-x>> y=<<new-y>> w=<<new-w>> h=<<new-h>> z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/>"""
 	dashReparentActions="""<$action-setfield $tiddler=<<currentTiddler>> dash-parent=<<new-parent>> x=<<new-x>> y=<<new-y>> w=<<new-w>> h=<<new-h>> z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/>"""
 	dashCopyActions="""<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" dashboard=<<dashId>> dash-parent=<<new-parent>> target={{!!target}} style={{!!style}} x=<<new-x>> y=<<new-y>> w=<<new-w>> h=<<new-h>> z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/>"""

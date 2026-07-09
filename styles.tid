@@ -96,6 +96,71 @@ tags: $:/tags/Stylesheet
 	outline-offset: -4px;
 }
 
+/* File-upload drop layer: fills the canvas so an image dropped (or pasted, when
+   focused) anywhere on the dashboard is uploaded and turned into a tile. It sits
+   inside the canvas droppable and is the positioning context for the tiles. */
+.rr-dash-filezone {
+	position: absolute;
+	inset: 0;
+}
+
+.rr-dash-filezone:focus {
+	outline: none;
+}
+
+.rr-dash-filezone.tc-dragover,
+.rr-dash-filezone.fu-uploading,
+.rr-dash-filezone.fu-processing {
+	outline: 2px dashed rgba(80,140,220,0.8);
+	outline-offset: -4px;
+	background-color: rgba(80,140,220,0.06);
+}
+
+.rr-dash-filehint {
+	position: absolute;
+	left: 50%;
+	bottom: 8px;
+	transform: translateX(-50%);
+	z-index: 1;
+	pointer-events: none;
+	white-space: nowrap;
+	font-size: .75em;
+	color: rgba(128,128,128,0.9);
+	background-color: rgba(128,128,128,0.12);
+	padding: 2px 10px;
+	border-radius: 10px;
+	opacity: 0;
+	transition: opacity .12s ease;
+}
+
+.rr-dash-filezone:hover .rr-dash-filehint,
+.rr-dash-filezone:focus .rr-dash-filehint,
+.rr-dash-filezone.tc-dragover .rr-dash-filehint {
+	opacity: 1;
+}
+
+/* Per-tile drop zone: only rendered for content tiles whose target is under
+   work/. Dropping (or pasting when focused) an image on such a tile stores the
+   file in the work location alongside that item, instead of the default /files/. */
+.rr-dash-tile-filezone {
+	height: 100%;
+}
+
+/* Bare tiles set pointer-events:none on their body preview; re-enable it on the
+   work drop zone so it can receive drops (dragging the box still works because
+   pointerdown bubbles up to the tile). */
+.rr-dash-bare .rr-dash-tile-filezone {
+	pointer-events: auto;
+}
+
+.rr-dash-tile-filezone.tc-dragover,
+.rr-dash-tile-filezone.fu-uploading,
+.rr-dash-tile-filezone.fu-processing {
+	outline: 2px dashed rgba(80,140,220,0.8);
+	outline-offset: -4px;
+	background-color: rgba(80,140,220,0.06);
+}
+
 .rr-dash-box {
 	display: flex;
 	flex-direction: column;
