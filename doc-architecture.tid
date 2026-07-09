@@ -88,6 +88,12 @@ The ⧉ tile control writes the target's title into `$:/state/rimir/dashboard/po
 
 The overlay is `position: fixed` so it escapes the tile's `overflow` clipping and sits above every tile (whose `z-index` tops out at 9999 during a drag). The backdrop and the × button both clear the state tiddler to close. Because the state lives under `$:/state`, it is transient and never written to disk.
 
+!! What a tile shows
+
+The tile body no longer hard-codes a body transclude. A small filter resolves a //display field// per tile — tile `display` field, then the first matching per-dashboard //display rule//, then the built-in default (`text` → body, else `icon` → icon). One render dispatch then either transcludes the target body (`text`/`body`), transcludes the field's value as a tiddler when it names one (real //or shadow//, so core `$:/core/images/*` icons resolve), or renders the value as wikitext (covering inline-SVG icons). It is all wikitext — the widget is untouched.
+
+The display-rule match is the one subtle part: a rule's `filter` field is applied to the tile's target via `[<target>subfilter{!!filter}]`. That must run inside `:map` (not `:filter`) — the `{!!filter}` textref rebinds to the iteration item under `:map` but silently reads the outer tiddler under `:filter`. Non-matching rules yield an empty string, so the chain filters with `+[!is[blank]first[]]` to pick the first genuinely-matching rule's field.
+
 !! Division of labour
 
 Everything except the pointer maths is wikitext and CSS: the cascade entry, the canvas body, the tile chrome, drop-to-add via the core `<$droppable>` widget, and the action strings that mutate tile fields. The widget is deliberately thin — it computes geometry and delegates all state writes back to wikitext.

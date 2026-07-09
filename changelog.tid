@@ -1,6 +1,7 @@
 title: $:/plugins/rimir/dashboard/changelog
 
 |!Version |!Date |!Changes |
+|0.0.14 |2026-07-09 |Tiles can now show a chosen //field// instead of the body. By default, a tiddler with no text but an `icon` shows its icon. Pick per tile from the ⋮ menu (auto / body / icon / any field), or set per-dashboard ''display rules'' (a target filter → the field to show) via the new //Display rules// panel |
 |0.0.13 |2026-07-09 |Tile actions now live behind a ⋮ menu that opens on hover/focus. New ↗ action, and ''Ctrl/Cmd-click'' opens a tile's external link in a new browser tab; the source fields (default `url` then `_canonical_uri`) and their priority are configurable in settings. Plain click still opens the target in the wiki |
 |0.0.12 |2026-07-09 |Drop an image on the canvas — or click an empty spot and paste (Ctrl+V) — to upload it via `rimir/file-upload` and add a tile (thumbnail via `rimir/file-pipeline`). Dropping/pasting on a content tile whose `target` is under `work/` stores the file in the `work` location alongside that item. Degrades to drop-only when file-upload is absent. Needs file-upload ≥ 0.1.31 |
 |0.0.11 |2026-07-08 |Window- and group-tile caption-bar controls now appear only while the tile is hovered (like the bare-tile controls) and float over the caption, so the title gets the full width and is no longer shortened to make room for the buttons |

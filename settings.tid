@@ -22,6 +22,16 @@ Geometry is written by a small `<$dashboard-drag>` widget on pointer release via
 
 Each tile's actions live behind a ⋮ menu in the corner (revealed on hover), opened on hover or keyboard focus: ↗ open-external (when available), ⧉ show-in-popup, ⊟ toggle window/bare, × remove.
 
+!! What a tile shows
+
+By default a tile transcludes its `target`'s body; if the target has no (or empty) `text` but has an `icon`, the tile shows the icon instead. You can override what a tile shows, in three layers (first that applies wins):
+
+# ''Per tile'' — the tile's `display` field names a field of the target (or `body`). Set it from the tile's ⋮ menu (//Show//: auto / body / icon, or type any field name).
+# ''Per dashboard'' — //display rules//: tiddlers tagged <<tag "$:/tags/rimir/dashboard/display-rule">> with a `dashboard` (the dash id), a `filter` (matched against a tile's `target`) and a `field`. The first rule, in `order`, whose filter selects the target sets the field. Edit them from the //Display rules// panel on the dashboard.
+# ''Default'' — `text` → body, else `icon` → icon.
+
+When the resolved field's value names an existing tiddler (e.g. `icon` pointing at an image/SVG tiddler) it is transcluded; otherwise the field's own value is rendered as wikitext (so an inline-SVG `icon` works too).
+
 !! Opening a link in a new browser tab
 
 If a tile's `target` tiddler has one of the //external-open fields// below, the tile shows an ↗ action and ''Ctrl/Cmd-clicking'' the tile opens that value in a new browser tab (like Ctrl-clicking a link). Plain click still opens the target in the wiki.

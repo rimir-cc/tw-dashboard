@@ -21,6 +21,23 @@ title: $:/plugins/rimir/dashboard/body
 <$action-deletetiddler $tiddler=<<currentTiddler>>/>
 ×
 </$button>
+<span class="rr-dash-menu-sep"></span>
+<span class="rr-dash-menu-showlabel">Show</span>
+<span class="rr-dash-menu-row">
+<$button class="rr-dash-ctl" tooltip="Show automatically: the body when the tiddler has text, otherwise its icon" aria-label="Show automatic">
+<$action-deletefield $tiddler=<<currentTiddler>> $field="display"/>
+auto
+</$button>
+<$button class="rr-dash-ctl" tooltip="Show the tiddler's body" aria-label="Show body">
+<$action-setfield $tiddler=<<currentTiddler>> display="text"/>
+body
+</$button>
+<$button class="rr-dash-ctl" tooltip="Show the tiddler's icon" aria-label="Show icon">
+<$action-setfield $tiddler=<<currentTiddler>> display="icon"/>
+icon
+</$button>
+</span>
+<$edit-text tiddler=<<currentTiddler>> field="display" tag="input" default="" placeholder="…or a field name" class="rr-dash-menu-input tc-edit-texteditor"/>
 </span>
 </span>
 \end
@@ -44,18 +61,33 @@ title: $:/plugins/rimir/dashboard/body
 </span>
 \end
 
+\procedure dash-tile-content()
+<%if [<displayField>match[text]] [<displayField>match[body]] %>
+<$tiddler tiddler=<<tileTarget>>>
+<$transclude $mode="block"/>
+</$tiddler>
+<%else%>
+<$let dispVal={{{ [<tileTarget>get<displayField>] }}}>
+<%if [<dispVal>is[tiddler]] [<dispVal>is[shadow]] %>
+<div class="rr-dash-tile-icon"><$transclude $tiddler=<<dispVal>> $mode="block"/></div>
+<%else%>
+<div class="rr-dash-tile-field"><$transclude $tiddler=<<tileTarget>> $field=<<displayField>> $mode="block"/></div>
+<%endif%>
+</$let>
+<%endif%>
+\end
+
 \procedure dash-tile-body()
-<$let tileTarget={{!!target}} dropWork={{{ [<hasFileUpload>match[yes]] :filter[<tileTarget>prefix[work/]] +[first[]] }}}>
+<$let tileTarget={{!!target}}
+	dashRuleField={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/display-rule]field:dashboard<dashId>nsort[order]] :map[<tileTarget>subfilter{!!filter}first[]then{!!field}] +[!is[blank]first[]] }}}
+	displayField={{{ [<currentTiddler>get[display]!is[blank]] ~[<dashRuleField>!is[blank]] ~[<tileTarget>has[text]then[text]] ~[<tileTarget>has[icon]then[icon]] ~[[text]] }}}
+	dropWork={{{ [<hasFileUpload>match[yes]] :filter[<tileTarget>prefix[work/]] +[first[]] }}}>
 <%if [<dropWork>match[yes]] %>
 <$file-dropzone class="rr-dash-tile-filezone" tabindex="0" location="work" subfolder={{{ [<tileTarget>removeprefix[work/]] }}} actions=<<dashWorkUploadActions>>>
-<$tiddler tiddler=<<tileTarget>>>
-<$transclude $mode="block"/>
-</$tiddler>
+<<dash-tile-content>>
 </$file-dropzone>
 <%else%>
-<$tiddler tiddler=<<tileTarget>>>
-<$transclude $mode="block"/>
-</$tiddler>
+<<dash-tile-content>>
 <%endif%>
 </$let>
 \end
@@ -124,6 +156,38 @@ Cancel
 <<dash-clean-body>>
 </$let>
 <%endif%>
+</div>
+</$reveal>
+\end
+
+\procedure dash-rules-editor()
+<$reveal type="match" state="$:/state/rimir/dashboard/rules-open" text="yes">
+<div class="rr-dash-rules rr-dash-no-drag">
+<div class="rr-dash-rules-hint">For any tile without its own //Show// choice, the first rule whose filter selects the tile's target decides which field it shows.</div>
+<$list filter="[all[tiddlers]tag[$:/tags/rimir/dashboard/display-rule]field:dashboard<dashId>nsort[order]]" variable="ruleTid">
+<div class="rr-dash-rule-row">
+<$edit-text tiddler=<<ruleTid>> field="filter" tag="input" default="" placeholder="target filter — e.g. [tag[Image]]" class="rr-dash-rule-filter tc-edit-texteditor"/>
+<span class="rr-dash-rule-arrow">⇒</span>
+<$edit-text tiddler=<<ruleTid>> field="field" tag="input" default="" placeholder="field — e.g. icon" class="rr-dash-rule-field tc-edit-texteditor"/>
+<$button class="rr-dash-ctl" tooltip="Delete this rule" aria-label="Delete rule">
+<$action-deletetiddler $tiddler=<<ruleTid>>/>
+×
+</$button>
+</div>
+</$list>
+<div class="rr-dash-rule-row">
+<$edit-text tiddler="$:/state/rimir/dashboard/rule-add-filter" tag="input" default="" placeholder="target filter…" class="rr-dash-rule-filter tc-edit-texteditor"/>
+<span class="rr-dash-rule-arrow">⇒</span>
+<$edit-text tiddler="$:/state/rimir/dashboard/rule-add-field" tag="input" default="" placeholder="field…" class="rr-dash-rule-field tc-edit-texteditor"/>
+<$button tooltip="Add this display rule" aria-label="Add rule">
+<$list filter="[{$:/state/rimir/dashboard/rule-add-filter}!is[blank]]" variable="ignore">
+<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/display-rules/rule]] }}} tags="$:/tags/rimir/dashboard/display-rule" dashboard=<<dashId>> filter={{$:/state/rimir/dashboard/rule-add-filter}} field={{$:/state/rimir/dashboard/rule-add-field}} order={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/display-rule]field:dashboard<dashId>get[order]nsort[]last[]add[1]] ~[[1]] }}}/>
+<$action-setfield $tiddler="$:/state/rimir/dashboard/rule-add-filter" text=""/>
+<$action-setfield $tiddler="$:/state/rimir/dashboard/rule-add-field" text=""/>
+</$list>
+Add rule
+</$button>
+</div>
 </div>
 </$reveal>
 \end
@@ -258,6 +322,13 @@ Clean
 </$button>
 <<dash-clean-confirm>>
 </div>
+<div class="rr-dash-toolbar rr-dash-no-drag">
+<$button tooltip="Per-dashboard display rules: map a target filter to the field each matching tile shows" aria-label="Toggle display rules">
+<$action-setfield $tiddler="$:/state/rimir/dashboard/rules-open" text={{{ [{$:/state/rimir/dashboard/rules-open}match[yes]then[no]] ~[[yes]] }}}/>
+Display rules
+</$button>
+</div>
+<<dash-rules-editor>>
 <$transclude $variable="dash-canvas" containerId="" $mode="block"/>
 <<dash-popup>>
 </div>

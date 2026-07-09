@@ -58,6 +58,39 @@ z: 2
 
 You can flip any tile between //window// and //bare// live with the ⊟ action in the tile's ⋮ menu.
 
+!! Show a field instead of the body
+
+A tile shows its target's body by default; a target with no text but an `icon` shows the icon automatically. To force a specific field, add a `display` field to the tile (or use the ⋮ menu → //Show//):
+
+```
+title: $:/config/rimir/dashboard/my-board/tiles/tile-icon
+tags: $:/tags/rimir/dashboard/tile
+dashboard: my-board
+target: Some Tag Or Kind Instance
+display: icon
+x: 40
+y: 40
+w: 160
+h: 160
+```
+
+`display` can be any field name, or `body` to force the full body. If the field's value names an image/SVG tiddler it is transcluded; otherwise the value renders as wikitext.
+
+!! Display rules for a whole dashboard
+
+To decide per //target// rather than per tile, add display-rule tiddlers (or use the //Display rules// panel). The first rule, by `order`, whose `filter` selects a tile's target sets the field that tile shows:
+
+```
+title: $:/config/rimir/dashboard/my-board/display-rules/rule-1
+tags: $:/tags/rimir/dashboard/display-rule
+dashboard: my-board
+filter: [has[icon]]
+field: icon
+order: 1
+```
+
+Now every tile whose target has an `icon` shows that icon (unless the tile sets its own `display`). Write the `filter` as a run that filters its input — `[tag[Image]]`, `[has[icon]]`, `[field:type[image/png]]` — since it is applied to the tile's target.
+
 !! A group (meta) tile
 
 Press ''Add group'' to create a container tile. A group has `role: group`, no `target`, and its body is a canvas for other tiles:

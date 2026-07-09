@@ -13,6 +13,7 @@ rdt.section: Reference
 |!Tag |!Applied to |
 |<<tag "$:/tags/rimir/dashboard">> |A dashboard tiddler (its body becomes the canvas) |
 |<<tag "$:/tags/rimir/dashboard/tile">> |A tile tiddler |
+|<<tag "$:/tags/rimir/dashboard/display-rule">> |A per-dashboard display rule (maps a target `filter` to the `field` matching tiles show) |
 
 !! Dashboard fields
 
@@ -32,6 +33,7 @@ rdt.section: Reference
 |`w` / `h` |Width / height in pixels (both are retained but not applied while a group is collapsed — it shrinks to its header — and restored on expand) |
 |`z` |Stacking order (higher = in front); set to `max+1` on interaction |
 |`style` |Content tiles only — `window` (default) or `bare` |
+|`display` |Content tiles only — which field of the `target` to show: a field name, or `body`/`text` for the whole body. Absent = resolve automatically (see //What a tile shows// below). Set from the ⋮ menu |
 
 !! Group (meta) tiles
 
@@ -69,6 +71,30 @@ The positioning/interaction widget (used internally by the canvas body).
 
 Recognised regions inside the box: `.rr-dash-handle` (move surface for window and group tiles), `.rr-dash-resize` (resize grip), `.rr-dash-no-drag` (never starts a drag — buttons, controls, the group-name input). Each `.rr-dash-canvas` carries `data-dash-parent` (its container id) and `data-dash-id` so the widget can hit-test drop targets.
 
+!! What a tile shows (display resolution)
+
+For each content tile the //display field// is resolved in this order (first non-empty wins):
+
+# the tile's own `display` field;
+# the first per-dashboard //display rule// (see below) whose `filter` selects the tile's `target`;
+# the target has non-empty `text` → `text` (its body);
+# the target has an `icon` → `icon`;
+# otherwise `text`.
+
+The resolved field is then rendered: `text`/`body` transcludes the target's body (unchanged from earlier versions); otherwise the field's value is read — if it names an existing tiddler (real or shadow, e.g. `icon` → an image/SVG tiddler) that tiddler is transcluded, else the value is rendered as wikitext (so an inline-SVG `icon` also works).
+
+!! Display rules (per dashboard)
+
+A display rule is a tiddler tagged <<tag "$:/tags/rimir/dashboard/display-rule">>, conventionally stored at `$:/config/rimir/dashboard/<dashId>/display-rules/<uid>`:
+
+|!Field |!Meaning |
+|`dashboard` |The dashboard id the rule applies to |
+|`filter` |Evaluated against a tile's `target` (as the input) — e.g. `[tag[Image]]`, `[has[icon]]`, `[field:type[image/png]]`. Write it as a run that //filters its input//, not one that selects from all tiddlers |
+|`field` |The field to show when the filter matches |
+|`order` |Numeric priority; the lowest-order matching rule wins |
+
+Edit them from the //Display rules// panel (the toolbar button toggles it): each row is a `filter ⇒ field` pair with a delete button, plus an add row.
+
 !! Kind integration (optional)
 
 When [[rimir/kind|$:/plugins/rimir/kind]] is installed and a window tile's `target` is a kind instance (a tiddler with a `kind.type` field), the title bar prefixes the caption with the type's `kind.icon`, using the type's `kind.caption` as hover text. The type definition is located generically with
@@ -89,6 +115,8 @@ so there is no hard dependency on the kind plugin's own functions — the icon s
 |`$:/state/rimir/dashboard/clean-confirm` |`yes` while the //Clean// confirmation is showing |
 |`$:/state/rimir/dashboard/popup` |Transient title of the tiddler shown in the //show contents// popup; empty when the popup is closed |
 |`$:/config/rimir/dashboard/external-open-fields` |Space-separated list of the target's fields consulted, in order, for a tile's external link (↗ action and Ctrl/Cmd-click). The first non-empty one wins. Defaults to `url _canonical_uri` |
+|`$:/config/rimir/dashboard/<dashId>/display-rules/…` |Per-dashboard display-rule tiddlers (see //Display rules// above) |
+|`$:/state/rimir/dashboard/rules-open` |`yes` while the //Display rules// panel is open |
 
 </$fill>
 </$transclude>

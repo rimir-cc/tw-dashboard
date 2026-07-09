@@ -48,6 +48,12 @@ Use the ⊟ action in the tile's ⋮ menu (the corner cluster revealed on hover)
 
 If the tile's target tiddler has a `url` or `_canonical_uri` field, the tile shows an ↗ action in its ⋮ menu, and ''Ctrl/Cmd-clicking'' the tile does the same — it opens that address in a new browser tab. A plain click still opens the target //inside the wiki//. This is how an uploaded image or file tile (which carries `_canonical_uri`) opens its raw file. The fields consulted and their priority are set in `$:/config/rimir/dashboard/external-open-fields` (default `url _canonical_uri`, first non-empty wins); edit it to add your own field or change the order. Absolute URLs open as-is; a bare host gets `https://` prepended.
 
+!! Can a tile show a tiddler's icon (or some other field) instead of its body?
+
+Yes. By default a tile shows the target's body, but if the target has no (or empty) `text` and an `icon`, the tile shows the icon automatically. To choose explicitly, open the tile's ⋮ menu and pick under //Show//: ''auto'' (the default), ''body'', ''icon'', or type any field name. That sets the tile's `display` field.
+
+To do it for many tiles at once, use ''display rules'' on the dashboard: click //Display rules//, then add a row like `[tag[Image]] ⇒ _canonical_uri` or `[has[icon]] ⇒ icon`. The first rule (by order) whose filter selects a tile's target decides what that tile shows — unless the tile has its own //Show// choice, which always wins. If the chosen field's value points at an image/SVG tiddler it is transcluded; otherwise the field's value is rendered as-is.
+
 !! Clicking a bare tile opens the tiddler instead of interacting with its content — is that expected?
 
 Yes. Bare tiles are previews: their content is non-interactive (`pointer-events: none`) so the whole box reliably acts as move / open surface. Use a window tile when you need to interact with the content.
