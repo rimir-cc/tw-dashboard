@@ -38,7 +38,7 @@ rdt.section: Reference
 
 !! Group (meta) tiles
 
-A tile with `role: group` is a container: its body is a nested `.rr-dash-canvas` enumerating the tiles whose `dash-parent` is this group's title. Because membership is a single field forming a tree, groups nest recursively with no depth limit. A group is positioned, dragged and resized like any tile; the ▸/▾ header control toggles `collapsed`, and its ＋ control adds a nested group. Removing a group re-homes its direct children to the group's own parent (they are not deleted). A group may carry an `icon`: it appears small before the caption while open, and — when the group is collapsed — replaces the header entirely (the icon becomes a click-to-expand button whose tooltip is the caption). Same field-value dispatch as tile display (a tiddler title is transcluded, otherwise the value renders as wikitext).
+A tile with `role: group` is a container: its body is a nested `.rr-dash-canvas` enumerating the tiles whose `dash-parent` is this group's title. Because membership is a single field forming a tree, groups nest recursively with no depth limit. A group is positioned, dragged and resized like any tile; the ▸/▾ header control toggles `collapsed`, and its ＋ control adds a nested group. Removing a group re-homes its direct children to the group's own parent (they are not deleted). A group may carry an `icon`: it appears small before the caption while open, and — when the group is collapsed — replaces the header entirely: drag the icon to move the group, click it to expand, hover for the caption. Same field-value dispatch as tile display (a tiddler title is transcluded, otherwise the value renders as wikitext).
 
 Tiles — including whole groups — are re-parented by ''dragging'' them onto another container: on release the drop point is hit-tested for the topmost `.rr-dash-canvas`, and if it differs from the tile's current container (and is the same dashboard, and not the tile's own descendant) the tile's `dash-parent`, position and `z` are rewritten. Holding ''Ctrl''/''Cmd'' at the start of the drag ''duplicates'' a content tile instead of moving it — a new tile with the same `target` is created at the drop point and the original is left untouched, so a tiddler may appear on any number of tiles.
 
@@ -117,6 +117,8 @@ so there is no hard dependency on the kind plugin's own functions — the icon s
 |`$:/state/rimir/dashboard/clean-confirm` |`yes` while the //Clean// confirmation is showing |
 |`$:/state/rimir/dashboard/popup` |Transient title of the tiddler shown in the //show contents// popup; empty when the popup is closed |
 |`$:/config/rimir/dashboard/external-open-fields` |Space-separated list of the target's fields consulted, in order, for a tile's external link (↗ action and Ctrl/Cmd-click). The first non-empty one wins. Defaults to `url _canonical_uri` |
+|`$:/config/rimir/dashboard/group-icon-max-width` |Max width (px) of a //collapsed// group's icon; default 64 |
+|`$:/config/rimir/dashboard/group-icon-max-height` |Max height (px) of a //collapsed// group's icon; default 64 |
 |`$:/config/rimir/dashboard/<dashId>/display-rules/…` |Per-dashboard display-rule tiddlers (see //Display rules// above) |
 |`$:/state/rimir/dashboard/rules-open` |`yes` while the //Display rules// panel is open |
 |`$:/state/rimir/dashboard/icon-edit` |Title of the group whose icon editor is open; empty when closed |

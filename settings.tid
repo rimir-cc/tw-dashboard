@@ -32,6 +32,13 @@ By default a tile transcludes its `target`'s body; if the target has a `_thumbna
 
 When the resolved field's value names an existing tiddler (e.g. `icon` pointing at an image/SVG tiddler) it is transcluded — but if that tiddler is an uploaded image with a `_thumbnail_uri`, its thumbnail is shown instead of the full image; otherwise the field's own value is rendered as wikitext (so an inline-SVG `icon` works too).
 
+!! Collapsed group-icon size
+
+When a group is collapsed to just its icon, the icon is scaled to fit this box (in pixels), keeping its aspect ratio. Raise it for photo-style group icons; a small glyph stays small.
+
+|Max width |<$edit-text tiddler="$:/config/rimir/dashboard/group-icon-max-width" tag="input" default="64" class="tc-edit-texteditor" size="6"/> px |
+|Max height |<$edit-text tiddler="$:/config/rimir/dashboard/group-icon-max-height" tag="input" default="64" class="tc-edit-texteditor" size="6"/> px |
+
 !! Opening a link in a new browser tab
 
 If a tile's `target` tiddler has one of the //external-open fields// below, the tile shows an ↗ action and ''Ctrl/Cmd-clicking'' the tile opens that value in a new browser tab (like Ctrl-clicking a link). Plain click still opens the target in the wiki.

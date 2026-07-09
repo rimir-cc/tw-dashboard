@@ -1,6 +1,8 @@
 title: $:/plugins/rimir/dashboard/changelog
 
 |!Version |!Date |!Changes |
+|0.0.19 |2026-07-09 |Fixed dragging a collapsed group whose header is an image icon: the icon is now a move + click-to-expand surface, so you can ''drag the image itself'' to move the group (a plain click still expands it). Native image-dragging is suppressed on tile/group icons, so dragging one no longer drops a stray new tile onto the canvas |
+|0.0.18 |2026-07-09 |A collapsed group's icon is now scaled to a reasonable box (default 64×64 px) preserving its aspect ratio, instead of being forced into a tiny square — so wide/large image icons render properly. The max width and height are configurable in the plugin settings |
 |0.0.17 |2026-07-09 |Image (and PDF) tiles now show the ''thumbnail'' by default when the target has a `_thumbnail_uri`, rendered as an `<img>` scaled to the tile — instead of the full-size original. The same applies when an `icon` (a group's, or a tile's) points at an uploaded image: its thumbnail is used, not the full image. Choose //body// from the ⋮ menu (or a display rule) to force the full image |
 |0.0.16 |2026-07-09 |The group //Icon…// action now opens a proper icon editor — common-icon quick-picks, a full-width input (tiddler title or inline markup), a live preview and Clear — rendered at the canvas root. Replaces the cramped in-menu field that was too small and lost focus while typing |
 |0.0.15 |2026-07-09 |Group tiles can carry an `icon` (their `icon` field), set/cleared from the group's ⋮ menu. An open group shows the icon small before its name; a collapsed group that has an icon shows //only// the icon — hover for the name, click it to expand |

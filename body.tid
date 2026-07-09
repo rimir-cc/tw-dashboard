@@ -68,11 +68,11 @@ Icon…
 
 \procedure dash-value()
 <%if [<dvImg>match[yes]] %>
-<img class="rr-dash-tile-img" src=<<dvVal>> loading="lazy"/>
+<img class="rr-dash-tile-img" src=<<dvVal>> draggable="false" loading="lazy"/>
 <%else%>
 <%if [<dvVal>is[tiddler]] [<dvVal>is[shadow]] %>
 <%if [<dvVal>has[_thumbnail_uri]] %>
-<img class="rr-dash-tile-img" src={{{ [<dvVal>get[_thumbnail_uri]] }}} loading="lazy"/>
+<img class="rr-dash-tile-img" src={{{ [<dvVal>get[_thumbnail_uri]] }}} draggable="false" loading="lazy"/>
 <%else%>
 <$transclude $tiddler=<<dvVal>> $mode=<<dvMode>>/>
 <%endif%>
@@ -286,15 +286,13 @@ Done
 	groupIcon={{!!icon}}
 	groupCaption={{{ [{!!caption}!is[blank]] ~[[Group]] }}}
 	iconOnly={{{ [<collapsed>match[yes]] :filter[<groupIcon>!is[blank]] +[first[]then[yes]] ~[[no]] }}}
-	dvTid=<<currentTiddler>> dvField="icon" dvMode="inline" dvImg="no" dvVal={{!!icon}}>
-<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} move-selector=".rr-dash-handle" class="rr-dash-box rr-dash-group" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> fit-width={{{ [<collapsed>match[yes]then[yes]] }}} fit-height={{{ [<collapsed>match[yes]then[yes]] }}}>
+	dvTid=<<currentTiddler>> dvField="icon" dvMode="inline" dvImg="no" dvVal={{!!icon}}
+	dashGroupExpand="""<$list filter="[<currentTiddler>get[collapsed]match[yes]]" variable="ignore"><$action-setfield $tiddler=<<currentTiddler>> collapsed="no" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/></$list>""">
+<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} move-selector=".rr-dash-handle" class="rr-dash-box rr-dash-group" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> open-actions=<<dashGroupExpand>> fit-width={{{ [<collapsed>match[yes]then[yes]] }}} fit-height={{{ [<collapsed>match[yes]then[yes]] }}}>
 <div class="rr-dash-handle">
 <%if [<iconOnly>match[yes]] %>
-<span class="rr-dash-title rr-dash-group-icononly">
-<$button class="rr-dash-group-icon-btn rr-dash-no-drag" tooltip=<<groupCaption>> aria-label=<<groupCaption>>>
-<$action-setfield $tiddler=<<currentTiddler>> collapsed="no" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>
+<span class="rr-dash-title rr-dash-group-icononly" title=<<groupCaption>>>
 <span class="rr-dash-group-icon rr-dash-group-icon-lg"><<dash-value>></span>
-</$button>
 </span>
 <%else%>
 <span class="rr-dash-title">

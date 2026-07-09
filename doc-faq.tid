@@ -34,7 +34,7 @@ Press ''Add group'' for a container tile, then either drop tiddlers from the wik
 
 !! Can a group have an icon?
 
-Yes. Open the group's ⋮ menu and click //Icon…// to open the icon editor: pick a common icon, or enter any tiddler title (such as `$:/core/images/folder`) or inline markup in the input, watch the live preview, and use //Clear// to remove it. (Equivalently, set the group tile's `icon` field directly.) While the group is open the icon shows small before its name. Collapse a group that has an icon and its header becomes //just// the icon: hover it to see the name, click it to expand the group again. Groups without an icon keep the usual ▸/▾ toggle and name when collapsed.
+Yes. Open the group's ⋮ menu and click //Icon…// to open the icon editor: pick a common icon, or enter any tiddler title (such as `$:/core/images/folder`) or inline markup in the input, watch the live preview, and use //Clear// to remove it. (Equivalently, set the group tile's `icon` field directly.) While the group is open the icon shows small before its name. Collapse a group that has an icon and its header becomes //just// the icon: hover it to see the name, click it to expand the group again, or drag the icon to move the group. A collapsed icon is scaled to a configurable box (default 64×64 px, set in the plugin settings) preserving its aspect ratio, so a wide or large image isn't squashed. Groups without an icon keep the usual ▸/▾ toggle and name when collapsed.
 
 !! I expanded a group but another tile covers it — how do I keep it on top?
 

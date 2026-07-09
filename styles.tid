@@ -383,6 +383,20 @@ tags: $:/tags/Stylesheet
 	object-fit: contain;
 }
 
+/* Icons / thumbnails used as tile or group content must not start a native
+   HTML5 image-drag (which would drop a new tile onto the canvas). With the
+   drag suppressed, a pointer drag on the image moves the tile/group instead. */
+.rr-dash-tile-img,
+.rr-dash-group-icon img,
+.rr-dash-group-icon svg {
+	-webkit-user-drag: none;
+	user-select: none;
+}
+
+.rr-dash-group-icononly {
+	cursor: grab;
+}
+
 /* Single-field display: render the chosen field's value in normal flow. */
 .rr-dash-tile-field {
 	width: 100%;
@@ -536,10 +550,17 @@ tags: $:/tags/Stylesheet
 	line-height: 1;
 }
 
+/* Collapsed group whose header is only the icon: scale it to a reasonable,
+   configurable box (default 64px), preserving aspect ratio — so a wide photo
+   or large image isn't squashed into a tiny square. Both dimensions are
+   editable in the plugin settings. */
 .rr-dash-group-icon-lg svg,
 .rr-dash-group-icon-lg img {
-	width: 1.5em;
-	height: 1.5em;
+	width: auto;
+	height: auto;
+	max-width: {{{ [{$:/config/rimir/dashboard/group-icon-max-width}trim[]!is[blank]] ~[[64]] }}}px;
+	max-height: {{{ [{$:/config/rimir/dashboard/group-icon-max-height}trim[]!is[blank]] ~[[64]] }}}px;
+	object-fit: contain;
 }
 
 /* The group's body is a nested canvas; strip the padding and let the canvas
