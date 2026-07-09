@@ -48,6 +48,10 @@ They are not deleted. Removing a group (its × control) promotes its direct chil
 
 Positions are relative to the container. When a tile moves into (or out of) a group its coordinates are recomputed relative to the new canvas, so it keeps roughly the on-screen spot where you dropped it rather than its old numbers.
 
+!! Can I collapse a normal (content) tile, not just a group?
+
+Yes — window tiles have a ▸/▾ toggle in their title bar. Collapsing shrinks the tile to just its headline (the caption); if the target has an `icon`, it collapses to just that icon instead — click it to expand, drag it to move, hover for the caption (the same behavior as a collapsed group). Bare tiles have no title bar, so switch a tile to //window// style (the ⊟ action) if you want to collapse it.
+
 !! How do I switch a tile between window and bare?
 
 Use the ⊟ action in the tile's ⋮ menu (the corner cluster revealed on hover). It toggles the tile's `style` field.

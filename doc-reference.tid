@@ -29,7 +29,7 @@ rdt.section: Reference
 |`role` |`group` for a group (meta) tile; empty / absent for an ordinary content tile |
 |`caption` |Group tiles only — the editable group name shown in its header |
 |`icon` |Group tiles only — an icon shown small before the caption when open; when collapsed //and// set, it becomes the group's whole header (hover shows the caption, click expands). Value is a tiddler title (transcluded) or inline markup. Set/cleared from the icon editor (group ⋮ menu → //Icon…//) |
-|`collapsed` |Group tiles only — `yes` shows just the header bar, otherwise the group's canvas is shown |
+|`collapsed` |Group tiles and window content tiles — `yes` collapses the tile: a group shrinks to its header (and its canvas is hidden), a content tile to just its headline, or — if the target has an `icon` — to just that icon (click to expand, drag to move). Toggled by the ▸/▾ control |
 |`x` / `y` |Top-left position in pixels, relative to the tile's container canvas |
 |`w` / `h` |Width / height in pixels (both are retained but not applied while a group is collapsed — it shrinks to its header — and restored on expand) |
 |`z` |Stacking order (higher = in front); set to `max+1` on interaction |
