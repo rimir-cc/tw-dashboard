@@ -2,8 +2,6 @@ title: $:/plugins/rimir/dashboard/settings
 
 ! Dashboard settings
 
-This plugin is convention-driven; there are no global settings yet.
-
 !! Marking a dashboard
 
 Tag a tiddler with <<tag "$:/tags/rimir/dashboard">>. A view-template body cascade entry (`$:/config/ViewTemplateBodyFilters/rimir-dashboard`, ordered before `default`) swaps its body to the dashboard canvas.
@@ -19,3 +17,17 @@ Tiles are tiddlers tagged <<tag "$:/tags/rimir/dashboard/tile">> with these fiel
 |`w` / `h` |Width / height in pixels |
 
 Geometry is written by a small `<$dashboard-drag>` widget on pointer release via a plain `$action-setfield` — the values are ordinary editable fields.
+
+!! Tile actions menu
+
+Each tile's actions live behind a ⋮ menu in the corner (revealed on hover), opened on hover or keyboard focus: ↗ open-external (when available), ⧉ show-in-popup, ⊟ toggle window/bare, × remove.
+
+!! Opening a link in a new browser tab
+
+If a tile's `target` tiddler has one of the //external-open fields// below, the tile shows an ↗ action and ''Ctrl/Cmd-clicking'' the tile opens that value in a new browser tab (like Ctrl-clicking a link). Plain click still opens the target in the wiki.
+
+The fields are tried in order; the first non-empty one wins. Edit the space-separated list to add your own (e.g. `href`, `link`) or change the priority:
+
+<$edit-text tiddler="$:/config/rimir/dashboard/external-open-fields" tag="input" default="url _canonical_uri" class="tc-edit-texteditor" placeholder="url _canonical_uri"/>
+
+Absolute URLs (`https://…`, `//host/…`, `/path`) open as-is; a bare host gets `https://` prepended. This is how an uploaded image or file tile (which carries `_canonical_uri`) opens its raw file in a new tab.

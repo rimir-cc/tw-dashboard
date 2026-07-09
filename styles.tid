@@ -250,6 +250,67 @@ tags: $:/tags/Stylesheet
 	opacity: 1;
 }
 
+/* Tile-actions menu: a ⋮ trigger (revealed with the rest of the controls on tile
+   hover) that opens a dropdown of actions on hover or keyboard focus. The dropdown
+   stays within the tile box, so it isn't clipped by the box's overflow. */
+.rr-dash-menu {
+	position: relative;
+	display: inline-flex;
+}
+
+.rr-dash-menu-trigger {
+	font-size: 1.15em;
+}
+
+.rr-dash-menu-items {
+	position: absolute;
+	top: 100%;
+	right: 0;
+	z-index: 3;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	padding: 2px;
+	background-color: <<colour tiddler-background>>;
+	border: 1px solid rgba(128,128,128,0.35);
+	border-radius: 6px;
+	box-shadow: 0 4px 14px rgba(0,0,0,0.22);
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(-3px);
+	transition: opacity .12s ease, transform .12s ease, visibility .12s;
+}
+
+.rr-dash-menu:hover .rr-dash-menu-items,
+.rr-dash-menu:focus-within .rr-dash-menu-items {
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
+}
+
+/* The tile box clips its content (overflow:hidden). While a menu is open, let it
+   overflow so every item shows and the dropdown grows/shrinks with its contents,
+   regardless of how short the tile is. */
+.rr-dash-box:has(.rr-dash-menu:hover),
+.rr-dash-box:has(.rr-dash-menu:focus-within) {
+	overflow: visible;
+}
+
+.rr-dash-menu-items .rr-dash-ctl {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 3px 8px;
+	border-radius: 4px;
+	text-decoration: none;
+	opacity: .8;
+}
+
+.rr-dash-menu-items .rr-dash-ctl:hover {
+	opacity: 1;
+	background-color: rgba(128,128,128,0.18);
+}
+
 .rr-dash-body {
 	flex: 1;
 	overflow: auto;

@@ -11,8 +11,10 @@ A TiddlyWiki 5 plugin (`$:/plugins/rimir/dashboard`) that turns any tiddler into
 - **Move** a tile by dragging its title bar; **resize** it from the bottom-right corner. Geometry is saved on release.
 - **Bring-to-front** — interacting with a tile raises it; the `z`-order persists.
 - **Two styles** per tile: a *window* tile with a title bar, or a *bare* tile that is just the resizable content.
+- **Actions menu** — each tile's actions live behind a ⋮ menu in the corner that opens on hover or keyboard focus: ↗ open-external (when available), ⧉ show-in-popup, ⊟ toggle window/bare, × remove.
 - **Group (meta) tiles** — *Add group* creates a container tile that is itself a mini-canvas: drop tiddlers into it, drag existing tiles in and out, and nest groups inside groups recursively. Collapse to a header bar with ▸/▾, rename inline, and see the child count. Removing a group promotes its contents to the parent container.
 - **Click to open** — a click (not a drag) opens the tile's target tiddler in the story river.
+- **Open a link in a new browser tab** — if a tile's target carries a `url` (or `_canonical_uri`) field, the tile shows an ↗ action and **Ctrl/Cmd-clicking** the tile opens that address in a new browser tab (an uploaded image or file tile opens its raw file this way). Plain click still opens the target in the wiki. The fields consulted and their priority are configurable.
 - **Ctrl-drag to duplicate** — hold Ctrl (or Cmd) as you start dragging a tile to drop a *copy* of it elsewhere (even into another group), leaving the original in place. The same tiddler can appear on as many tiles as you like.
 - **Show contents in a popup** — the ⧉ control opens the target in a centered popup rendered through TiddlyWiki's default ViewTemplate (title, tags, fields and body), without leaving the dashboard. Close it with the × button or by clicking the backdrop.
 - **Kind-aware** — when a tile's target is a [`rimir/kind`](https://github.com/rimir-cc/tw-kind) instance, the window tile shows the type's icon (with the type name as hover text) before the caption. Degrades silently when kind isn't installed.

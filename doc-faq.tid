@@ -42,7 +42,11 @@ Positions are relative to the container. When a tile moves into (or out of) a gr
 
 !! How do I switch a tile between window and bare?
 
-Use the ⊟ control — in the title bar of a window tile, or the hover-corner cluster of a bare tile. It toggles the tile's `style` field.
+Use the ⊟ action in the tile's ⋮ menu (the corner cluster revealed on hover). It toggles the tile's `style` field.
+
+!! How do I open a tile's link in a new browser tab?
+
+If the tile's target tiddler has a `url` or `_canonical_uri` field, the tile shows an ↗ action in its ⋮ menu, and ''Ctrl/Cmd-clicking'' the tile does the same — it opens that address in a new browser tab. A plain click still opens the target //inside the wiki//. This is how an uploaded image or file tile (which carries `_canonical_uri`) opens its raw file. The fields consulted and their priority are set in `$:/config/rimir/dashboard/external-open-fields` (default `url _canonical_uri`, first non-empty wins); edit it to add your own field or change the order. Absolute URLs open as-is; a bare host gets `https://` prepended.
 
 !! Clicking a bare tile opens the tiddler instead of interacting with its content — is that expected?
 

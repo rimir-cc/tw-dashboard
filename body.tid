@@ -3,32 +3,45 @@ title: $:/plugins/rimir/dashboard/body
 \whitespace trim
 
 \procedure dash-controls()
-<$button class="rr-dash-ctl rr-dash-no-drag" tooltip="Show the tiddler's contents in a popup" aria-label="Show contents">
+<span class="rr-dash-menu rr-dash-no-drag">
+<button type="button" class="rr-dash-ctl rr-dash-menu-trigger" title="Tile actions" aria-label="Tile actions">⋮</button>
+<span class="rr-dash-menu-items">
+<$list filter="[<tileExtUrl>!is[blank]]" variable="ignore">
+<a class="rr-dash-ctl" href=<<tileExtUrl>> target="_blank" rel="noopener noreferrer" title="Open link in a new browser tab (or Ctrl/Cmd-click the tile)" aria-label="Open link in a new tab">↗</a>
+</$list>
+<$button class="rr-dash-ctl" tooltip="Show the tiddler's contents in a popup" aria-label="Show contents">
 <$action-setfield $tiddler="$:/state/rimir/dashboard/popup" text={{!!target}}/>
 ⧉
 </$button>
-<$button class="rr-dash-ctl rr-dash-no-drag" tooltip="Toggle tile style (window / bare)" aria-label="Toggle tile style">
+<$button class="rr-dash-ctl" tooltip="Toggle tile style (window / bare)" aria-label="Toggle tile style">
 <$action-setfield $tiddler=<<currentTiddler>> style={{{ [{!!style}match[bare]then[window]] ~[[bare]] }}}/>
 ⊟
 </$button>
-<$button class="rr-dash-ctl rr-dash-no-drag" tooltip="Remove this tile from the dashboard" aria-label="Remove tile">
+<$button class="rr-dash-ctl" tooltip="Remove this tile from the dashboard" aria-label="Remove tile">
 <$action-deletetiddler $tiddler=<<currentTiddler>>/>
 ×
 </$button>
+</span>
+</span>
 \end
 
 \procedure dash-group-controls()
-<$button class="rr-dash-ctl rr-dash-no-drag" tooltip="Add a nested group inside this one" aria-label="Add nested group">
+<span class="rr-dash-menu rr-dash-no-drag">
+<button type="button" class="rr-dash-ctl rr-dash-menu-trigger" title="Group actions" aria-label="Group actions">⋮</button>
+<span class="rr-dash-menu-items">
+<$button class="rr-dash-ctl" tooltip="Add a nested group inside this one" aria-label="Add nested group">
 <$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" role="group" dashboard=<<dashId>> dash-parent=<<currentTiddler>> collapsed="no" x="24" y="24" w="280" h="200" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>
 ＋
 </$button>
-<$button class="rr-dash-ctl rr-dash-no-drag" tooltip="Remove this group; its contents move up to the parent container" aria-label="Remove group">
+<$button class="rr-dash-ctl" tooltip="Remove this group; its contents move up to the parent container" aria-label="Remove group">
 <$list filter="[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>field:dash-parent<currentTiddler>]" variable="dashChild">
 <$action-setfield $tiddler=<<dashChild>> dash-parent={{!!dash-parent}}/>
 </$list>
 <$action-deletetiddler $tiddler=<<currentTiddler>>/>
 ×
 </$button>
+</span>
+</span>
 \end
 
 \procedure dash-tile-body()
@@ -116,15 +129,15 @@ Cancel
 \end
 
 \procedure dash-content-tile()
-<$let tileStyle={{{ [{!!style}match[bare]then[bare]] ~[[window]] }}}>
+<$let tileStyle={{{ [{!!style}match[bare]then[bare]] ~[[window]] }}} tileTargetTitle={{!!target}} tileExtUrl={{{ [enlist{$:/config/rimir/dashboard/external-open-fields}] :map[<tileTargetTitle>get<currentTiddler>] +[!is[blank]first[]] }}}>
 <%if [<tileStyle>match[bare]] %>
-<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} move-selector="" class="rr-dash-box rr-dash-bare" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> copy-actions=<<dashCopyActions>> open-actions=<<dashOpenActions>>>
+<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} move-selector="" class="rr-dash-box rr-dash-bare" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> copy-actions=<<dashCopyActions>> open-actions=<<dashOpenActions>> ctrl-open-url=<<tileExtUrl>>>
 <div class="rr-dash-controls rr-dash-no-drag"><<dash-controls>></div>
 <div class="rr-dash-body"><<dash-tile-body>></div>
 <div class="rr-dash-resize"></div>
 </$dashboard-drag>
 <%else%>
-<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} move-selector=".rr-dash-handle" class="rr-dash-box" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> copy-actions=<<dashCopyActions>> open-actions=<<dashOpenActions>>>
+<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} move-selector=".rr-dash-handle" class="rr-dash-box" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> copy-actions=<<dashCopyActions>> open-actions=<<dashOpenActions>> ctrl-open-url=<<tileExtUrl>>>
 <div class="rr-dash-handle">
 <span class="rr-dash-title"><<dash-title>></span>
 <span class="rr-dash-controls"><<dash-controls>></span>

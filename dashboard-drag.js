@@ -72,6 +72,7 @@ DashboardDragWidget.prototype.execute = function() {
 	this.reparentActions = this.getAttribute("reparent-actions","");
 	this.copyActions = this.getAttribute("copy-actions","");
 	this.openActions = this.getAttribute("open-actions","");
+	this.ctrlOpenUrl = this.getAttribute("ctrl-open-url","");
 	this.boxClass = this.getAttribute("class","rr-dash-box");
 	this.moveSelector = this.getAttribute("move-selector","");
 	this.containerId = this.getAttribute("container","");
@@ -186,6 +187,17 @@ DashboardDragWidget.prototype.handlePointerUp = function(event) {
 	try { this.domNode.releasePointerCapture(event.pointerId); } catch(e) {}
 	this.applyZ(); // restore stacking from the stored z (drag commit will refresh it)
 	if(mode === "grab" && !this.moved) {
+		// Ctrl/Cmd-click opens the tile's external target (url / _canonical_uri,
+		// resolved in wikitext) in a new browser tab — like Ctrl-clicking a link.
+		if((event.ctrlKey || event.metaKey) && this.ctrlOpenUrl) {
+			var extUrl = this.ctrlOpenUrl;
+			// Absolute (scheme:, //host, /path) URLs pass through; bare hosts get https://
+			if(!/^([a-z][a-z0-9+.-]*:|\/\/|\/)/i.test(extUrl)) {
+				extUrl = "https://" + extUrl;
+			}
+			window.open(extUrl,"_blank","noopener");
+			return;
+		}
 		if(this.openActions) {
 			this.invokeActionString(this.openActions,this,event,{});
 		}
@@ -273,6 +285,7 @@ DashboardDragWidget.prototype.refresh = function(changedTiddlers) {
 	var changed = this.computeAttributes();
 	if(changed.tile || changed["class"] || changed["move-selector"] || changed.actions ||
 			changed["reparent-actions"] || changed["copy-actions"] || changed["open-actions"] ||
+			changed["ctrl-open-url"] ||
 			changed["min-width"] || changed["min-height"] || changed.container || changed["dash-id"] ||
 			changed["fit-width"] || changed["fit-height"]) {
 		this.refreshSelf();
