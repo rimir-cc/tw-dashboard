@@ -16,6 +16,10 @@ No. Tiles use absolute pixel coordinates, so a free-form dashboard is desktop-fi
 
 A tile transcludes the target tiddler's body. Tiddlers whose visible display comes from ViewTemplate //segments// rather than their body — and stream-typed tiddlers, whose `text` field is empty — render thin in a tile. Point the tile at a tiddler with body content, or use a transclusion-bearing wrapper as the target.
 
+!! An image tile shows the full-size image — can it show the thumbnail?
+
+It does by default: if the target was uploaded via [[rimir/file-upload|$:/plugins/rimir/file-upload]] and has a `_thumbnail_uri`, the tile shows that thumbnail (scaled to the tile) rather than the full-size original — so image and PDF tiles stay light. If you want the full image in a tile, open its ⋮ menu → //Show// → ''body'' (or add a display rule mapping those targets to `_canonical_uri`). A target with no thumbnail simply shows its full body as before.
+
 !! What is the difference between the ⧉ popup and clicking a tile to open it?
 
 Clicking a tile ''navigates'' to the target in the story river (leaving the dashboard view). The ⧉ //show contents// control instead opens the target in a centered popup ''on top of'' the dashboard, rendered through the default ViewTemplate — so you can read the full tiddler (title, tags, fields and body) without losing your place. Close it with × or by clicking the backdrop.
@@ -30,7 +34,7 @@ Press ''Add group'' for a container tile, then either drop tiddlers from the wik
 
 !! Can a group have an icon?
 
-Yes. Open the group's ⋮ menu and type an icon under //Icon// — a tiddler title such as `$:/core/images/folder`, or inline markup — and //Clear icon// removes it again. (Equivalently, set the group tile's `icon` field directly.) While the group is open the icon shows small before its name. Collapse a group that has an icon and its header becomes //just// the icon: hover it to see the name, click it to expand the group again. Groups without an icon keep the usual ▸/▾ toggle and name when collapsed.
+Yes. Open the group's ⋮ menu and click //Icon…// to open the icon editor: pick a common icon, or enter any tiddler title (such as `$:/core/images/folder`) or inline markup in the input, watch the live preview, and use //Clear// to remove it. (Equivalently, set the group tile's `icon` field directly.) While the group is open the icon shows small before its name. Collapse a group that has an icon and its header becomes //just// the icon: hover it to see the name, click it to expand the group again. Groups without an icon keep the usual ▸/▾ toggle and name when collapsed.
 
 !! I expanded a group but another tile covers it — how do I keep it on top?
 

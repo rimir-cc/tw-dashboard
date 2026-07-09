@@ -58,23 +58,27 @@ icon
 ×
 </$button>
 <span class="rr-dash-menu-sep"></span>
-<span class="rr-dash-menu-showlabel">Icon</span>
-<$edit-text tiddler=<<currentTiddler>> field="icon" tag="input" default="" placeholder="icon tiddler or markup" class="rr-dash-menu-input tc-edit-texteditor"/>
-<$list filter="[<currentTiddler>has[icon]]" variable="ignore">
-<$button class="rr-dash-ctl" tooltip="Remove this group's icon" aria-label="Clear icon">
-<$action-deletefield $tiddler=<<currentTiddler>> $field="icon"/>
-Clear icon
+<$button class="rr-dash-ctl" tooltip="Set or change this group's icon" aria-label="Edit group icon">
+<$action-setfield $tiddler="$:/state/rimir/dashboard/icon-edit" text=<<currentTiddler>>/>
+Icon…
 </$button>
-</$list>
 </span>
 </span>
 \end
 
 \procedure dash-value()
+<%if [<dvImg>match[yes]] %>
+<img class="rr-dash-tile-img" src=<<dvVal>> loading="lazy"/>
+<%else%>
 <%if [<dvVal>is[tiddler]] [<dvVal>is[shadow]] %>
+<%if [<dvVal>has[_thumbnail_uri]] %>
+<img class="rr-dash-tile-img" src={{{ [<dvVal>get[_thumbnail_uri]] }}} loading="lazy"/>
+<%else%>
 <$transclude $tiddler=<<dvVal>> $mode=<<dvMode>>/>
+<%endif%>
 <%else%>
 <$transclude $tiddler=<<dvTid>> $field=<<dvField>> $mode=<<dvMode>>/>
+<%endif%>
 <%endif%>
 \end
 
@@ -84,7 +88,7 @@ Clear icon
 <$transclude $mode="block"/>
 </$tiddler>
 <%else%>
-<$let dvTid=<<tileTarget>> dvField=<<displayField>> dvMode="block" dvVal={{{ [<tileTarget>get<displayField>] }}} dvClass={{{ [<dvVal>is[tiddler]] [<dvVal>is[shadow]] +[first[]then[rr-dash-tile-icon]] ~[[rr-dash-tile-field]] }}}>
+<$let dvTid=<<tileTarget>> dvField=<<displayField>> dvMode="block" dvVal={{{ [<tileTarget>get<displayField>] }}} dvImg={{{ [<displayField>match[_thumbnail_uri]then[yes]] ~[<tileTarget>get[type]prefix[image/]then<displayField>match[_canonical_uri]then[yes]] ~[[no]] }}} dvClass={{{ [<dvImg>match[yes]then[rr-dash-tile-icon]] ~[<dvVal>is[tiddler]then[rr-dash-tile-icon]] ~[<dvVal>is[shadow]then[rr-dash-tile-icon]] ~[[rr-dash-tile-field]] }}}>
 <div class=<<dvClass>>><<dash-value>></div>
 </$let>
 <%endif%>
@@ -93,7 +97,7 @@ Clear icon
 \procedure dash-tile-body()
 <$let tileTarget={{!!target}}
 	dashRuleField={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/display-rule]field:dashboard<dashId>nsort[order]] :map[<tileTarget>subfilter{!!filter}first[]then{!!field}] +[!is[blank]first[]] }}}
-	displayField={{{ [<currentTiddler>get[display]!is[blank]] ~[<dashRuleField>!is[blank]] ~[<tileTarget>has[text]then[text]] ~[<tileTarget>has[icon]then[icon]] ~[[text]] }}}
+	displayField={{{ [<currentTiddler>get[display]!is[blank]] ~[<dashRuleField>!is[blank]] ~[<tileTarget>has[_thumbnail_uri]then[_thumbnail_uri]] ~[<tileTarget>has[text]then[text]] ~[<tileTarget>has[icon]then[icon]] ~[[text]] }}}
 	dropWork={{{ [<hasFileUpload>match[yes]] :filter[<tileTarget>prefix[work/]] +[first[]] }}}>
 <%if [<dropWork>match[yes]] %>
 <$file-dropzone class="rr-dash-tile-filezone" tabindex="0" location="work" subfolder={{{ [<tileTarget>removeprefix[work/]] }}} actions=<<dashWorkUploadActions>>>
@@ -205,6 +209,57 @@ Add rule
 </$reveal>
 \end
 
+\procedure dash-icon-editor()
+<$reveal type="nomatch" state="$:/state/rimir/dashboard/icon-edit" text="">
+<$let iconTarget={{$:/state/rimir/dashboard/icon-edit}}>
+<div class="rr-dash-overlay rr-dash-no-drag">
+<$button class="rr-dash-overlay-backdrop" tooltip="Close" aria-label="Close icon editor">
+<$action-setfield $tiddler="$:/state/rimir/dashboard/icon-edit" text=""/>
+</$button>
+<div class="rr-dash-modal rr-dash-icon-modal">
+<div class="rr-dash-modal-bar">
+<span class="rr-dash-icon-modal-title">Group icon — <$text text={{{ [<iconTarget>get[caption]!is[blank]] ~[[Group]] }}}/></span>
+<$button class="rr-dash-ctl" tooltip="Close" aria-label="Close">
+<$action-setfield $tiddler="$:/state/rimir/dashboard/icon-edit" text=""/>
+×
+</$button>
+</div>
+<div class="rr-dash-modal-body">
+<div class="rr-dash-icon-picks">
+<$list filter="[[$:/core/images/folder]] [[$:/core/images/tag-button]] [[$:/core/images/list]] [[$:/core/images/star-filled]] [[$:/core/images/home-button]] [[$:/core/images/file]] [[$:/core/images/globe]] [[$:/core/images/chevron-right]]" variable="pickIcon">
+<$button class="rr-dash-icon-pick" tooltip=<<pickIcon>> aria-label="Use this icon">
+<$action-setfield $tiddler=<<iconTarget>> icon=<<pickIcon>>/>
+<$transclude $tiddler=<<pickIcon>> $mode="inline"/>
+</$button>
+</$list>
+</div>
+<div class="rr-dash-icon-custom">
+<span class="rr-dash-icon-customlabel">Icon tiddler title, or inline markup:</span>
+<$edit-text tiddler=<<iconTarget>> field="icon" tag="input" default="" placeholder="$:/core/images/… or <svg>…</svg>" class="rr-dash-icon-input tc-edit-texteditor"/>
+</div>
+<div class="rr-dash-icon-previewbar">
+<span class="rr-dash-icon-previewlabel">Preview:</span>
+<$list filter="[<iconTarget>has[icon]]" variable="ignore" emptyMessage="<span class='rr-muted'>(none)</span>">
+<span class="rr-dash-group-icon rr-dash-group-icon-lg"><$let dvTid=<<iconTarget>> dvField="icon" dvMode="inline" dvImg="no" dvVal={{{ [<iconTarget>get[icon]] }}}><<dash-value>></$let></span>
+</$list>
+</div>
+<div class="rr-dash-icon-actions">
+<$button class="rr-dash-icon-clear" tooltip="Remove the icon" aria-label="Clear icon">
+<$action-deletefield $tiddler=<<iconTarget>> $field="icon"/>
+Clear
+</$button>
+<$button class="rr-dash-icon-done" tooltip="Close" aria-label="Done">
+<$action-setfield $tiddler="$:/state/rimir/dashboard/icon-edit" text=""/>
+Done
+</$button>
+</div>
+</div>
+</div>
+</div>
+</$let>
+</$reveal>
+\end
+
 \procedure dash-content-tile()
 <$let tileStyle={{{ [{!!style}match[bare]then[bare]] ~[[window]] }}} tileTargetTitle={{!!target}} tileExtUrl={{{ [enlist{$:/config/rimir/dashboard/external-open-fields}] :map[<tileTargetTitle>get<currentTiddler>] +[!is[blank]first[]] }}}>
 <%if [<tileStyle>match[bare]] %>
@@ -231,7 +286,7 @@ Add rule
 	groupIcon={{!!icon}}
 	groupCaption={{{ [{!!caption}!is[blank]] ~[[Group]] }}}
 	iconOnly={{{ [<collapsed>match[yes]] :filter[<groupIcon>!is[blank]] +[first[]then[yes]] ~[[no]] }}}
-	dvTid=<<currentTiddler>> dvField="icon" dvMode="inline" dvVal={{!!icon}}>
+	dvTid=<<currentTiddler>> dvField="icon" dvMode="inline" dvImg="no" dvVal={{!!icon}}>
 <$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} move-selector=".rr-dash-handle" class="rr-dash-box rr-dash-group" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> fit-width={{{ [<collapsed>match[yes]then[yes]] }}} fit-height={{{ [<collapsed>match[yes]then[yes]] }}}>
 <div class="rr-dash-handle">
 <%if [<iconOnly>match[yes]] %>
@@ -360,5 +415,6 @@ Display rules
 <<dash-rules-editor>>
 <$transclude $variable="dash-canvas" containerId="" $mode="block"/>
 <<dash-popup>>
+<<dash-icon-editor>>
 </div>
 </$let>

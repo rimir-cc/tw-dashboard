@@ -110,7 +110,7 @@ h: 300
 z: 1
 ```
 
-The optional `icon` (a tiddler title or inline markup) shows small before the caption while the group is open. Collapse a group that has an icon and the header becomes //just// the icon — hover it for the name, click it to expand. Set or clear it from the group's ⋮ menu (//Icon//) rather than editing the field by hand.
+The optional `icon` (a tiddler title or inline markup) shows small before the caption while the group is open. Collapse a group that has an icon and the header becomes //just// the icon — hover it for the name, click it to expand. Set or clear it from the icon editor (⋮ menu → //Icon…//) rather than editing the field by hand.
 
 A tile belongs to a group when its `dash-parent` field holds the group's title:
 

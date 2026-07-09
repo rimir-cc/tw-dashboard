@@ -27,7 +27,7 @@ Tag a tiddler with <<tag "$:/tags/rimir/dashboard">> and a view-template body ca
 * ''Bring-to-front z-order'' — interacting with a tile raises it above the others; the stacking order persists.
 * ''Two tile styles'' — a //window// tile with a title bar and controls, or a //bare// tile that is just the resizable content.
 * ''Actions menu'' — each tile's actions live behind a ⋮ menu in the corner, revealed on hover or keyboard focus: ↗ open-external (when available), ⧉ show-in-popup, ⊟ toggle window/bare, × remove.
-* ''Choose what a tile shows'' — the body by default; a tiddler with no text but an `icon` shows its icon. Override per tile (⋮ menu: auto / body / icon / any field), or per dashboard with filter-based //display rules//.
+* ''Choose what a tile shows'' — the body by default; uploaded images/PDFs show their thumbnail, and a tiddler with no text but an `icon` shows its icon. Override per tile (⋮ menu: auto / body / icon / any field), or per dashboard with filter-based //display rules//.
 * ''Group (meta) tiles'' — a group tile is itself a free-form canvas you can drop other tiles into; groups nest recursively. Collapse/expand with ▸/▾, rename inline, and drag tiles (or whole groups) between containers to re-home them.
 * ''Click to open'' — a click (as opposed to a drag) opens the tile's target tiddler in the story river; ''Ctrl/Cmd-click'' opens the target's external link (`url` / `_canonical_uri`, fields configurable) in a new browser tab.
 * ''Ctrl-drag to duplicate'' — hold Ctrl/Cmd while starting a drag to drop a copy of the tile elsewhere (the same tiddler may appear on any number of tiles).

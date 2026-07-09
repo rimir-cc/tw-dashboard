@@ -28,7 +28,7 @@ rdt.section: Reference
 |`dash-parent` |Title of the group tile this tile lives inside. Empty / absent = top-level (directly on the dashboard canvas) |
 |`role` |`group` for a group (meta) tile; empty / absent for an ordinary content tile |
 |`caption` |Group tiles only — the editable group name shown in its header |
-|`icon` |Group tiles only — an icon shown small before the caption when open; when collapsed //and// set, it becomes the group's whole header (hover shows the caption, click expands). Value is a tiddler title (transcluded) or inline markup. Set/cleared from the group's ⋮ menu |
+|`icon` |Group tiles only — an icon shown small before the caption when open; when collapsed //and// set, it becomes the group's whole header (hover shows the caption, click expands). Value is a tiddler title (transcluded) or inline markup. Set/cleared from the icon editor (group ⋮ menu → //Icon…//) |
 |`collapsed` |Group tiles only — `yes` shows just the header bar, otherwise the group's canvas is shown |
 |`x` / `y` |Top-left position in pixels, relative to the tile's container canvas |
 |`w` / `h` |Width / height in pixels (both are retained but not applied while a group is collapsed — it shrinks to its header — and restored on expand) |
@@ -78,11 +78,12 @@ For each content tile the //display field// is resolved in this order (first non
 
 # the tile's own `display` field;
 # the first per-dashboard //display rule// (see below) whose `filter` selects the tile's `target`;
+# the target has a `_thumbnail_uri` (an uploaded image/PDF thumbnail) → `_thumbnail_uri`;
 # the target has non-empty `text` → `text` (its body);
 # the target has an `icon` → `icon`;
 # otherwise `text`.
 
-The resolved field is then rendered: `text`/`body` transcludes the target's body (unchanged from earlier versions); otherwise the field's value is read — if it names an existing tiddler (real or shadow, e.g. `icon` → an image/SVG tiddler) that tiddler is transcluded, else the value is rendered as wikitext (so an inline-SVG `icon` also works).
+The resolved field is then rendered: `text`/`body` transcludes the target's body (unchanged from earlier versions); a `_thumbnail_uri` (or the `_canonical_uri` of an image-typed target) becomes an `<img>` scaled to the tile; otherwise the field's value is read — if it names an existing tiddler (real or shadow, e.g. `icon` → an image/SVG tiddler) that tiddler is transcluded — unless it is itself an uploaded image carrying a `_thumbnail_uri`, in which case its thumbnail is shown rather than the full image — else the value is rendered as wikitext (so an inline-SVG `icon` also works).
 
 !! Display rules (per dashboard)
 
@@ -118,6 +119,7 @@ so there is no hard dependency on the kind plugin's own functions — the icon s
 |`$:/config/rimir/dashboard/external-open-fields` |Space-separated list of the target's fields consulted, in order, for a tile's external link (↗ action and Ctrl/Cmd-click). The first non-empty one wins. Defaults to `url _canonical_uri` |
 |`$:/config/rimir/dashboard/<dashId>/display-rules/…` |Per-dashboard display-rule tiddlers (see //Display rules// above) |
 |`$:/state/rimir/dashboard/rules-open` |`yes` while the //Display rules// panel is open |
+|`$:/state/rimir/dashboard/icon-edit` |Title of the group whose icon editor is open; empty when closed |
 
 </$fill>
 </$transclude>
