@@ -276,6 +276,9 @@ Done
 	tileExtUrl={{{ [enlist{$:/config/rimir/dashboard/external-open-fields}] :map[<tileTargetTitle>get<currentTiddler>] +[!is[blank]first[]] }}}
 	collapsed={{{ [{!!collapsed}match[yes]then[yes]] ~[[no]] }}}
 	cIconOnly={{{ [<collapsed>match[yes]] :filter[<tileTargetTitle>has[icon]] +[first[]then[yes]] ~[[no]] }}}
+	iconW={{{ [{!!icon-w}trim[]!is[blank]] ~[{$:/config/rimir/dashboard/group-icon-max-width}trim[]!is[blank]] ~[[64]] }}}
+	iconH={{{ [{!!icon-h}trim[]!is[blank]] ~[{$:/config/rimir/dashboard/group-icon-max-height}trim[]!is[blank]] ~[[64]] }}}
+	iconStyle={{{ [<iconW>addprefix[width:]addsuffix[px; height:]addsuffix<iconH>addsuffix[px;]] }}}
 	dvTid=<<tileTargetTitle>> dvField="icon" dvMode="inline" dvImg="no" dvVal={{{ [<tileTargetTitle>get[icon]] }}}
 	dashContentExpand="""<$list filter="[<currentTiddler>get[collapsed]match[yes]]" variable="ignore"><$action-setfield $tiddler=<<currentTiddler>> collapsed="no" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/></$list>""">
 <%if [<tileStyle>match[bare]] %>
@@ -285,17 +288,20 @@ Done
 <div class="rr-dash-resize"></div>
 </$dashboard-drag>
 <%else%>
-<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} move-selector=".rr-dash-handle" class="rr-dash-box" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> copy-actions=<<dashCopyActions>> open-actions={{{ [<collapsed>match[yes]then<dashContentExpand>] ~[<dashOpenActions>] }}} ctrl-open-url=<<tileExtUrl>> fit-width={{{ [<cIconOnly>match[yes]then[yes]] }}} fit-height={{{ [<collapsed>match[yes]then[yes]] }}}>
+<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} icon-w=<<iconW>> icon-h=<<iconH>> move-selector=".rr-dash-handle" class="rr-dash-box" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> copy-actions=<<dashCopyActions>> open-actions={{{ [<collapsed>match[yes]then<dashContentExpand>] ~[<dashOpenActions>] }}} size-actions=<<dashSizeActions>> ctrl-open-url=<<tileExtUrl>> fit-width={{{ [<cIconOnly>match[yes]then[yes]] }}} fit-height={{{ [<collapsed>match[yes]then[yes]] }}}>
 <div class="rr-dash-handle">
 <%if [<cIconOnly>match[yes]] %>
 <span class="rr-dash-title rr-dash-group-icononly" title={{{ [<tileTargetTitle>get[caption]!is[blank]] ~[<tileTargetTitle>] }}}>
-<span class="rr-dash-group-icon rr-dash-group-icon-lg"><<dash-value>></span>
+<span class="rr-dash-group-icon rr-dash-group-icon-lg" style=<<iconStyle>>><<dash-value>></span>
 </span>
 <%else%>
 <span class="rr-dash-title"><<dash-collapse-toggle>><<dash-title>></span>
 <%endif%>
 <span class="rr-dash-controls"><<dash-controls>></span>
 </div>
+<%if [<cIconOnly>match[yes]] %>
+<div class="rr-dash-resize rr-dash-resize-icon" title="Drag to resize this icon"></div>
+<%endif%>
 <%if [<collapsed>match[no]] %>
 <div class="rr-dash-body"><<dash-tile-body>></div>
 <div class="rr-dash-resize"></div>
@@ -310,13 +316,16 @@ Done
 	groupIcon={{!!icon}}
 	groupCaption={{{ [{!!caption}!is[blank]] ~[[Group]] }}}
 	iconOnly={{{ [<collapsed>match[yes]] :filter[<groupIcon>!is[blank]] +[first[]then[yes]] ~[[no]] }}}
+	iconW={{{ [{!!icon-w}trim[]!is[blank]] ~[{$:/config/rimir/dashboard/group-icon-max-width}trim[]!is[blank]] ~[[64]] }}}
+	iconH={{{ [{!!icon-h}trim[]!is[blank]] ~[{$:/config/rimir/dashboard/group-icon-max-height}trim[]!is[blank]] ~[[64]] }}}
+	iconStyle={{{ [<iconW>addprefix[width:]addsuffix[px; height:]addsuffix<iconH>addsuffix[px;]] }}}
 	dvTid=<<currentTiddler>> dvField="icon" dvMode="inline" dvImg="no" dvVal={{!!icon}}
 	dashGroupExpand="""<$list filter="[<currentTiddler>get[collapsed]match[yes]]" variable="ignore"><$action-setfield $tiddler=<<currentTiddler>> collapsed="no" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/></$list>""">
-<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} move-selector=".rr-dash-handle" class="rr-dash-box rr-dash-group" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> open-actions=<<dashGroupExpand>> fit-width={{{ [<collapsed>match[yes]then[yes]] }}} fit-height={{{ [<collapsed>match[yes]then[yes]] }}}>
+<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} icon-w=<<iconW>> icon-h=<<iconH>> move-selector=".rr-dash-handle" class="rr-dash-box rr-dash-group" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> open-actions=<<dashGroupExpand>> size-actions=<<dashSizeActions>> fit-width={{{ [<collapsed>match[yes]then[yes]] }}} fit-height={{{ [<collapsed>match[yes]then[yes]] }}}>
 <div class="rr-dash-handle">
 <%if [<iconOnly>match[yes]] %>
 <span class="rr-dash-title rr-dash-group-icononly" title=<<groupCaption>>>
-<span class="rr-dash-group-icon rr-dash-group-icon-lg"><<dash-value>></span>
+<span class="rr-dash-group-icon rr-dash-group-icon-lg" style=<<iconStyle>>><<dash-value>></span>
 </span>
 <%else%>
 <span class="rr-dash-title">
@@ -330,6 +339,9 @@ Done
 <%endif%>
 <span class="rr-dash-controls"><<dash-group-controls>></span>
 </div>
+<%if [<iconOnly>match[yes]] %>
+<div class="rr-dash-resize rr-dash-resize-icon" title="Drag to resize this icon"></div>
+<%endif%>
 <%if [<collapsed>match[no]] %>
 <div class="rr-dash-body rr-dash-group-body"><$transclude $variable="dash-canvas" containerId=<<currentTiddler>> $mode="block"/></div>
 <div class="rr-dash-resize"></div>
@@ -384,6 +396,7 @@ Done
 	dashReparentActions="""<$action-setfield $tiddler=<<currentTiddler>> dash-parent=<<new-parent>> x=<<new-x>> y=<<new-y>> w=<<new-w>> h=<<new-h>> z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/>"""
 	dashCopyActions="""<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" dashboard=<<dashId>> dash-parent=<<new-parent>> target={{!!target}} style={{!!style}} x=<<new-x>> y=<<new-y>> w=<<new-w>> h=<<new-h>> z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/>"""
 	dashOpenActions="""<$action-navigate $to={{!!target}}/>"""
+	dashSizeActions="""<$action-setfield $tiddler=<<currentTiddler>> icon-w=<<new-icon-w>> icon-h=<<new-icon-h>>/>"""
 	dashEmptyHint="""<div class="rr-dash-hint">Empty. Drop tiddlers here from the wiki, or drag a tile in from another container.</div>"""
 >
 <div class="rr-dash-root">

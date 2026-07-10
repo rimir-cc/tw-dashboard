@@ -33,6 +33,12 @@ target canvas. Otherwise the ordinary `actions` (geometry) commit runs.
 width / height — used for collapsed group tiles, which shrink to their header;
 the stored `w`/`h` are preserved (not applied) and restored on expand.
 
+A collapsed-to-icon tile carries a `.rr-dash-resize-icon` grip. Dragging it is a
+"resize-icon" drag: it sizes the `.rr-dash-group-icon-lg` element directly and, on
+release, commits the new box via `size-actions` (variables new-icon-w / new-icon-h)
+instead of the geometry `actions` — so each tile's collapsed icon is individually
+sizable while the shrink-to-fit box tracks it.
+
 Holding Ctrl/Cmd when a move starts on a tile that has `copy-actions` turns the
 drag into a DUPLICATE: on release the `copy-actions` string is invoked (creating
 a new tile at the drop location/container) and the original snaps back to its
@@ -43,6 +49,7 @@ start — so a tiddler can appear on the dashboard any number of times.
 var Widget = require("$:/core/modules/widgets/widget.js").widget;
 
 var DRAG_THRESHOLD = 4; // px of motion before a grab counts as a move (not a click)
+var MIN_ICON = 24; // px floor for a collapsed tile's resizable icon box
 
 var DashboardDragWidget = function(parseTreeNode,options) {
 	this.initialise(parseTreeNode,options);
@@ -71,6 +78,7 @@ DashboardDragWidget.prototype.execute = function() {
 	this.dragActions = this.getAttribute("actions","");
 	this.reparentActions = this.getAttribute("reparent-actions","");
 	this.copyActions = this.getAttribute("copy-actions","");
+	this.sizeActions = this.getAttribute("size-actions","");
 	this.openActions = this.getAttribute("open-actions","");
 	this.ctrlOpenUrl = this.getAttribute("ctrl-open-url","");
 	this.boxClass = this.getAttribute("class","rr-dash-box");
@@ -113,7 +121,9 @@ DashboardDragWidget.prototype.handlePointerDown = function(event) {
 		return; // buttons / links / inputs handle their own clicks
 	}
 	var mode = null;
-	if(target.closest && target.closest(".rr-dash-resize")) {
+	if(target.closest && target.closest(".rr-dash-resize-icon")) {
+		mode = "resize-icon";
+	} else if(target.closest && target.closest(".rr-dash-resize")) {
 		mode = "resize";
 	} else if(!this.moveSelector) {
 		mode = "grab"; // whole box is a move/open surface (bare tiles)
@@ -133,6 +143,13 @@ DashboardDragWidget.prototype.handlePointerDown = function(event) {
 	this.startGeoY = this.geoY;
 	this.startGeoW = this.geoW;
 	this.startGeoH = this.geoH;
+	if(mode === "resize-icon") {
+		this.startIconW = this.num(this.getAttribute("icon-w"),64);
+		this.startIconH = this.num(this.getAttribute("icon-h"),64);
+		this.iconW = this.startIconW;
+		this.iconH = this.startIconH;
+		this.iconEl = this.domNode.querySelector(".rr-dash-group-icon-lg");
+	}
 	$tw.utils.addClass(this.domNode,"rr-dash-dragging");
 	// Ctrl/Cmd at grab-start on a copyable (content) tile → duplicate instead of move
 	this.copyDrag = (mode === "grab") && !!this.copyActions && !!(event.ctrlKey || event.metaKey);
@@ -165,6 +182,14 @@ DashboardDragWidget.prototype.handlePointerMove = function(event) {
 		this.geoX = Math.max(0,Math.round(this.startGeoX + dx));
 		this.geoY = Math.max(0,Math.round(this.startGeoY + dy));
 		this.applyGeometry();
+	} else if(this.dragMode === "resize-icon") {
+		this.moved = true;
+		this.iconW = Math.max(MIN_ICON,Math.round(this.startIconW + dx));
+		this.iconH = Math.max(MIN_ICON,Math.round(this.startIconH + dy));
+		if(this.iconEl) {
+			this.iconEl.style.width = this.iconW + "px";
+			this.iconEl.style.height = this.iconH + "px";
+		}
 	} else {
 		this.moved = true;
 		this.geoW = Math.max(this.minW,Math.round(this.startGeoW + dx));
@@ -200,6 +225,17 @@ DashboardDragWidget.prototype.handlePointerUp = function(event) {
 		}
 		if(this.openActions) {
 			this.invokeActionString(this.openActions,this,event,{});
+		}
+		return;
+	}
+	// Resizing a collapsed tile's icon commits the new icon box only (no geometry
+	// move / reparent): the shrink-to-fit box follows the icon automatically.
+	if(mode === "resize-icon") {
+		if(this.sizeActions) {
+			this.invokeActionString(this.sizeActions,this,event,{
+				"new-icon-w": String(this.iconW),
+				"new-icon-h": String(this.iconH)
+			});
 		}
 		return;
 	}
@@ -285,7 +321,7 @@ DashboardDragWidget.prototype.refresh = function(changedTiddlers) {
 	var changed = this.computeAttributes();
 	if(changed.tile || changed["class"] || changed["move-selector"] || changed.actions ||
 			changed["reparent-actions"] || changed["copy-actions"] || changed["open-actions"] ||
-			changed["ctrl-open-url"] ||
+			changed["size-actions"] || changed["ctrl-open-url"] ||
 			changed["min-width"] || changed["min-height"] || changed.container || changed["dash-id"] ||
 			changed["fit-width"] || changed["fit-height"]) {
 		this.refreshSelf();

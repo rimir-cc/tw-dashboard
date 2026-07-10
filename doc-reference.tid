@@ -32,6 +32,7 @@ rdt.section: Reference
 |`collapsed` |Group tiles and window content tiles — `yes` collapses the tile: a group shrinks to its header (and its canvas is hidden), a content tile to just its headline, or — if the target has an `icon` — to just that icon (click to expand, drag to move). Toggled by the ▸/▾ control |
 |`x` / `y` |Top-left position in pixels, relative to the tile's container canvas |
 |`w` / `h` |Width / height in pixels (both are retained but not applied while a group is collapsed — it shrinks to its header — and restored on expand) |
+|`icon-w` / `icon-h` |Size in pixels of this tile's icon while collapsed-to-icon. Written by dragging the icon's corner grip; absent = the configured default (`group-icon-max-width`/`-height`, 64) |
 |`z` |Stacking order (higher = in front); set to `max+1` on interaction |
 |`style` |Content tiles only — `window` (default) or `bare` |
 |`display` |Content tiles only — which field of the `target` to show: a field name, or `body`/`text` for the whole body. Absent = resolve automatically (see //What a tile shows// below). Set from the ⋮ menu |
@@ -57,6 +58,7 @@ The positioning/interaction widget (used internally by the canvas body).
 |!Attribute |!Meaning |
 |`tile` |Title of the tile tiddler |
 |`x` `y` `w` `h` |Initial geometry in pixels |
+|`icon-w` `icon-h` |Icon-box size (px) used while collapsed-to-icon; the start size for an icon resize |
 |`z` |Initial `z-index` |
 |`class` |Class(es) for the box element |
 |`move-selector` |CSS selector that starts a move; empty = the whole box |
@@ -68,9 +70,10 @@ The positioning/interaction widget (used internally by the canvas body).
 |`reparent-actions` |Action string invoked when a move ends over a //different// container, with the above plus `<<new-parent>>` (the target container's id) |
 |`copy-actions` |Action string invoked instead of moving when Ctrl/Cmd is held at the start of a move — same variables as `reparent-actions`. Creates a duplicate tile; the original snaps back. Only content tiles set this (groups are not duplicated) |
 |`open-actions` |Action string invoked on a plain click (no drag) |
+|`size-actions` |Action string invoked when a `.rr-dash-resize-icon` grip is dragged, with variables `<<new-icon-w>>` `<<new-icon-h>>`. Used to size a collapsed tile's icon; no geometry move/reparent happens |
 |`ctrl-open-url` |A URL; when set, a ''Ctrl/Cmd-click'' (no drag) opens it in a new browser tab instead of running `open-actions`. Absolute URLs open as-is; a bare host gets `https://` prepended |
 
-Recognised regions inside the box: `.rr-dash-handle` (move surface for window and group tiles), `.rr-dash-resize` (resize grip), `.rr-dash-no-drag` (never starts a drag — buttons, controls, the group-name input). Each `.rr-dash-canvas` carries `data-dash-parent` (its container id) and `data-dash-id` so the widget can hit-test drop targets.
+Recognised regions inside the box: `.rr-dash-handle` (move surface for window and group tiles), `.rr-dash-resize` (resize grip), `.rr-dash-resize-icon` (a resize grip that sizes the collapsed-to-icon box instead of the tile), `.rr-dash-no-drag` (never starts a drag — buttons, controls, the group-name input). Each `.rr-dash-canvas` carries `data-dash-parent` (its container id) and `data-dash-id` so the widget can hit-test drop targets.
 
 !! What a tile shows (display resolution)
 
@@ -117,8 +120,8 @@ so there is no hard dependency on the kind plugin's own functions — the icon s
 |`$:/state/rimir/dashboard/clean-confirm` |`yes` while the //Clean// confirmation is showing |
 |`$:/state/rimir/dashboard/popup` |Transient title of the tiddler shown in the //show contents// popup; empty when the popup is closed |
 |`$:/config/rimir/dashboard/external-open-fields` |Space-separated list of the target's fields consulted, in order, for a tile's external link (↗ action and Ctrl/Cmd-click). The first non-empty one wins. Defaults to `url _canonical_uri` |
-|`$:/config/rimir/dashboard/group-icon-max-width` |Max width (px) of a //collapsed// group's icon; default 64 |
-|`$:/config/rimir/dashboard/group-icon-max-height` |Max height (px) of a //collapsed// group's icon; default 64 |
+|`$:/config/rimir/dashboard/group-icon-max-width` |Default width (px) of a //collapsed// tile's/group's icon box; overridden per tile by `icon-w`. Default 64 |
+|`$:/config/rimir/dashboard/group-icon-max-height` |Default height (px) of a //collapsed// tile's/group's icon box; overridden per tile by `icon-h`. Default 64 |
 |`$:/config/rimir/dashboard/<dashId>/display-rules/…` |Per-dashboard display-rule tiddlers (see //Display rules// above) |
 |`$:/state/rimir/dashboard/rules-open` |`yes` while the //Display rules// panel is open |
 |`$:/state/rimir/dashboard/icon-edit` |Title of the group whose icon editor is open; empty when closed |

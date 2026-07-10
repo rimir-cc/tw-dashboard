@@ -479,6 +479,19 @@ tags: $:/tags/Stylesheet
 	background: linear-gradient(135deg, transparent 50%, rgba(128,128,128,0.55) 50%);
 }
 
+/* Collapsed-icon resize grip: smaller and revealed only on hover, so it doesn't
+   clutter the bare icon; drag it to size this tile's icon individually. */
+.rr-dash-resize-icon {
+	width: 12px;
+	height: 12px;
+	opacity: 0;
+	transition: opacity .1s ease;
+}
+
+.rr-dash-box:hover .rr-dash-resize-icon {
+	opacity: 1;
+}
+
 /* Group (meta) tiles: a container tile whose body is itself a canvas of child
    tiles. Distinguished by a dashed frame; collapse hides the inner canvas. */
 .rr-dash-group {
@@ -550,16 +563,21 @@ tags: $:/tags/Stylesheet
 	line-height: 1;
 }
 
-/* Collapsed group whose header is only the icon: scale it to a reasonable,
-   configurable box (default 64px), preserving aspect ratio — so a wide photo
-   or large image isn't squashed into a tiny square. Both dimensions are
-   editable in the plugin settings. */
+/* Collapsed-to-icon header: the icon lives in an explicitly-sized box, so it can
+   be resized per tile (drag the corner grip → writes the tile's icon-w / icon-h).
+   The box size falls back to the configured default (group-icon-max-width/height,
+   64px) here; each tile overrides it with an inline style from its own fields. The
+   glyph/image fills the box, keeping aspect ratio. */
+.rr-dash-group-icon-lg {
+	width: {{{ [{$:/config/rimir/dashboard/group-icon-max-width}trim[]!is[blank]] ~[[64]] }}}px;
+	height: {{{ [{$:/config/rimir/dashboard/group-icon-max-height}trim[]!is[blank]] ~[[64]] }}}px;
+	overflow: hidden;
+}
+
 .rr-dash-group-icon-lg svg,
 .rr-dash-group-icon-lg img {
-	width: auto;
-	height: auto;
-	max-width: {{{ [{$:/config/rimir/dashboard/group-icon-max-width}trim[]!is[blank]] ~[[64]] }}}px;
-	max-height: {{{ [{$:/config/rimir/dashboard/group-icon-max-height}trim[]!is[blank]] ~[[64]] }}}px;
+	width: 100%;
+	height: 100%;
 	object-fit: contain;
 }
 

@@ -1,6 +1,7 @@
 title: $:/plugins/rimir/dashboard/changelog
 
 |!Version |!Date |!Changes |
+|0.0.21 |2026-07-10 |A collapsed tile's (or group's) icon can now be ''resized individually'': hover it and drag the corner grip. The size is stored per tile (`icon-w` / `icon-h`), so each collapsed icon can differ; the settings box size becomes the //default// for icons not yet resized |
 |0.0.20 |2026-07-09 |Window content tiles can now be collapsed (▸/▾ in the title bar), like groups: a collapsed tile shrinks to just its headline — or, if its `target` has an `icon`, to just that icon (click to expand, drag to move, hover for the caption). The collapse toggle is now shared between tiles and groups |
 |0.0.19 |2026-07-09 |Fixed dragging a collapsed group whose header is an image icon: the icon is now a move + click-to-expand surface, so you can ''drag the image itself'' to move the group (a plain click still expands it). Native image-dragging is suppressed on tile/group icons, so dragging one no longer drops a stray new tile onto the canvas |
 |0.0.18 |2026-07-09 |A collapsed group's icon is now scaled to a reasonable box (default 64×64 px) preserving its aspect ratio, instead of being forced into a tiny square — so wide/large image icons render properly. The max width and height are configurable in the plugin settings |
