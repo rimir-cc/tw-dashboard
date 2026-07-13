@@ -608,6 +608,38 @@ tags: $:/tags/Stylesheet
 	min-width: 0;
 }
 
+/* Collapsed tile as a drop target: a collapsed tile renders no body, so its own
+   header IS the drop surface. For a group, dropping a tiddler/file adds it as a
+   child and expands the group; for a content tile whose target is under work/,
+   dropping a file uploads it into that item's folder. No permanent chrome: only
+   a highlight drawn around the whole collapsed box while a drag is over it. */
+.rr-dash-collapsed-droptarget,
+.rr-dash-collapsed-droptarget-fz {
+	display: contents;
+}
+
+.rr-dash-collapsed-droptarget-fz:focus {
+	outline: none;
+}
+
+.rr-dash-box:has(> .rr-dash-collapsed-droptarget.tc-dragover),
+.rr-dash-box:has(.rr-dash-collapsed-droptarget-fz.tc-dragover),
+.rr-dash-box:has(.rr-dash-collapsed-droptarget-fz.fu-uploading),
+.rr-dash-box:has(.rr-dash-collapsed-droptarget-fz.fu-processing) {
+	outline: 2px dashed rgba(80,140,220,0.85);
+	outline-offset: 2px;
+	background-color: rgba(80,140,220,0.08);
+}
+
+/* The collapsed header sits inside the drop-target wrapper, so restore the
+   group-title flex layout that `.rr-dash-group > .rr-dash-handle` gives it. */
+.rr-dash-collapsed-droptarget .rr-dash-handle .rr-dash-title {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+	min-width: 0;
+}
+
 /* Popup overlay: a fixed viewport-covering layer so it escapes the tile's
    overflow clipping. The target tiddler is rendered through the default
    ViewTemplate inside the modal. */

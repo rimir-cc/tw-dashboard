@@ -30,7 +30,7 @@ Yes. A tile is just a tiddler with a `target` field, so nothing stops several ti
 
 !! How do I put tiles into a group, and nest groups?
 
-Press ''Add group'' for a container tile, then either drop tiddlers from the wiki onto its canvas or drag existing tiles into it. A group's ＋ control adds a group //inside// it, and you can also drag a whole group into another — nesting is recursive with no depth limit. Drag a tile (or group) back onto the root canvas to take it out again.
+Press ''Add group'' for a container tile, then either drop tiddlers from the wiki onto its canvas or drag existing tiles into it. A group's ＋ control adds a group //inside// it, and you can also drag a whole group into another — nesting is recursive with no depth limit. Drag a tile (or group) back onto the root canvas to take it out again. A //collapsed// group is still a drop target: drop a tiddler onto it and the tiddler is added as a child and the group expands (see the collapsed-drop FAQ below).
 
 !! Can a group have an icon?
 
@@ -51,6 +51,10 @@ Positions are relative to the container. When a tile moves into (or out of) a gr
 !! Can I collapse a normal (content) tile, not just a group?
 
 Yes — window tiles have a ▸/▾ toggle in their title bar. Collapsing shrinks the tile to just its headline (the caption); if the target has an `icon`, it collapses to just that icon instead — click it to expand, drag it to move, hover for the caption (the same behavior as a collapsed group). Bare tiles have no title bar, so switch a tile to //window// style (the ⊟ action) if you want to collapse it.
+
+!! Can I drop something onto a //collapsed// tile or group?
+
+Yes. A collapsed tile renders no body, but its header still acts as a drop surface — you don't have to expand it first. Drop a tiddler //or// a file onto a collapsed ''group'' and it is added as a child of that group, which then expands so you can see it land. Drop a file onto a collapsed ''content tile'' whose `target` is under `work/` and the file is uploaded into that item's folder (exactly as dropping on the open tile would). There is no permanent drop band — the box is simply outlined while a drag hovers over it. (A collapsed content tile with a non-`work/` target has no attach point, so it doesn't take a drop — the same as when it is expanded; drop on the canvas instead to add it as a new tile.)
 
 !! How do I switch a tile between window and bare?
 
