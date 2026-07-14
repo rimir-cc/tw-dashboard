@@ -10,7 +10,11 @@ rdt.section: FAQ
 
 !! Does the layout reflow on small screens?
 
-No. Tiles use absolute pixel coordinates, so a free-form dashboard is desktop-first and does not reflow to narrow viewports. This is inherent to the free-form model.
+No — tiles use absolute pixel coordinates, so a free-form dashboard does not //reflow// to narrow viewports (that is inherent to the free-form model). Instead, turn on ''Fit to screen'' (the toolbar toggle): it scales the whole board down so everything is visible at once, sized to your window. It only ever shrinks — a board that already fits is left at full size — and the choice is remembered per dashboard. Dragging and resizing stay accurate while fitted. Pair it with ''Fullscreen'' (the next button) to give the board the entire screen.
+
+!! What does the Fullscreen button do?
+
+It shows //just the dashboard// fullscreen via the browser's Fullscreen API — the whole screen, without the surrounding wiki chrome (sidebar, tabs, browser toolbar). Press it again, or Esc, to exit; the button label and state update either way. It is most useful together with ''Fit to screen'': fullscreen maximises the available area, and fit then scales the board to fill it, so you see everything at once. (Fullscreen requires the click as a user gesture — it can't be triggered programmatically.)
 
 !! A tile shows nothing / only raw text — why?
 

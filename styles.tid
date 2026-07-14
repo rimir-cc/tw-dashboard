@@ -8,6 +8,24 @@ tags: $:/tags/Stylesheet
 	flex-direction: column;
 }
 
+/* Fullscreen (via the Fullscreen button): the dashboard root fills the physical
+   screen. Give it the page background and some padding — a fullscreen element
+   otherwise gets a black backdrop and sits flush to the edges. Separate rules per
+   vendor pseudo so an unknown one doesn't invalidate the whole selector list. */
+.rr-dash-root:fullscreen {
+	background-color: <<colour page-background>>;
+	overflow: auto;
+	padding: 8px;
+	box-sizing: border-box;
+}
+
+.rr-dash-root:-webkit-full-screen {
+	background-color: <<colour page-background>>;
+	overflow: auto;
+	padding: 8px;
+	box-sizing: border-box;
+}
+
 /* Core's ViewTemplate body transcludes in inline mode, wrapping our root in a
    <p>. Collapse that wrapper so it contributes no stray margins (see the
    flibbles/graph <p>-cascade fix). */
@@ -21,6 +39,21 @@ tags: $:/tags/Stylesheet
 	align-items: center;
 	flex-wrap: wrap;
 	margin-bottom: .5em;
+}
+
+/* Fit-to-screen toggle: highlighted while active so its state is obvious. */
+.rr-dash-fit-btn.rr-dash-fit-on {
+	background-color: rgba(80,140,220,0.18);
+	border-color: rgba(80,140,220,0.6);
+}
+
+/* Wrapper around the root canvas. When fit-to-screen is active the widget sets an
+   inline transform on the canvas and gives this wrapper an explicit (scaled)
+   height with overflow:hidden, so the shrunk board sits flush in the page and the
+   unscaled overflow is clipped. At natural size it is a transparent pass-through. */
+.rr-dash-fit {
+	position: relative;
+	width: 100%;
 }
 
 .rr-dash-add-input {
@@ -164,11 +197,32 @@ tags: $:/tags/Stylesheet
 .rr-dash-box {
 	display: flex;
 	flex-direction: column;
+	/* Stacking is driven by a custom property the widget sets (never an inline
+	   z-index), so the hover/drag rules below can lift a tile — and its ancestor
+	   groups — over their siblings without !important. */
+	z-index: var(--rr-dash-z, auto);
 	background-color: <<colour tiddler-background>>;
 	border: 1px solid rgba(128,128,128,0.35);
 	border-radius: 6px;
 	box-shadow: 0 1px 4px rgba(0,0,0,0.15);
 	overflow: hidden;
+}
+
+/* While a tile or group is being dragged, lift it AND every ancestor group box
+   above their siblings, and stop those ancestors from clipping it. This lets a
+   nested group be dragged out of its parent and dropped anywhere — previously
+   the parent's overflow clipped the dragged box at its edge and its stacking
+   context trapped it, so the only reachable drop targets were sibling subgroups
+   inside the same parent. (The drop target is hit-tested from the pointer; this
+   just makes the box visible where it actually goes.) */
+.rr-dash-box:has(.rr-dash-box.rr-dash-dragging) {
+	z-index: 9999;
+	overflow: visible;
+}
+
+.rr-dash-box:has(.rr-dash-box.rr-dash-dragging) > .rr-dash-body,
+.rr-dash-canvas:has(.rr-dash-box.rr-dash-dragging) {
+	overflow: visible;
 }
 
 .rr-dash-box.rr-dash-dragging {
@@ -290,10 +344,13 @@ tags: $:/tags/Stylesheet
 
 /* The tile box clips its content (overflow:hidden). While a menu is open, let it
    overflow so every item shows and the dropdown grows/shrinks with its contents,
-   regardless of how short the tile is. */
+   regardless of how short the tile is — and lift the box (and, via :has, any
+   ancestor group boxes) above sibling tiles so the dropdown is never painted
+   behind an overlapping neighbour. */
 .rr-dash-box:has(.rr-dash-menu:hover),
 .rr-dash-box:has(.rr-dash-menu:focus-within) {
 	overflow: visible;
+	z-index: 9999;
 }
 
 .rr-dash-menu-items .rr-dash-ctl {

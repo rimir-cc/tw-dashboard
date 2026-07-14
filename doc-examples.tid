@@ -158,6 +158,8 @@ The underlying tiddlers are never touched — only the tiles (the dashboard's re
 * ''Duplicate'' — hold ''Ctrl'' (or ''Cmd'') as you start dragging a content tile to drop a copy of it where you release — in the same container or another one. The original stays put, and both tiles point at the same target tiddler.
 * ''Show contents'' — the ⧉ control opens the target in a centered popup rendered through the default ViewTemplate, without leaving the dashboard. Close it with × or by clicking the backdrop.
 * ''Remove'' — the × control on a content tile deletes that tile tiddler only; the target tiddler is untouched. The × on a group removes the group and promotes its contents to the parent container.
+* ''Fit to screen'' — the //Fit to screen// toolbar toggle scales the whole board down so it fits your window (shrink-only), so everything is visible at once on a small display. It is remembered per dashboard, and dragging/resizing still works while fitted.
+* ''Fullscreen'' — the //Fullscreen// toolbar button shows the dashboard on the whole screen (no wiki chrome); press again or Esc to exit. Combine it with //Fit to screen// to see the entire board at once.
 
 !! Housekeeping filters
 

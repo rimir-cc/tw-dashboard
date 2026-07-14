@@ -41,6 +41,13 @@ When a group — or a content tile whose target has an `icon` — is collapsed t
 
 To size a single collapsed icon, hover it and ''drag the corner grip'' — the tile's own `icon-w` / `icon-h` fields are set and override the default above for that tile only.
 
+!! Fit to screen and fullscreen
+
+Two toolbar controls help on small screens:
+
+* ''Fit to screen'' scales the whole board down (a CSS transform) so its entire content fits your window — the available width and the remaining viewport height. It only shrinks; a board that already fits stays at full size. The choice is remembered per dashboard in `$:/config/rimir/dashboard/<dashId>/fit` (`yes`/empty). Dragging and resizing remain accurate while fitted — the drag widget divides pointer movement by the current scale.
+* ''Fullscreen'' shows just the dashboard on the whole screen via the browser Fullscreen API — no sidebar, tabs or browser toolbar. Press it again or Esc to exit; the state is tracked in `$:/state/rimir/dashboard/fullscreen`. Combine the two to view an entire board at once on a small display.
+
 !! Opening a link in a new browser tab
 
 If a tile's `target` tiddler has one of the //external-open fields// below, the tile shows an ↗ action and ''Ctrl/Cmd-clicking'' the tile opens that value in a new browser tab (like Ctrl-clicking a link). Plain click still opens the target in the wiki.

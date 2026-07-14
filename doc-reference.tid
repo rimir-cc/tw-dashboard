@@ -77,6 +77,25 @@ The positioning/interaction widget (used internally by the canvas body).
 
 Recognised regions inside the box: `.rr-dash-handle` (move surface for window and group tiles), `.rr-dash-resize` (resize grip), `.rr-dash-resize-icon` (a resize grip that sizes the collapsed-to-icon box instead of the tile), `.rr-dash-no-drag` (never starts a drag — buttons, controls, the group-name input). Each `.rr-dash-canvas` carries `data-dash-parent` (its container id) and `data-dash-id` so the widget can hit-test drop targets.
 
+The widget is ''scale-aware'': it derives the containing canvas' effective on-screen scale (`getBoundingClientRect().width / offsetWidth`) and divides pointer deltas and drop coordinates by it, so move / resize / reparent stay accurate while //Fit to screen// has the board zoomed. At natural size the scale is 1 and nothing changes. The `z-index` of a box is driven by the `--rr-dash-z` custom property (not an inline `z-index`), so hover / drag CSS can lift a tile and its ancestor groups above their siblings without `!important`.
+
+!! `<$dashboard-fit>` widget
+
+Wraps the root canvas and, when `enabled="yes"`, scales it (a CSS transform) so the whole content bounding box fits the available width and the remaining viewport height. Shrink-only — a board that already fits is left at natural size. Used internally by the canvas body.
+
+|!Attribute |!Meaning |
+|`enabled` |`yes` to scale the board to fit; anything else leaves it at natural size |
+|`content-width` / `content-height` |The board's content extent in pixels (`max(x+w)` / `max(y+h)` over the root-level tiles), computed by the caller in wikitext |
+
+It re-fits on container resize, window resize, `fullscreenchange`, and whenever the tiles change (extent recomputed), all debounced to an animation frame and guarded so a no-op fit writes nothing. It publishes the effective scale on the canvas as `data-dash-scale`, and keeps `$:/state/rimir/dashboard/fullscreen` in sync with the browser fullscreen state.
+
+!! `<$action-rr-dash-fullscreen>` widget
+
+Action widget that toggles the browser Fullscreen API on the nearest matching ancestor (used by the //Fullscreen// toolbar button).
+
+|!Attribute |!Meaning |
+|`selector` |CSS selector for the element to make fullscreen (default `.rr-dash-root` — the dashboard itself) |
+
 !! What a tile shows (display resolution)
 
 For each content tile the //display field// is resolved in this order (first non-empty wins):
@@ -125,8 +144,10 @@ so there is no hard dependency on the kind plugin's own functions — the icon s
 |`$:/config/rimir/dashboard/group-icon-max-width` |Default width (px) of a //collapsed// tile's/group's icon box; overridden per tile by `icon-w`. Default 64 |
 |`$:/config/rimir/dashboard/group-icon-max-height` |Default height (px) of a //collapsed// tile's/group's icon box; overridden per tile by `icon-h`. Default 64 |
 |`$:/config/rimir/dashboard/<dashId>/display-rules/…` |Per-dashboard display-rule tiddlers (see //Display rules// above) |
+|`$:/config/rimir/dashboard/<dashId>/fit` |`yes` when //Fit to screen// is on for that dashboard; persisted per dashboard |
 |`$:/state/rimir/dashboard/rules-open` |`yes` while the //Display rules// panel is open |
 |`$:/state/rimir/dashboard/icon-edit` |Title of the group whose icon editor is open; empty when closed |
+|`$:/state/rimir/dashboard/fullscreen` |`yes` while a dashboard is shown fullscreen; kept in sync with the browser (incl. Esc) by the fit widget |
 
 </$fill>
 </$transclude>

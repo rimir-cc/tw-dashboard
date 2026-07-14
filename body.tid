@@ -47,7 +47,9 @@ icon
 <button type="button" class="rr-dash-ctl rr-dash-menu-trigger" title="Group actions" aria-label="Group actions">⋮</button>
 <span class="rr-dash-menu-items">
 <$button class="rr-dash-ctl" tooltip="Add a nested group inside this one" aria-label="Add nested group">
-<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" role="group" dashboard=<<dashId>> dash-parent=<<currentTiddler>> collapsed="no" x="24" y="24" w="280" h="200" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>
+<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" role="group" dashboard=<<dashId>> dash-parent=<<currentTiddler>> collapsed="no" x="24" y="24" w="280" h="200" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}>
+<$action-setfield $tiddler="$:/state/rimir/dashboard/focus-group" text=<<createTiddler-title>>/>
+</$action-createtiddler>
 ＋
 </$button>
 <$button class="rr-dash-ctl" tooltip="Remove this group; its contents move up to the parent container" aria-label="Remove group">
@@ -273,7 +275,7 @@ Done
 \procedure dash-group-handle()
 <div class="rr-dash-handle">
 <%if [<iconOnly>match[yes]] %>
-<span class="rr-dash-title rr-dash-group-icononly" title=<<groupCaption>>>
+<span class="rr-dash-title rr-dash-group-icononly" title={{{ [{!!caption}!is[blank]] ~[[Group]] }}}>
 <span class="rr-dash-group-icon rr-dash-group-icon-lg" style=<<iconStyle>>><<dash-value>></span>
 </span>
 <%else%>
@@ -282,7 +284,7 @@ Done
 <$list filter="[<groupIcon>!is[blank]]" variable="ignore">
 <span class="rr-dash-group-icon rr-dash-group-icon-sm"><<dash-value>></span>
 </$list>
-<$edit-text tiddler=<<currentTiddler>> field="caption" tag="input" default="" placeholder="Group" class="rr-dash-group-name rr-dash-no-drag tc-edit-texteditor"/>
+<$edit-text tiddler=<<currentTiddler>> field="caption" tag="input" default="" placeholder="Group" focus={{{ [{$:/state/rimir/dashboard/focus-group}match<currentTiddler>then[yes]] }}} class="rr-dash-group-name rr-dash-no-drag tc-edit-texteditor"/>
 <span class="rr-dash-count">(<$count filter="[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>field:dash-parent<currentTiddler>]"/>)</span>
 </span>
 <%endif%>
@@ -347,7 +349,6 @@ Done
 \procedure dash-group-tile()
 <$let collapsed={{{ [{!!collapsed}match[yes]then[yes]] ~[[no]] }}}
 	groupIcon={{!!icon}}
-	groupCaption={{{ [{!!caption}!is[blank]] ~[[Group]] }}}
 	iconOnly={{{ [<collapsed>match[yes]] :filter[<groupIcon>!is[blank]] +[first[]then[yes]] ~[[no]] }}}
 	iconW={{{ [{!!icon-w}trim[]!is[blank]] ~[{$:/config/rimir/dashboard/group-icon-max-width}trim[]!is[blank]] ~[[64]] }}}
 	iconH={{{ [{!!icon-h}trim[]!is[blank]] ~[{$:/config/rimir/dashboard/group-icon-max-height}trim[]!is[blank]] ~[[64]] }}}
@@ -417,6 +418,10 @@ Done
 <$let
 	dashId={{{ [<currentTiddler>get[dashboard-id]] ~[<currentTiddler>] }}}
 	hasFileUpload={{{ [[$:/plugins/rimir/file-upload]!is[missing]then[yes]] }}}
+	fitStateTid={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/fit]] }}}
+	fitEnabled={{{ [<fitStateTid>get[text]match[yes]then[yes]] ~[[no]] }}}
+	fitContentW={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>!has[dash-parent]] :map[get[x]add{!!w}] +[nsort[]last[]add[24]] ~[[0]] }}}
+	fitContentH={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>!has[dash-parent]] :map[get[y]add{!!h}] +[nsort[]last[]add[24]] ~[[0]] }}}
 	dashUploadActions="""<$action-createtiddler $basetitle=<<filename>> _canonical_uri=<<canonical-uri>> _thumbnail_uri=<<generated-uri>> _content_hash=<<content-hash>> type=<<type>>>
 <$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" dashboard=<<dashId>> dash-parent=<<containerId>> target=<<createTiddler-title>> x="24" y="24" w="320" h="220" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>
 </$action-createtiddler>"""
@@ -443,7 +448,9 @@ Done
 Add tile
 </$button>
 <$button tooltip="Add a group tile to organise other tiles into (uses the text above as its name, if any)" aria-label="Add group">
-<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" role="group" dashboard=<<dashId>> caption={{$:/state/rimir/dashboard/add-target}} collapsed="no" x="24" y="24" w="300" h="240" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>
+<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" role="group" dashboard=<<dashId>> caption={{$:/state/rimir/dashboard/add-target}} collapsed="no" x="24" y="24" w="300" h="240" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}>
+<$action-setfield $tiddler="$:/state/rimir/dashboard/focus-group" text=<<createTiddler-title>>/>
+</$action-createtiddler>
 <$action-setfield $tiddler="$:/state/rimir/dashboard/add-target" text=""/>
 Add group
 </$button>
@@ -473,9 +480,19 @@ Clean
 <$action-setfield $tiddler="$:/state/rimir/dashboard/rules-open" text={{{ [{$:/state/rimir/dashboard/rules-open}match[yes]then[no]] ~[[yes]] }}}/>
 Display rules
 </$button>
+<$button class={{{ [<fitEnabled>match[yes]then[rr-dash-fit-btn rr-dash-fit-on]] ~[[rr-dash-fit-btn]] }}} tooltip="Scale the whole board down so everything fits on screen at once — useful on a small display. Turn off to view at full size" aria-label="Toggle fit to screen">
+<$action-setfield $tiddler=<<fitStateTid>> text={{{ [<fitEnabled>match[yes]then[no]] ~[[yes]] }}}/>
+<%if [<fitEnabled>match[yes]] %>Fit to screen: on<%else%>Fit to screen: off<%endif%>
+</$button>
+<$button class={{{ [{$:/state/rimir/dashboard/fullscreen}match[yes]then[rr-dash-fit-btn rr-dash-fit-on]] ~[[rr-dash-fit-btn]] }}} tooltip="Show this dashboard fullscreen, using the whole screen (press again or Esc to exit). Combine with //Fit to screen// to see the entire board at once" aria-label="Toggle fullscreen">
+<$action-rr-dash-fullscreen/>
+<%if [{$:/state/rimir/dashboard/fullscreen}match[yes]] %>⛶ Exit fullscreen<%else%>⛶ Fullscreen<%endif%>
+</$button>
 </div>
 <<dash-rules-editor>>
+<$dashboard-fit enabled=<<fitEnabled>> content-width=<<fitContentW>> content-height=<<fitContentH>>>
 <$transclude $variable="dash-canvas" containerId="" $mode="block"/>
+</$dashboard-fit>
 <<dash-popup>>
 <<dash-icon-editor>>
 </div>

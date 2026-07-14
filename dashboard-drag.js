@@ -102,6 +102,20 @@ DashboardDragWidget.prototype.num = function(value,fallback) {
 	return isNaN(n) ? fallback : n;
 };
 
+/*
+Effective visual scale of a canvas element: its on-screen width (affected by any
+ancestor CSS transform — e.g. the fit-to-screen zoom) over its layout width
+(unaffected by transforms). 1 when the board is at natural size. Used to convert
+screen-pixel pointer deltas back into the canvas' own coordinate space so drag /
+resize / reparent stay accurate while the board is scaled to fit.
+*/
+DashboardDragWidget.prototype.canvasScale = function(canvas) {
+	if(!canvas || !canvas.getBoundingClientRect) { return 1; }
+	var w = canvas.getBoundingClientRect().width,
+		lw = canvas.offsetWidth;
+	return (w > 0 && lw > 0) ? (w / lw) : 1;
+};
+
 DashboardDragWidget.prototype.applyGeometry = function() {
 	var s = this.domNode.style;
 	s.position = "absolute";
@@ -112,7 +126,20 @@ DashboardDragWidget.prototype.applyGeometry = function() {
 };
 
 DashboardDragWidget.prototype.applyZ = function() {
-	this.domNode.style.zIndex = (this.geoZ === "" || this.geoZ === null || this.geoZ === undefined) ? "" : this.geoZ;
+	// Drive stacking through a CSS custom property (read by .rr-dash-box as
+	// `z-index: var(--rr-dash-z)` in the stylesheet) rather than an inline
+	// z-index, so hover / drag CSS rules can lift a tile — and, via :has(), its
+	// ancestor groups — above their siblings WITHOUT !important (an inline
+	// z-index would always win over a stylesheet rule). The inline z-index is
+	// cleared here; it is set directly (to 9999) only for the duration of an
+	// active drag, where winning over the CSS var is exactly what we want.
+	var z = (this.geoZ === "" || this.geoZ === null || this.geoZ === undefined) ? "" : this.geoZ;
+	this.domNode.style.zIndex = "";
+	if(z === "") {
+		this.domNode.style.removeProperty("--rr-dash-z");
+	} else {
+		this.domNode.style.setProperty("--rr-dash-z",z);
+	}
 };
 
 DashboardDragWidget.prototype.handlePointerDown = function(event) {
@@ -137,6 +164,9 @@ DashboardDragWidget.prototype.handlePointerDown = function(event) {
 	event.stopPropagation();
 	this.dragMode = mode;
 	this.moved = false;
+	// Convert screen-pixel deltas to canvas coordinates when the board is scaled
+	// to fit (the containing canvas reports its cumulative on-screen scale).
+	this.dragScale = this.canvasScale(this.domNode.closest && this.domNode.closest(".rr-dash-canvas"));
 	this.startX = event.clientX;
 	this.startY = event.clientY;
 	this.startGeoX = this.geoX;
@@ -170,11 +200,14 @@ DashboardDragWidget.prototype.handlePointerMove = function(event) {
 	if(!this.dragMode) {
 		return;
 	}
-	var dx = event.clientX - this.startX,
-		dy = event.clientY - this.startY;
+	var scale = this.dragScale || 1,
+		dx = (event.clientX - this.startX) / scale,
+		dy = (event.clientY - this.startY) / scale;
 	if(this.dragMode === "grab") {
 		if(!this.moved) {
-			if(Math.abs(dx) < DRAG_THRESHOLD && Math.abs(dy) < DRAG_THRESHOLD) {
+			// Click tolerance is in screen pixels, so test the raw (un-scaled) motion.
+			if(Math.abs(event.clientX - this.startX) < DRAG_THRESHOLD &&
+					Math.abs(event.clientY - this.startY) < DRAG_THRESHOLD) {
 				return; // still within click tolerance
 			}
 			this.moved = true;
@@ -307,13 +340,14 @@ DashboardDragWidget.prototype.hitTestCanvas = function(event) {
 	if(!canvas) {
 		return null;
 	}
-	var canvasRect = canvas.getBoundingClientRect();
+	var canvasRect = canvas.getBoundingClientRect(),
+		scale = this.canvasScale(canvas); // fit-to-screen zoom → convert back to canvas coords
 	return {
 		canvas: canvas,
 		parent: canvas.getAttribute("data-dash-parent") || "",
 		dashId: canvas.getAttribute("data-dash-id") || "",
-		x: Math.max(0,Math.round(tileRect.left - canvasRect.left + canvas.scrollLeft)),
-		y: Math.max(0,Math.round(tileRect.top - canvasRect.top + canvas.scrollTop))
+		x: Math.max(0,Math.round((tileRect.left - canvasRect.left) / scale + canvas.scrollLeft)),
+		y: Math.max(0,Math.round((tileRect.top - canvasRect.top) / scale + canvas.scrollTop))
 	};
 };
 
