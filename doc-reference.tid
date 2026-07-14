@@ -87,7 +87,7 @@ Wraps the root canvas and, when `enabled="yes"`, scales it (a CSS transform) so 
 |`enabled` |`yes` to scale the board to fit; anything else leaves it at natural size |
 |`content-width` / `content-height` |The board's content extent in pixels (`max(x+w)` / `max(y+h)` over the root-level tiles), computed by the caller in wikitext |
 
-It re-fits on container resize, window resize, `fullscreenchange`, and whenever the tiles change (extent recomputed), all debounced to an animation frame and guarded so a no-op fit writes nothing. It publishes the effective scale on the canvas as `data-dash-scale`, and keeps `$:/state/rimir/dashboard/fullscreen` in sync with the browser fullscreen state.
+It re-fits on container resize, window resize, `fullscreenchange`, and whenever the tiles change (extent recomputed), all debounced to an animation frame and guarded so a no-op fit writes nothing. It publishes the effective scale on the canvas as `data-dash-scale`, and keeps `$:/state/rimir/dashboard/fullscreen` in sync with the browser fullscreen state. While it is actively scaling the board it adds the class `rr-dash-fitted` to its wrapper, so the fullscreen fill-height CSS stands aside (in fullscreen with fit //off// the canvas instead flex-grows to fill the height and scrolls internally).
 
 !! `<$action-rr-dash-fullscreen>` widget
 

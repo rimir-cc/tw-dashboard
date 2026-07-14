@@ -14,7 +14,7 @@ No — tiles use absolute pixel coordinates, so a free-form dashboard does not /
 
 !! What does the Fullscreen button do?
 
-It shows //just the dashboard// fullscreen via the browser's Fullscreen API — the whole screen, without the surrounding wiki chrome (sidebar, tabs, browser toolbar). Press it again, or Esc, to exit; the button label and state update either way. It is most useful together with ''Fit to screen'': fullscreen maximises the available area, and fit then scales the board to fill it, so you see everything at once. (Fullscreen requires the click as a user gesture — it can't be triggered programmatically.)
+It shows //just the dashboard// fullscreen via the browser's Fullscreen API — the whole screen, without the surrounding wiki chrome (sidebar, tabs, browser toolbar). Press it again, or Esc, to exit; the button label and state update either way. In fullscreen the canvas fills the full height beneath the toolbars and scrolls inside itself, so the board uses the whole screen rather than leaving empty space below. It is most useful together with ''Fit to screen'': fullscreen maximises the available area, and fit then scales the board to fill it, so you see everything at once. (Fullscreen requires the click as a user gesture — it can't be triggered programmatically.)
 
 !! A tile shows nothing / only raw text — why?
 

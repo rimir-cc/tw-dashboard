@@ -9,21 +9,35 @@ tags: $:/tags/Stylesheet
 }
 
 /* Fullscreen (via the Fullscreen button): the dashboard root fills the physical
-   screen. Give it the page background and some padding — a fullscreen element
-   otherwise gets a black backdrop and sits flush to the edges. Separate rules per
-   vendor pseudo so an unknown one doesn't invalidate the whole selector list. */
-.rr-dash-root:fullscreen {
+   screen. Give it the page background and padding (a fullscreen element otherwise
+   gets a black backdrop flush to the edges) and let the canvas — not the root — be
+   the scroller, so the board uses the full height instead of leaving empty space
+   below while the whole root overflows. `:is()` tolerates the unprefixed and
+   -webkit- fullscreen pseudos together (forgiving selector list). */
+.rr-dash-root:is(:fullscreen, :-webkit-full-screen) {
 	background-color: <<colour page-background>>;
-	overflow: auto;
+	overflow: hidden;
 	padding: 8px;
 	box-sizing: border-box;
 }
 
-.rr-dash-root:-webkit-full-screen {
-	background-color: <<colour page-background>>;
-	overflow: auto;
-	padding: 8px;
-	box-sizing: border-box;
+/* The canvas wrapper grows to fill the height under the toolbars, and the canvas
+   scrolls inside it (instead of the fixed min-height that overflows the screen).
+   Skipped while Fit-to-screen is active — then the fit widget sizes the canvas. */
+.rr-dash-root:is(:fullscreen, :-webkit-full-screen) .rr-dash-fit:not(.rr-dash-fitted) {
+	flex: 1 1 auto;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+.rr-dash-root:is(:fullscreen, :-webkit-full-screen) .rr-dash-fit:not(.rr-dash-fitted) > p {
+	display: contents;
+}
+
+.rr-dash-root:is(:fullscreen, :-webkit-full-screen) .rr-dash-fit:not(.rr-dash-fitted) .rr-dash-canvas {
+	flex: 1 1 auto;
+	min-height: 0;
 }
 
 /* Core's ViewTemplate body transcludes in inline mode, wrapping our root in a

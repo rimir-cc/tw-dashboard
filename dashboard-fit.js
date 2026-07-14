@@ -134,6 +134,9 @@ DashboardFitWidget.prototype.applyFit = function() {
 	// flush in the page while spanning exactly the available width.
 	this.domNode.style.overflow = "hidden";
 	this.domNode.style.height = Math.ceil(contentH * f) + "px";
+	// Mark the wrapper so the fullscreen fill-height CSS stands aside — we are
+	// sizing the canvas ourselves.
+	$tw.utils.addClass(this.domNode,"rr-dash-fitted");
 };
 
 DashboardFitWidget.prototype.clearFit = function(canvas) {
@@ -145,6 +148,7 @@ DashboardFitWidget.prototype.clearFit = function(canvas) {
 	canvas.removeAttribute("data-dash-scale");
 	this.domNode.style.overflow = "";
 	this.domNode.style.height = "";
+	$tw.utils.removeClass(this.domNode,"rr-dash-fitted");
 };
 
 DashboardFitWidget.prototype.refresh = function(changedTiddlers) {
