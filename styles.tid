@@ -278,6 +278,54 @@ tags: $:/tags/Stylesheet
 	cursor: help;
 }
 
+/* Group context chip: a small drop target in a group header linking the group to
+   a tiddler as its "implicit context". Empty = a faint link glyph inviting a
+   drop; linked = the context's kind icon (or a link glyph), clickable to open the
+   tiddler. It is rr-dash-no-drag, so it never starts a group move. */
+/* The whole expanded group header is the context drop target: a real flex box
+   filling the title area, so it is easy to hit and highlights clearly on
+   drag-over (an inline chip was too small/faint to use). The visible chip inside
+   (kind icon / faint link glyph) is just the state indicator + open-in-river
+   button. */
+.rr-dash-ctx-drop {
+	flex: 1 1 auto;
+	min-width: 0;
+	display: flex;
+	align-items: center;
+	border-radius: 4px;
+}
+
+.rr-dash-ctx-drop.tc-dragover {
+	outline: 2px dashed rgba(80,140,220,0.85);
+	outline-offset: -2px;
+	background-color: rgba(80,140,220,0.16);
+}
+
+.rr-dash-ctx-link.rr-dash-ctl {
+	opacity: .85;
+	padding: 0 2px;
+}
+
+.rr-dash-ctx-link.rr-dash-ctl:hover {
+	opacity: 1;
+}
+
+.rr-dash-ctx-link .rr-dash-kind-icon {
+	margin-right: 0;
+	cursor: pointer;
+}
+
+.rr-dash-ctx-empty {
+	opacity: 0;
+	padding: 0 2px;
+	line-height: 1;
+	cursor: copy;
+}
+
+.rr-dash-box:hover .rr-dash-ctx-empty {
+	opacity: .4;
+}
+
 .rr-dash-controls {
 	display: flex;
 	gap: 1px;
@@ -380,6 +428,21 @@ tags: $:/tags/Stylesheet
 .rr-dash-group .rr-dash-canvas:has(.rr-dash-menu:hover),
 .rr-dash-group .rr-dash-canvas:has(.rr-dash-menu:focus-within) {
 	overflow: visible;
+}
+
+/* A group's OWN header menus (⋮ actions, ✎ entity) drop down INTO the group body,
+   where the child tiles live. Lifting the whole group box (rule above) raises it
+   over sibling tiles, but WITHIN the box the dropdown (z-index 3) competes with the
+   child tiles' own z-index (var(--rr-dash-z), often higher) — so a child paints
+   over the dropdown, leaving it partly unusable. Make the header a stacking context
+   above the body while its menu is open, so the dropdown paints over every child
+   regardless of their z. Scoped to the group's direct header, so child-tile menus
+   inside the body are unaffected. */
+.rr-dash-group > .rr-dash-handle:has(.rr-dash-menu:hover),
+.rr-dash-group > .rr-dash-handle:has(.rr-dash-menu:focus-within) {
+	/* The handle is a flex item, so z-index applies without position:relative —
+	   which avoids re-anchoring the absolutely-positioned .rr-dash-controls. */
+	z-index: 10000;
 }
 
 .rr-dash-menu-items .rr-dash-ctl {

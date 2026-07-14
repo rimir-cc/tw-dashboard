@@ -128,6 +128,22 @@ h: 140
 
 Give a child the title of a //group// (via `dash-parent`) and that group renders inside its parent — nesting is recursive. In practice you rarely edit these by hand: type a name in the add box and press ''Add group'' (the text becomes the group's `caption`), drop tiddlers into it, and use the group's ＋ control to add a nested group. You can rename a group inline from its header at any time.
 
+!! Link a group to a tiddler (its context)
+
+A group can carry a `dash-context` field naming the tiddler it represents. Set it from the group ⋮ menu → //Context…// (type a title, or //Unlink// to clear) or by dropping a tiddler onto the group's header:
+
+```
+title: $:/config/rimir/dashboard/my-board/tiles/group
+tags: $:/tags/rimir/dashboard/tile
+dashboard: my-board
+role: group
+caption: Project Apollo
+dash-context: Project Apollo
+collapsed: no
+```
+
+On linking, the group adopts the context tiddler's caption (here //Project Apollo//) — you may rename the group afterwards without affecting the tiddler. The header shows a context chip: the tiddler's `kind.icon` when it is a [[rimir/kind|$:/plugins/rimir/kind]] instance (otherwise a link glyph), clickable to open the tiddler. If the context is a kind instance, the group also shows the ✎ //entity// control — //Add child// there creates instances with `parent` set to //Project Apollo// and drops their tiles straight into this group.
+
 !! Batch-add by filter
 
 The filter box above the canvas adds a tile for every tiddler a filter selects. For example, to tile every open task:

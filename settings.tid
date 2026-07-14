@@ -20,7 +20,7 @@ Geometry is written by a small `<$dashboard-drag>` widget on pointer release via
 
 !! Tile actions menu
 
-Each tile's controls appear in the corner on hover. When the target has an external link, an ↗ open-external button sits beside the ⋮ //actions// menu, which opens on hover or keyboard focus with ⧉ show-in-popup, ⊟ toggle window/bare, × remove. Group tiles' ⋮ menu instead offers ＋ add-nested-group, × remove, and an //Icon…// action that opens an icon editor (common-icon quick-picks, a custom input and a live preview) to set or clear the group's icon.
+Each tile's controls appear in the corner on hover. When the target has an external link, an ↗ open-external button sits beside the ⋮ //actions// menu, which opens on hover or keyboard focus with ⧉ show-in-popup, ⊟ toggle window/bare, × remove. Group tiles' ⋮ menu instead offers ＋ add-nested-group, × remove, an //Icon…// action that opens an icon editor (common-icon quick-picks, a custom input and a live preview) to set or clear the group's icon, and a //Context…// action that opens an editor to link the group to a tiddler as its implicit context (adopting its caption, showing its kind icon, and enabling the ✎ entity actions).
 
 !! What a tile shows
 
