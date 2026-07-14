@@ -367,6 +367,15 @@ tags: $:/tags/Stylesheet
 	z-index: 9999;
 }
 
+/* Also un-clip the group bodies that contain the open menu, so a popup on a tile
+   inside a group isn't cut off at the group's edge (the tile box and its ancestor
+   group boxes are already un-clipped + lifted above). The root canvas still
+   bounds it, exactly like the graph popup. */
+.rr-dash-group > .rr-dash-body:has(.rr-dash-menu:hover),
+.rr-dash-group > .rr-dash-body:has(.rr-dash-menu:focus-within) {
+	overflow: visible;
+}
+
 .rr-dash-menu-items .rr-dash-ctl {
 	display: flex;
 	align-items: center;
@@ -413,6 +422,16 @@ tags: $:/tags/Stylesheet
 	margin-top: 3px;
 	font-size: .82em;
 	padding: 2px 4px;
+}
+
+/* Entity-actions popup — the second (pencil) trigger on a kind-instance tile,
+   left of the ⋮ menu. A compact floating popup like the graph tooltip, reusing
+   the kind plugin's kg-tip-* button styling; wider than the ⋮ menu so the
+   add-child buttons sit in a row rather than a tall stack. */
+.rr-dash-emenu-items {
+	min-width: 220px;
+	max-width: 300px;
+	padding: 6px 8px;
 }
 
 .rr-dash-body {

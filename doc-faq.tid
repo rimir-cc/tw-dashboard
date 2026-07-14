@@ -90,6 +90,10 @@ You can point a tile at another dashboard tiddler; it will render that dashboard
 
 Yes — automatically. If a window tile's target is a [[rimir/kind|$:/plugins/rimir/kind]] instance, the type's icon appears before the caption with the type name as hover text. It requires nothing beyond having kind installed and a `kind.icon` on the type; without kind, the icon is simply omitted. (Bare tiles have no title bar, so no icon is shown there.)
 
+!! Can I edit a kind entity, or add children to it, from the dashboard?
+
+Yes, when [[rimir/kind|$:/plugins/rimir/kind]] is installed and the tile's `target` is a kind instance. Hover the ✎ //entity// control next to the tile's ⋮ menu — it opens a compact popup: ''edit'' opens the same live editor modal you get from //Kind: Instances Overview// (change fields, applied immediately), and ''Add child'' shows a button for each kind whose `parent` reference accepts this entity's type — clicking one opens the create modal with `parent` already pointing at this entity, using the same validation and title formula as the Creator. The ✎ control is absent on non-entity tiles and when kind isn't installed. (Entity //deletion// is intentionally left to the graph view; the tile's × removes the tile, not the underlying tiddler.)
+
 !! Nothing happens when I drag — the tile just gets selected/dragged as text.
 
 That is a sign the drag region isn't arming (for example an element accidentally marked `.rr-dash-no-drag`). Move starts only on the handle (window) or the box (bare); resize only on the corner grip.

@@ -98,6 +98,7 @@ DashboardFitWidget.prototype.scheduleFit = function() {
 };
 
 DashboardFitWidget.prototype.applyFit = function() {
+	if(!this.domNode.querySelector) { return; } // fake document (CLI render) — no DOM
 	var canvas = this.domNode.querySelector(".rr-dash-canvas");
 	if(!canvas) { return; }
 	var enabled = (this.getAttribute("enabled","no") === "yes"),

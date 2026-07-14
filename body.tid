@@ -3,6 +3,18 @@ title: $:/plugins/rimir/dashboard/body
 \whitespace trim
 
 \procedure dash-controls()
+<$list filter="[<hasKind>match[yes]]" variable="ignore">
+<$let ea-entity={{!!target}}>
+<$list filter="[<ea-entity>has[kind.type]]" variable="ignore">
+<span class="rr-dash-menu rr-dash-emenu rr-dash-no-drag">
+<button type="button" class="rr-dash-ctl rr-dash-menu-trigger" title="Entity actions — edit fields / add a child" aria-label="Entity actions">&#9998;</button>
+<span class="rr-dash-menu-items rr-dash-emenu-items">
+<$transclude $tiddler="$:/plugins/rimir/kind/entity-actions" $mode="block"/>
+</span>
+</span>
+</$list>
+</$let>
+</$list>
 <span class="rr-dash-menu rr-dash-no-drag">
 <button type="button" class="rr-dash-ctl rr-dash-menu-trigger" title="Tile actions" aria-label="Tile actions">⋮</button>
 <span class="rr-dash-menu-items">
@@ -418,6 +430,7 @@ Done
 <$let
 	dashId={{{ [<currentTiddler>get[dashboard-id]] ~[<currentTiddler>] }}}
 	hasFileUpload={{{ [[$:/plugins/rimir/file-upload]!is[missing]then[yes]] }}}
+	hasKind={{{ [[$:/plugins/rimir/kind]!is[missing]then[yes]] }}}
 	fitStateTid={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/fit]] }}}
 	fitEnabled={{{ [<fitStateTid>get[text]match[yes]then[yes]] ~[[no]] }}}
 	fitContentW={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>!has[dash-parent]] :map[get[x]add{!!w}] +[nsort[]last[]add[24]] ~[[0]] }}}

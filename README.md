@@ -23,6 +23,7 @@ A TiddlyWiki 5 plugin (`$:/plugins/rimir/dashboard`) that turns any tiddler into
 - **Ctrl-drag to duplicate** — hold Ctrl (or Cmd) as you start dragging a tile to drop a *copy* of it elsewhere (even into another group), leaving the original in place. The same tiddler can appear on as many tiles as you like.
 - **Show contents in a popup** — the ⧉ control opens the target in a centered popup rendered through TiddlyWiki's default ViewTemplate (title, tags, fields and body), without leaving the dashboard. Close it with the × button or by clicking the backdrop.
 - **Kind-aware** — when a tile's target is a [`rimir/kind`](https://github.com/rimir-cc/tw-kind) instance, the window tile shows the type's icon (with the type name as hover text) before the caption. Degrades silently when kind isn't installed.
+- **Edit & extend kind entities** — for a tile whose target is a [`rimir/kind`](https://github.com/rimir-cc/tw-kind) instance, a ✎ *entity* control appears next to the ⋮ menu; hovering it opens a compact popup (the same actions as *Kind: Instances Overview*): **edit** opens the live editor modal, and **Add child** offers a button per kind whose `parent` accepts this entity's type — creating the child with `parent` pre-set (same validation/title-formula as the Creator). Only shown when kind is installed and the target is an instance.
 
 ## Quick start
 

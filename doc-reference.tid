@@ -131,6 +131,15 @@ When [[rimir/kind|$:/plugins/rimir/kind]] is installed and a window tile's `targ
 
 so there is no hard dependency on the kind plugin's own functions — the icon simply does not appear when kind (or the type's icon) is absent. Bare tiles have no title bar and therefore show no icon.
 
+!!! Entity actions (edit / add child)
+
+When kind is installed and a tile's `target` is an instance, a second ✎ //entity// trigger appears next to the ⋮ menu (its own `.rr-dash-emenu` hover popup, kept separate so neither menu grows tall). The popup transcludes the kind plugin's reusable `$:/plugins/rimir/kind/entity-actions` tiddler (with `ea-entity` set to the target via an ancestor `<$let>`) and renders the same actions as the //Kind: Instances Overview// graph tooltip:
+
+* ''edit'' — opens the shared kind graph-modal (`$:/plugins/rimir/kind/graph-modal`, tagged `$:/tags/AboveStory`) as a live field editor for the entity.
+* ''Add child'' — one button per kind whose `parent` reference accepts the entity's type (`kg.child-kinds`); clicking seeds a draft with `parent` pre-set + the child kind's defaults and opens the modal in create mode (reusing the standard editor + `kind.finalize-create`).
+
+Both consumers drive the modal through the shared `kind.gm-edit` / `kind.gm-add-child` procedures in the kind engine, so the dashboard and the graph behave identically. The section is gated on `[[$:/plugins/rimir/kind]!is[missing]]` and `[<target>has[kind.type]]`, so it is silently absent without kind or on non-entity tiles. `entity-actions` is self-contained (it `\import`s the kind engine + graph), so the dashboard body needs no kind imports of its own.
+
 !! Configuration tiddlers
 
 |!Tiddler |!Purpose |
