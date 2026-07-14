@@ -66,7 +66,7 @@ Use the ⊟ action in the tile's ⋮ menu (the corner cluster revealed on hover)
 
 !! How do I open a tile's link in a new browser tab?
 
-If the tile's target tiddler has a `url` or `_canonical_uri` field, the tile shows an ↗ action in its ⋮ menu, and ''Ctrl/Cmd-clicking'' the tile does the same — it opens that address in a new browser tab. A plain click still opens the target //inside the wiki//. This is how an uploaded image or file tile (which carries `_canonical_uri`) opens its raw file. The fields consulted and their priority are set in `$:/config/rimir/dashboard/external-open-fields` (default `url _canonical_uri`, first non-empty wins); edit it to add your own field or change the order. Absolute URLs open as-is; a bare host gets `https://` prepended.
+If the tile's target tiddler has a `url` or `_canonical_uri` field, the tile shows an ↗ button beside its ⋮ menu, and ''Ctrl/Cmd-clicking'' the tile does the same — it opens that address in a new browser tab. A plain click still opens the target //inside the wiki//. This is how an uploaded image or file tile (which carries `_canonical_uri`) opens its raw file. The fields consulted and their priority are set in `$:/config/rimir/dashboard/external-open-fields` (default `url _canonical_uri`, first non-empty wins); edit it to add your own field or change the order. Absolute URLs open as-is; a bare host gets `https://` prepended.
 
 !! Can a tile show a tiddler's icon (or some other field) instead of its body?
 
