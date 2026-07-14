@@ -367,12 +367,18 @@ tags: $:/tags/Stylesheet
 	z-index: 9999;
 }
 
-/* Also un-clip the group bodies that contain the open menu, so a popup on a tile
-   inside a group isn't cut off at the group's edge (the tile box and its ancestor
-   group boxes are already un-clipped + lifted above). The root canvas still
-   bounds it, exactly like the graph popup. */
+/* Also un-clip everything between the tile and the root while a menu is open, so
+   a popup on a tile inside a group isn't cut off at the group's edge: the group
+   body (overflow:hidden) AND the nested group canvas (overflow:auto) that holds
+   the tile. Both are scoped to `.rr-dash-group …` so the ROOT canvas keeps its
+   own overflow (it just bounds the popup, like the graph popup, and never spills
+   the whole board). The tile box + ancestor group boxes are already un-clipped +
+   lifted above by the rule above; nesting resolves because :has matches every
+   ancestor group body / canvas that contains the hovered menu. */
 .rr-dash-group > .rr-dash-body:has(.rr-dash-menu:hover),
-.rr-dash-group > .rr-dash-body:has(.rr-dash-menu:focus-within) {
+.rr-dash-group > .rr-dash-body:has(.rr-dash-menu:focus-within),
+.rr-dash-group .rr-dash-canvas:has(.rr-dash-menu:hover),
+.rr-dash-group .rr-dash-canvas:has(.rr-dash-menu:focus-within) {
 	overflow: visible;
 }
 

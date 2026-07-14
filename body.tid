@@ -4,7 +4,10 @@ title: $:/plugins/rimir/dashboard/body
 
 \procedure dash-controls()
 <$list filter="[<hasKind>match[yes]]" variable="ignore">
-<$let ea-entity={{!!target}}>
+<$let ea-entity={{!!target}}
+	ea-after-create="dashboard.kind-add-child-hook"
+	ea-ctx-a=<<dashId>>
+	ea-ctx-b={{!!dash-parent}}>
 <$list filter="[<ea-entity>has[kind.type]]" variable="ignore">
 <span class="rr-dash-menu rr-dash-emenu rr-dash-no-drag">
 <button type="button" class="rr-dash-ctl rr-dash-menu-trigger" title="Entity actions — edit fields / add a child" aria-label="Entity actions">&#9998;</button>

@@ -1,0 +1,26 @@
+title: $:/plugins/rimir/dashboard/kind-add-child-hook
+tags: $:/tags/Macro
+
+\whitespace trim
+
+\procedure dashboard.kind-add-child-hook()
+<!-- Post-create hook invoked by kind.finalize-create INSIDE its
+     $action-createtiddler (as a $variable transclude — a $tiddler one would crash
+     during the createtiddler's argument-less refreshChildren), so
+     <<createTiddler-title>> is the fresh, post-uniquification title of the
+     just-created instance. Drops a dashboard tile for it into the same group the
+     source tile was in.
+
+     A GLOBAL procedure (tagged $:/tags/Macro) so it is in scope in the kind
+     graph-modal ($:/tags/AboveStory, which inherits the page macros). Context is
+     read from the shared graph-modal state, seeded by the dashboard's
+     entity-actions transclusion (see body.tid):
+       ctx-a = the dashboard id
+       ctx-b = the source tile's dash-parent (its group; empty = root canvas)
+     Inert unless a dashboard id is present. -->
+<$let dashId={{$:/state/rimir/kind/graph-modal!!ctx-a}} dashPar={{$:/state/rimir/kind/graph-modal!!ctx-b}}>
+<$list filter="[<dashId>!is[blank]]" variable="ignore">
+<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" dashboard=<<dashId>> dash-parent=<<dashPar>> target=<<createTiddler-title>> x="24" y="24" w="320" h="220" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>
+</$list>
+</$let>
+\end

@@ -36,7 +36,7 @@ Tag a tiddler with <<tag "$:/tags/rimir/dashboard">> and a view-template body ca
 * ''Ctrl-drag to duplicate'' — hold Ctrl/Cmd while starting a drag to drop a copy of the tile elsewhere (the same tiddler may appear on any number of tiles).
 * ''Show contents in a popup'' — the ⧉ control opens the target in a centered popup rendered through the default ViewTemplate (title, tags, fields and body), without leaving the dashboard.
 * ''Kind-aware'' — when a tile's target is a [[rimir/kind|$:/plugins/rimir/kind]] instance, the window tile shows the type's icon (with the type name as hover text) before the caption. Silently absent when kind is not installed.
-* ''Edit & extend kind entities'' — a kind-instance tile shows a ✎ //entity// control next to its ⋮ menu; hovering it opens a compact popup with //edit// (the same live editor modal as //Kind: Instances Overview//) and //Add child// buttons for every kind whose `parent` accepts this entity's type. Reuses the kind graph-modal; shown only when kind is installed.
+* ''Edit & extend kind entities'' — a kind-instance tile shows a ✎ //entity// control next to its ⋮ menu; hovering it opens a compact popup with //edit// (the same live editor modal as //Kind: Instances Overview//) and //Add child// buttons for every kind whose `parent` accepts this entity's type — the new child is also dropped as a tile into the same group as the source tile. Reuses the kind graph-modal; shown only when kind is installed.
 * ''Plain-field storage'' — every tile is its own system tiddler with ordinary editable fields (`x`, `y`, `w`, `h`, `z`, `target`, `style`). No JSON blobs.
 
 !! Quick start
