@@ -78,6 +78,8 @@ Use the ⊟ action in the tile's ⋮ menu (the corner cluster revealed on hover)
 
 If the tile's target tiddler has a `url` or `_canonical_uri` field, its ''caption is rendered as a real link'' — hover it to see the address in the browser status bar, click it to open in a new tab. The tile also shows an ↗ button beside its ⋮ menu, and ''Ctrl/Cmd-clicking'' the tile does the same. A plain click elsewhere on the tile still opens the target //inside the wiki//. This is how an uploaded image or file tile (which carries `_canonical_uri`) opens its raw file. The fields consulted and their priority are set in `$:/config/rimir/dashboard/external-open-fields` (default `url _canonical_uri`, first non-empty wins); edit it to add your own field or change the order. Absolute URLs open as-is; a bare host gets `https://` prepended.
 
+For a tile whose target has //no// such external link, the ⋮ menu instead offers an ↗ item that opens the target tiddler itself in a new browser tab, via its permalink (`#`-fragment) — handy for viewing a tiddler side-by-side without leaving the dashboard.
+
 !! Can a tile show a tiddler's icon (or some other field) instead of its body?
 
 Yes. By default a tile shows the target's body, but if the target has no (or empty) `text` and an `icon`, the tile shows the icon automatically. To choose explicitly, open the tile's ⋮ menu and pick under //Show//: ''auto'' (the default), ''body'', ''icon'', or type any field name. That sets the tile's `display` field.

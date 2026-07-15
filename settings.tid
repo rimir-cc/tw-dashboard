@@ -52,6 +52,8 @@ Two toolbar controls help on small screens:
 
 If a tile's `target` tiddler has one of the //external-open fields// below, the tile's ''caption is rendered as a link'' — hover it to see the address in the browser status bar, click it to open in a new tab. The tile also shows an ↗ action, and ''Ctrl/Cmd-clicking'' the tile opens that value in a new browser tab (like Ctrl-clicking a link). Plain click elsewhere on the tile still opens the target in the wiki.
 
+A tile whose target has //no// external-open field instead gets an ↗ item //inside// its ⋮ menu that opens the target tiddler itself in a new browser tab, via its permalink.
+
 The fields are tried in order; the first non-empty one wins. Edit the space-separated list to add your own (e.g. `href`, `link`) or change the priority:
 
 <$edit-text tiddler="$:/config/rimir/dashboard/external-open-fields" tag="input" default="url _canonical_uri" class="tc-edit-texteditor" placeholder="url _canonical_uri"/>

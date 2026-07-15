@@ -35,6 +35,9 @@ title: $:/plugins/rimir/dashboard/body
 <span class="rr-dash-menu rr-dash-no-drag">
 <button type="button" class="rr-dash-ctl rr-dash-menu-trigger" title="Tile actions" aria-label="Tile actions">⋮</button>
 <span class="rr-dash-menu-items">
+<$list filter="[<tileExtUrl>] ~[[]] +[is[blank]]" variable="ignore">
+<a class="rr-dash-ctl" href={{{ [<tileTargetTitle>encodeuricomponent[]addprefix[#]] }}} target="_blank" rel="noopener noreferrer" title="Open this tiddler in a new browser tab (its permalink)" aria-label="Open in a new browser tab">↗</a>
+</$list>
 <$button class="rr-dash-ctl" tooltip="Show the tiddler's contents in a popup" aria-label="Show contents">
 <$action-setfield $tiddler="$:/state/rimir/dashboard/popup" text={{!!target}}/>
 ⧉
