@@ -156,7 +156,7 @@ The tile-drop is wired through kind's generic post-create hook. When the dashboa
 |`$:/state/rimir/dashboard/clean-filter` |Transient input backing the //Clean// filter box; empty removes all tiles, otherwise removes tiles whose target the filter selects |
 |`$:/state/rimir/dashboard/clean-confirm` |`yes` while the //Clean// confirmation is showing |
 |`$:/state/rimir/dashboard/popup` |Transient title of the tiddler shown in the //show contents// popup; empty when the popup is closed |
-|`$:/config/rimir/dashboard/external-open-fields` |Space-separated list of the target's fields consulted, in order, for a tile's external link (↗ action and Ctrl/Cmd-click). The first non-empty one wins. Defaults to `url _canonical_uri` |
+|`$:/config/rimir/dashboard/external-open-fields` |Space-separated list of the target's fields consulted, in order, for a tile's external link (the linked caption, the ↗ action and Ctrl/Cmd-click). The first non-empty one wins. Defaults to `url _canonical_uri` |
 |`$:/config/rimir/dashboard/group-icon-max-width` |Default width (px) of a //collapsed// tile's/group's icon box; overridden per tile by `icon-w`. Default 64 |
 |`$:/config/rimir/dashboard/group-icon-max-height` |Default height (px) of a //collapsed// tile's/group's icon box; overridden per tile by `icon-h`. Default 64 |
 |`$:/config/rimir/dashboard/<dashId>/display-rules/…` |Per-dashboard display-rule tiddlers (see //Display rules// above) |

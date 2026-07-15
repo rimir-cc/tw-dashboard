@@ -273,6 +273,17 @@ tags: $:/tags/Stylesheet
 	font-weight: 600;
 }
 
+/* Caption rendered as a real link for tiles whose target carries an external URL
+   (url / _canonical_uri) — clickable and shows the URL in the browser status bar. */
+.rr-dash-title-link {
+	color: <<colour external-link-foreground>>;
+	text-decoration: none;
+}
+
+.rr-dash-title-link:hover {
+	text-decoration: underline;
+}
+
 .rr-dash-kind-icon {
 	margin-right: 4px;
 	cursor: help;

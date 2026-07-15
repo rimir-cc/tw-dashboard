@@ -50,7 +50,7 @@ Two toolbar controls help on small screens:
 
 !! Opening a link in a new browser tab
 
-If a tile's `target` tiddler has one of the //external-open fields// below, the tile shows an ↗ action and ''Ctrl/Cmd-clicking'' the tile opens that value in a new browser tab (like Ctrl-clicking a link). Plain click still opens the target in the wiki.
+If a tile's `target` tiddler has one of the //external-open fields// below, the tile's ''caption is rendered as a link'' — hover it to see the address in the browser status bar, click it to open in a new tab. The tile also shows an ↗ action, and ''Ctrl/Cmd-clicking'' the tile opens that value in a new browser tab (like Ctrl-clicking a link). Plain click elsewhere on the tile still opens the target in the wiki.
 
 The fields are tried in order; the first non-empty one wins. Edit the space-separated list to add your own (e.g. `href`, `link`) or change the priority:
 

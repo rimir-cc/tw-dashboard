@@ -169,7 +169,7 @@ Context…
 \end
 
 \procedure dash-title()
-<$let target={{!!target}}>
+<$let target={{!!target}} capText={{{ [<target>get[caption]!is[blank]] ~[<target>] ~[[(empty)]] }}}>
 <%if [<target>has[kind.type]] %>
 <$let typeKey={{{ [<target>get[kind.type]] }}}>
 <$list filter="[all[shadows+tiddlers]has[kind.fields]field:kind.type<typeKey>has[kind.icon]]" variable="typeTid">
@@ -177,7 +177,11 @@ Context…
 </$list>
 </$let>
 <%endif%>
-<$text text={{{ [<target>get[caption]!is[blank]] ~[<target>] ~[[(empty)]] }}}/>
+<%if [<tileExtUrl>!is[blank]] %>
+<a class="rr-dash-title-link rr-dash-no-drag" href=<<tileExtUrl>> target="_blank" rel="noopener noreferrer" title=<<tileExtUrl>>><$text text=<<capText>>/></a>
+<%else%>
+<$text text=<<capText>>/>
+<%endif%>
 </$let>
 \end
 
