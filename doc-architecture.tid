@@ -62,6 +62,17 @@ A group can appear in more than one place at once as a ''reference'': Ctrl/Cmd-d
 
 Because a reference points at another group, it can create a cycle — a reference of //A// dropped inside //A// (or any descendant). To keep rendering finite, `dash-canvas` / `dash-tiles` thread a `chain` parameter: the space-separated list of `groupId`s already open in the current branch's ancestry. Before recursing into its body, a group tests `isCycle` = is my `groupId` already in `chain`; if so it renders a stub (`.rr-dash-ref-cycle`, "would place the group inside itself") instead of its canvas. Ordinary (non-reference) groups can never trigger this — `dash-parent` is a strict tree, so a group's id never appears twice in one ancestry. Deleting a reference removes only that tile; deleting the //original// while references exist opens a confirmation (it reports how many references will also be removed) and then deletes the references and promotes the source's children up to its container.
 
+!! Revealing a tile (go-to-original &amp; Find)
+
+A reference's corner cluster carries a hover ↗ control (the same glyph as the open-external-link button) that jumps to the original group; the Find box in the toolbar does the same for any tile matched by caption. Both go through one primitive, `dash-reveal-actions(target)`:
+
+# `dash-expand-ancestors(target)` walks up the `dash-parent` chain and sets `collapsed=no` on each ancestor group that is collapsed (so the target will actually render), recursing to the root;
+# it writes the target's title into `$:/state/rimir/dashboard/reveal`.
+
+The `<$dashboard-drag>` widget takes a `reveal-state` attribute (that tiddler) and puts its tile title in a `data-dash-tile` attribute. On render and on a change to the reveal-state tiddler, the widget checks whether the requested title is its own; if so it defers a beat (so any just-expanded ancestors have laid out), calls `scrollIntoView` — which scrolls whatever scroll containers are available, in practice the root canvas — adds the `rr-dash-flash` class for a short red pulse, and clears the reveal-state (so the //same// tile can be revealed again — the next write is a fresh change). Scrolling and the one-shot flash are the parts that genuinely need JS; expansion, the button and the search are wikitext/CSS. Group bodies are `overflow:hidden` (not scrollers), so a tile positioned outside its parent group's box can't be scrolled to //within// the group — the common case (a top-level or in-box original) jumps correctly.
+
+The Find box computes matches with `dash.tile-cap` (a tile's effective caption — a reference resolves to its source's caption, a content tile to its target's caption/title) and a case-insensitive substring test, ordered by `z`. It reveals the match at a stored index and advances it, so repeated //Find// cycles through all matches and wraps.
+
 !! Attaching files: drop &amp; clipboard paste
 
 Every content tile's body (and, for collapsed tiles/groups, its header; and each canvas) is wrapped in a `<$file-dropzone>` from [[rimir/file-upload|$:/plugins/rimir/file-upload]]. Where the uploaded file lands is //derived from the tile's target// (or a group's `dash-context`, or — for the plain canvas — its container group's context). Four single-line filter functions do the mapping, driven entirely by the configured locations tagged `$:/tags/rimir/file-upload/location`:

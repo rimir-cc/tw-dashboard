@@ -13,6 +13,11 @@ title: $:/plugins/rimir/dashboard/body
 \function dash.fz-subfolder(loctarget) [all[tiddlers+shadows]tag[$:/tags/rimir/file-upload/location]get[text]jsonget[name]] :filter[<loctarget>split[/]first[]match<currentTiddler>] :map[<loctarget>removeprefix<currentTiddler>removeprefix[/]] +[first[]]
 \function dash.fz-title(loctarget,fname) [all[tiddlers+shadows]tag[$:/tags/rimir/file-upload/location]get[text]jsonget[name]] :filter[<loctarget>split[/]first[]match<currentTiddler>] :map[<loctarget>addsuffix[/]addsuffix<fname>] +[first[]] ~[<fname>]
 
+<!-- Effective caption of a tile, for the Find box: a group reference's source
+     caption, else the tile's own caption (source / plain groups), else a content
+     tile's target caption, else the target title, else the tile title. -->
+\function dash.tile-cap(tile) [<tile>get[dash-ref]get[caption]!is[blank]] ~[<tile>get[caption]!is[blank]] ~[<tile>get[target]get[caption]!is[blank]] ~[<tile>get[target]!is[blank]] ~[<tile>]
+
 <!-- Shared "arm paste" affordance. A plain (action-less) focusable button that
      lives INSIDE a <$file-dropzone>: clicking it takes focus (the drag widget
      ignores .rr-dash-no-drag without preventDefault, so the browser focuses it),
@@ -459,6 +464,26 @@ Cancel
 </$reveal>
 \end
 
+<!-- Recursively expand (uncollapse) every ancestor group of <<tile>>, walking up
+     the dash-parent chain, so the tile becomes visible. Only rewrites ancestors
+     that are actually collapsed. Terminates at the root (blank dash-parent). -->
+\procedure dash-expand-ancestors(tile)
+<$list filter="[<tile>get[dash-parent]!is[blank]]" variable="dashAnc">
+<$list filter="[<dashAnc>get[collapsed]match[yes]]" variable="ignore">
+<$action-setfield $tiddler=<<dashAnc>> collapsed="no"/>
+</$list>
+<$transclude $variable="dash-expand-ancestors" tile=<<dashAnc>>/>
+</$list>
+\end
+
+<!-- Reveal a tile: open its ancestor groups, then ask the drag widget (via the
+     reveal-state tiddler) to scroll it into view and flash it. Shared by the
+     reference "go to original" button and the Find box. -->
+\procedure dash-reveal-actions(target)
+<$transclude $variable="dash-expand-ancestors" tile=<<target>>/>
+<$action-setfield $tiddler="$:/state/rimir/dashboard/reveal" text=<<target>>/>
+\end
+
 \procedure dash-collapse-toggle()
 <$button class="rr-dash-ctl rr-dash-no-drag" tooltip="Collapse / expand this tile" aria-label="Collapse or expand tile">
 <$action-setfield $tiddler=<<currentTiddler>> collapsed={{{ [<collapsed>match[yes]then[no]] ~[[yes]] }}}/>
@@ -491,7 +516,7 @@ Cancel
 </span>
 </$droppable>
 <%endif%>
-<span class="rr-dash-controls"><$let emenuEntity=<<groupContext>> emenuCtxB=<<groupId>>><<dash-emenu>></$let><<dash-group-controls>></span>
+<span class="rr-dash-controls"><$let emenuEntity=<<groupContext>> emenuCtxB=<<groupId>>><<dash-emenu>></$let><$list filter="[<isRef>match[yes]]" variable="ignore"><$button class="rr-dash-ctl rr-dash-no-drag" tooltip="Go to the original group — opens its parent groups and scrolls to it" aria-label="Go to the original group"><$transclude $variable="dash-reveal-actions" target=<<groupId>>/>↗</$button></$list><<dash-group-controls>></span>
 </div>
 \end
 
@@ -521,13 +546,13 @@ Cancel
 	dvTid=<<tileTargetTitle>> dvField="icon" dvMode="inline" dvImg="no" dvVal={{{ [<tileTargetTitle>get[icon]] }}}
 	dashContentExpand="""<$list filter="[<currentTiddler>get[collapsed]match[yes]]" variable="ignore"><$action-setfield $tiddler=<<currentTiddler>> collapsed="no" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/></$list>""">
 <%if [<tileStyle>match[bare]] %>
-<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} move-selector="" class="rr-dash-box rr-dash-bare" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> copy-actions=<<dashCopyActions>> open-actions=<<dashOpenActions>> ctrl-open-url=<<tileExtUrl>>>
+<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} move-selector="" class="rr-dash-box rr-dash-bare" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> reveal-state="$:/state/rimir/dashboard/reveal" actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> copy-actions=<<dashCopyActions>> open-actions=<<dashOpenActions>> ctrl-open-url=<<tileExtUrl>>>
 <div class="rr-dash-controls rr-dash-no-drag"><<dash-controls>></div>
 <div class="rr-dash-body"><<dash-tile-body>></div>
 <div class="rr-dash-resize"></div>
 </$dashboard-drag>
 <%else%>
-<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} icon-w=<<iconW>> icon-h=<<iconH>> move-selector=".rr-dash-handle" class="rr-dash-box" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> copy-actions=<<dashCopyActions>> open-actions={{{ [<collapsed>match[yes]then<dashContentExpand>] ~[<dashOpenActions>] }}} size-actions=<<dashSizeActions>> ctrl-open-url=<<tileExtUrl>> fit-width={{{ [<cIconOnly>match[yes]then[yes]] }}} fit-height={{{ [<collapsed>match[yes]then[yes]] }}}>
+<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} icon-w=<<iconW>> icon-h=<<iconH>> move-selector=".rr-dash-handle" class="rr-dash-box" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> reveal-state="$:/state/rimir/dashboard/reveal" actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> copy-actions=<<dashCopyActions>> open-actions={{{ [<collapsed>match[yes]then<dashContentExpand>] ~[<dashOpenActions>] }}} size-actions=<<dashSizeActions>> ctrl-open-url=<<tileExtUrl>> fit-width={{{ [<cIconOnly>match[yes]then[yes]] }}} fit-height={{{ [<collapsed>match[yes]then[yes]] }}}>
 <%if [<collapsedDrop>match[yes]] %>
 <$let fzTarget=<<tileTargetTitle>> fzContainer=<<containerId>>>
 <$file-dropzone class="rr-dash-collapsed-droptarget-fz" tabindex="0" location={{{ [<fzTarget>function[dash.fz-location],<fzTarget>] ~[[files]] }}} subfolder={{{ [<fzTarget>function[dash.fz-subfolder],<fzTarget>] }}} actions=<<dashTilePasteActions>>>
@@ -566,7 +591,7 @@ Cancel
 	dvTid=<<groupId>> dvField="icon" dvMode="inline" dvImg="no" dvVal={{{ [<groupId>get[icon]] }}}
 	dashGroupExpand="""<$list filter="[<currentTiddler>get[collapsed]match[yes]]" variable="ignore"><$action-setfield $tiddler=<<currentTiddler>> collapsed="no" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/></$list>"""
 	dashGroupContextActions="""<$action-setfield $tiddler=<<groupId>> dash-context=<<actionTiddler>> caption={{{ [<actionTiddler>get[caption]!is[blank]] ~[<actionTiddler>] }}}/>""">
-<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} icon-w=<<iconW>> icon-h=<<iconH>> move-selector=".rr-dash-handle" class={{{ [<isRef>match[yes]then[rr-dash-box rr-dash-group rr-dash-ref]] ~[[rr-dash-box rr-dash-group]] }}} container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> copy-actions=<<dashRefActions>> open-actions=<<dashGroupExpand>> size-actions=<<dashSizeActions>> fit-width={{{ [<collapsed>match[yes]then[yes]] }}} fit-height={{{ [<collapsed>match[yes]then[yes]] }}}>
+<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} icon-w=<<iconW>> icon-h=<<iconH>> move-selector=".rr-dash-handle" class={{{ [<isRef>match[yes]then[rr-dash-box rr-dash-group rr-dash-ref]] ~[[rr-dash-box rr-dash-group]] }}} container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> reveal-state="$:/state/rimir/dashboard/reveal" actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> copy-actions=<<dashRefActions>> open-actions=<<dashGroupExpand>> size-actions=<<dashSizeActions>> fit-width={{{ [<collapsed>match[yes]then[yes]] }}} fit-height={{{ [<collapsed>match[yes]then[yes]] }}}>
 <%if [<collapsed>match[yes]] %>
 <$let containerId=<<groupId>> fzTarget=<<groupContext>> fzContainer=<<groupId>>>
 <$droppable tag="div" class="rr-dash-collapsed-droptarget" actions={{{ [<dashAddChildActions>addsuffix<dashGroupExpand>] }}}>
@@ -697,6 +722,27 @@ Add matching
 Clean
 </$button>
 <<dash-clean-confirm>>
+</div>
+<div class="rr-dash-toolbar rr-dash-no-drag">
+<$edit-text tiddler="$:/state/rimir/dashboard/find-query" tag="input" default="" placeholder="Find a tile by caption — opens its groups, scrolls to it and flashes it…" class="rr-dash-filter-input tc-edit-texteditor"/>
+<$let findQuery={{{ [{$:/state/rimir/dashboard/find-query}trim[]] }}} findQueryLc={{{ [{$:/state/rimir/dashboard/find-query}trim[]lowercase[]] }}}>
+<$let dashFindFilter="""[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>] :filter[function[dash.tile-cap],<currentTiddler>lowercase[]split<findQueryLc>count[]compare:integer:gteq[2]] +[nsort[z]]""">
+<$let matchCount={{{ [<findQuery>is[blank]then[0]] ~[subfilter<dashFindFilter>count[]] }}}>
+<$button tooltip="Find the next tile whose caption contains the text — opens its parent groups, scrolls to it and flashes it" aria-label="Find next match">
+<$list filter="[<matchCount>compare:integer:gt[0]]" variable="ignore">
+<$let idx={{{ [{$:/state/rimir/dashboard/find-index}!is[blank]] ~[[0]] +[remainder<matchCount>] }}} findTarget={{{ [subfilter<dashFindFilter>butfirst<idx>first[]] }}}>
+<$transclude $variable="dash-reveal-actions" target=<<findTarget>>/>
+<$action-setfield $tiddler="$:/state/rimir/dashboard/find-index" text={{{ [<idx>add[1]] }}}/>
+</$let>
+</$list>
+Find
+</$button>
+<$list filter="[<findQuery>!is[blank]]" variable="ignore">
+<span class="rr-dash-find-count"><$text text=<<matchCount>>/>&#32;match(es)</span>
+</$list>
+</$let>
+</$let>
+</$let>
 </div>
 <div class="rr-dash-toolbar rr-dash-no-drag">
 <$button tooltip="Per-dashboard display rules: map a target filter to the field each matching tile shows" aria-label="Toggle display rules">

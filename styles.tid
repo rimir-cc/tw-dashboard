@@ -777,13 +777,33 @@ tags: $:/tags/Stylesheet
 	background-color: rgba(128,128,128,0.10);
 }
 
-/* 🔗 marker in a reference's header, before the name. */
+/* 🔗 marker in a reference's header, before the name (an indicator, not a button —
+   the hover ↗ control in the corner navigates to the original). */
 .rr-dash-ref-badge {
 	flex: 0 0 auto;
 	opacity: .6;
 	cursor: help;
 	font-size: .9em;
 	line-height: 1;
+}
+
+/* Result count beside the Find box. */
+.rr-dash-find-count {
+	font-size: .8em;
+	opacity: .6;
+	white-space: nowrap;
+}
+
+/* Reveal flash: a short red pulse drawing the eye to a tile jumped-to by the Find
+   box or a reference's "go to original" button. The drag widget adds this class
+   for ~1s (two pulses). */
+@keyframes rr-dash-flash {
+	0%, 100% { box-shadow: 0 1px 4px rgba(0,0,0,0.15); border-color: rgba(128,128,128,0.35); }
+	25%, 75% { box-shadow: 0 0 0 3px rgba(220,40,40,0.9), 0 0 18px rgba(220,40,40,0.65); border-color: rgba(220,40,40,0.95); }
+}
+
+.rr-dash-box.rr-dash-flash {
+	animation: rr-dash-flash 0.5s ease-in-out 2;
 }
 
 /* Shown in place of a reference's contents when rendering it here would nest the

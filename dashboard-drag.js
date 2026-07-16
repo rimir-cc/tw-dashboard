@@ -43,6 +43,11 @@ Holding Ctrl/Cmd when a move starts on a tile that has `copy-actions` turns the
 drag into a DUPLICATE: on release the `copy-actions` string is invoked (creating
 a new tile at the drop location/container) and the original snaps back to its
 start — so a tiddler can appear on the dashboard any number of times.
+
+`reveal-state` names a tiddler that wikitext writes a tile title into to request
+"bring this tile into view". When our tile matches, we scroll it into view and
+flash it (`rr-dash-flash`), then clear the request. The box also carries a
+`data-dash-tile` attribute with its tile title.
 \*/
 "use strict";
 
@@ -65,12 +70,17 @@ DashboardDragWidget.prototype.render = function(parent,nextSibling) {
 	var domNode = this.document.createElement("div");
 	this.domNode = domNode;
 	domNode.className = this.boxClass;
+	if(this.tileTitle) { domNode.setAttribute("data-dash-tile",this.tileTitle); }
 	this.applyGeometry();
 	this.applyZ();
 	domNode.addEventListener("pointerdown",function(event){ self.handlePointerDown(event); },false);
 	parent.insertBefore(domNode,nextSibling);
 	this.renderChildren(domNode,null);
 	this.domNodes.push(domNode);
+	// If a "reveal this tile" request is already pending when this tile first
+	// renders (e.g. an ancestor group was just expanded to bring it into being),
+	// act on it now.
+	this.maybeReveal();
 };
 
 DashboardDragWidget.prototype.execute = function() {
@@ -85,6 +95,7 @@ DashboardDragWidget.prototype.execute = function() {
 	this.moveSelector = this.getAttribute("move-selector","");
 	this.containerId = this.getAttribute("container","");
 	this.dashId = this.getAttribute("dash-id","");
+	this.revealState = this.getAttribute("reveal-state","");
 	this.fitWidth = (this.getAttribute("fit-width","") === "yes");
 	this.fitHeight = (this.getAttribute("fit-height","") === "yes");
 	this.geoX = this.num(this.getAttribute("x"),0);
@@ -386,7 +397,45 @@ DashboardDragWidget.prototype.refresh = function(changedTiddlers) {
 	if(geoChanged && !this.dragMode) {
 		this.applyGeometry();
 	}
+	// React to a "reveal this tile" request that arrived without recreating us
+	// (a self-refresh path already re-renders and calls maybeReveal from render).
+	if(this.revealState && changedTiddlers[this.revealState]) {
+		this.maybeReveal();
+	}
 	return this.refreshChildren(changedTiddlers);
+};
+
+/*
+Reveal support. A wikitext action writes this tile's title into the `reveal-state`
+tiddler (after expanding the tile's collapsed ancestor groups) to ask "bring this
+tile into view". When our tile matches, scroll it into view across whatever scroll
+containers are available and flash it, then clear the request (so the SAME tile can
+be revealed again later — the next write is a real change). The scroll is deferred a
+beat so any just-expanded ancestor groups have laid out first.
+*/
+DashboardDragWidget.prototype.maybeReveal = function() {
+	if(!this.revealState || this._revealScheduled) { return; }
+	if(this.wiki.getTiddlerText(this.revealState,"") !== this.tileTitle) { return; }
+	this._revealScheduled = true;
+	var self = this;
+	setTimeout(function(){ self.revealNow(); },60);
+};
+
+DashboardDragWidget.prototype.revealNow = function() {
+	this._revealScheduled = false;
+	// one-shot: clear the request so a later reveal of the same tile re-fires
+	if(this.revealState && this.wiki.getTiddlerText(this.revealState,"") === this.tileTitle) {
+		this.wiki.setText(this.revealState,"text",null,"");
+	}
+	var node = this.domNode;
+	if(!node) { return; }
+	try {
+		node.scrollIntoView({behavior:"smooth",block:"center",inline:"center"});
+	} catch(e) {
+		try { node.scrollIntoView(); } catch(e2) {}
+	}
+	$tw.utils.addClass(node,"rr-dash-flash");
+	setTimeout(function(){ $tw.utils.removeClass(node,"rr-dash-flash"); },1000);
 };
 
 exports["dashboard-drag"] = DashboardDragWidget;

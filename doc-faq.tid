@@ -42,6 +42,12 @@ Yes — Ctrl/Cmd-drag a group to drop a ''reference'' of it. A reference is a li
 
 This is the group equivalent of duplicating a content tile — content tiles already "reference" their target because two tiles pointing at the same tiddler both reflect edits to it.
 
+To get from a reference //back to// its original, hover the reference and click the ↗ control beside its ⋮ menu (same glyph as the open-external-link button): the board opens the original's parent groups, scrolls to it and flashes it red.
+
+!! How do I find a tile on a big dashboard?
+
+Use the ''Find'' box above the canvas. Type part of a tile's caption and press //Find//: the dashboard opens whatever parent groups contain the first match, scrolls it into view and flashes it red, and shows how many tiles match. Press //Find// again to jump to the next match (it wraps around). Matching is case-insensitive and looks at each tile's effective caption — a group's name, a content tile's target caption (or title), and for a reference, its original's name. (Scrolling uses the dashboard's own scrollbar; a tile placed outside a parent group's visible box can't be scrolled to inside that group.)
+
 !! Can a group have an icon?
 
 Yes. Open the group's ⋮ menu and click //Icon…// to open the icon editor: pick a common icon, or enter any tiddler title (such as `$:/core/images/folder`) or inline markup in the input, watch the live preview, and use //Clear// to remove it. (Equivalently, set the group tile's `icon` field directly.) While the group is open the icon shows small before its name. Collapse a group that has an icon and its header becomes //just// the icon: hover it to see the name, click it to expand the group again, or drag the icon to move the group. A collapsed icon is scaled to a configurable box (default 64×64 px, set in the plugin settings) preserving its aspect ratio, so a wide or large image isn't squashed. Groups without an icon keep the usual ▸/▾ toggle and name when collapsed.
