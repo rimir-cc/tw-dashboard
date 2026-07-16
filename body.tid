@@ -2,6 +2,26 @@ title: $:/plugins/rimir/dashboard/body
 
 \whitespace trim
 
+<!-- File-upload location resolution. Given a "location target" (a content tile's
+     target, or a group's dash-context), map its first path segment to a configured
+     file-upload location (tag $:/tags/rimir/file-upload/location). This generalises
+     the old hard-coded work/ handling: any tiddler whose namespace matches a
+     configured location name is stored in that scattered location; everything else
+     falls back to the default files location. -->
+\function dash.fz-name(loctarget) [all[tiddlers+shadows]tag[$:/tags/rimir/file-upload/location]get[text]jsonget[name]] :filter[<loctarget>split[/]first[]match<currentTiddler>] +[first[]]
+\function dash.fz-location(loctarget) [all[tiddlers+shadows]tag[$:/tags/rimir/file-upload/location]get[text]jsonget[name]] :filter[<loctarget>split[/]first[]match<currentTiddler>] +[first[]] ~[[files]]
+\function dash.fz-subfolder(loctarget) [all[tiddlers+shadows]tag[$:/tags/rimir/file-upload/location]get[text]jsonget[name]] :filter[<loctarget>split[/]first[]match<currentTiddler>] :map[<loctarget>removeprefix<currentTiddler>removeprefix[/]] +[first[]]
+\function dash.fz-title(loctarget,fname) [all[tiddlers+shadows]tag[$:/tags/rimir/file-upload/location]get[text]jsonget[name]] :filter[<loctarget>split[/]first[]match<currentTiddler>] :map[<loctarget>addsuffix[/]addsuffix<fname>] +[first[]] ~[<fname>]
+
+<!-- Shared "arm paste" affordance. A plain (action-less) focusable button that
+     lives INSIDE a <$file-dropzone>: clicking it takes focus (the drag widget
+     ignores .rr-dash-no-drag without preventDefault, so the browser focuses it),
+     then Ctrl+V fires a paste event that bubbles up to the enclosing dropzone,
+     which uploads the clipboard image to that tile/group's fs location. -->
+\procedure dash-paste-btn()
+<button type="button" class="rr-dash-paste-btn rr-dash-no-drag" title="Click to arm, then press Ctrl+V to paste an image from the clipboard here" aria-label="Arm clipboard paste">&#128203;</button>
+\end
+
 <!-- Kind entity-actions (✎) menu, shared by content tiles and context-linked
      groups. Reads two vars from the caller's scope:
        emenuEntity  the kind instance to act on (a tile's target, or a group's
@@ -160,10 +180,11 @@ Context…
 <$let tileTarget={{!!target}}
 	dashRuleField={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/display-rule]field:dashboard<dashId>nsort[order]] :map[<tileTarget>subfilter{!!filter}first[]then{!!field}] +[!is[blank]first[]] }}}
 	displayField={{{ [<currentTiddler>get[display]!is[blank]] ~[<dashRuleField>!is[blank]] ~[<tileTarget>has[_thumbnail_uri]then[_thumbnail_uri]] ~[<tileTarget>has[text]then[text]] ~[<tileTarget>has[icon]then[icon]] ~[[text]] }}}
-	dropWork={{{ [<hasFileUpload>match[yes]] :filter[<tileTarget>prefix[work/]] +[first[]] }}}>
-<%if [<dropWork>match[yes]] %>
-<$file-dropzone class="rr-dash-tile-filezone" tabindex="0" location="work" subfolder={{{ [<tileTarget>removeprefix[work/]] }}} actions=<<dashWorkUploadActions>>>
+	fzTarget={{!!target}} fzContainer=<<containerId>>>
+<%if [<hasFileUpload>match[yes]] %>
+<$file-dropzone class="rr-dash-tile-filezone" tabindex="0" location={{{ [<fzTarget>function[dash.fz-location],<fzTarget>] ~[[files]] }}} subfolder={{{ [<fzTarget>function[dash.fz-subfolder],<fzTarget>] }}} actions=<<dashTilePasteActions>>>
 <<dash-tile-content>>
+<<dash-paste-btn>>
 </$file-dropzone>
 <%else%>
 <<dash-tile-content>>
@@ -430,7 +451,7 @@ Link
 	tileExtUrl={{{ [enlist{$:/config/rimir/dashboard/external-open-fields}] :map[<tileTargetTitle>get<currentTiddler>] +[!is[blank]first[]] }}}
 	collapsed={{{ [{!!collapsed}match[yes]then[yes]] ~[[no]] }}}
 	cIconOnly={{{ [<collapsed>match[yes]] :filter[<tileTargetTitle>has[icon]] +[first[]then[yes]] ~[[no]] }}}
-	collapsedWorkDrop={{{ [<hasFileUpload>match[yes]] :filter[<tileTargetTitle>prefix[work/]] :filter[<collapsed>match[yes]] +[first[]then[yes]] ~[[no]] }}}
+	collapsedDrop={{{ [<hasFileUpload>match[yes]] :filter[<collapsed>match[yes]] +[first[]then[yes]] ~[[no]] }}}
 	iconW={{{ [{!!icon-w}trim[]!is[blank]] ~[{$:/config/rimir/dashboard/group-icon-max-width}trim[]!is[blank]] ~[[64]] }}}
 	iconH={{{ [{!!icon-h}trim[]!is[blank]] ~[{$:/config/rimir/dashboard/group-icon-max-height}trim[]!is[blank]] ~[[64]] }}}
 	iconStyle={{{ [<iconW>addprefix[width:]addsuffix[px; height:]addsuffix<iconH>addsuffix[px;]] }}}
@@ -444,10 +465,11 @@ Link
 </$dashboard-drag>
 <%else%>
 <$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} icon-w=<<iconW>> icon-h=<<iconH>> move-selector=".rr-dash-handle" class="rr-dash-box" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> copy-actions=<<dashCopyActions>> open-actions={{{ [<collapsed>match[yes]then<dashContentExpand>] ~[<dashOpenActions>] }}} size-actions=<<dashSizeActions>> ctrl-open-url=<<tileExtUrl>> fit-width={{{ [<cIconOnly>match[yes]then[yes]] }}} fit-height={{{ [<collapsed>match[yes]then[yes]] }}}>
-<%if [<collapsedWorkDrop>match[yes]] %>
-<$let tileTarget=<<tileTargetTitle>>>
-<$file-dropzone class="rr-dash-collapsed-droptarget-fz" tabindex="0" location="work" subfolder={{{ [<tileTargetTitle>removeprefix[work/]] }}} actions=<<dashWorkUploadActions>>>
+<%if [<collapsedDrop>match[yes]] %>
+<$let fzTarget=<<tileTargetTitle>> fzContainer=<<containerId>>>
+<$file-dropzone class="rr-dash-collapsed-droptarget-fz" tabindex="0" location={{{ [<fzTarget>function[dash.fz-location],<fzTarget>] ~[[files]] }}} subfolder={{{ [<fzTarget>function[dash.fz-subfolder],<fzTarget>] }}} actions=<<dashTilePasteActions>>>
 <<dash-content-handle>>
+<<dash-paste-btn>>
 </$file-dropzone>
 </$let>
 <%else%>
@@ -477,11 +499,12 @@ Link
 	dashGroupExpand="""<$list filter="[<currentTiddler>get[collapsed]match[yes]]" variable="ignore"><$action-setfield $tiddler=<<currentTiddler>> collapsed="no" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/></$list>""">
 <$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} icon-w=<<iconW>> icon-h=<<iconH>> move-selector=".rr-dash-handle" class="rr-dash-box rr-dash-group" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> open-actions=<<dashGroupExpand>> size-actions=<<dashSizeActions>> fit-width={{{ [<collapsed>match[yes]then[yes]] }}} fit-height={{{ [<collapsed>match[yes]then[yes]] }}}>
 <%if [<collapsed>match[yes]] %>
-<$let containerId=<<currentTiddler>>>
+<$let containerId=<<currentTiddler>> fzTarget=<<groupContext>> fzContainer=<<currentTiddler>>>
 <$droppable tag="div" class="rr-dash-collapsed-droptarget" actions={{{ [<dashAddChildActions>addsuffix<dashExpandAction>] }}}>
 <%if [<hasFileUpload>match[yes]] %>
-<$file-dropzone class="rr-dash-collapsed-droptarget-fz" tabindex="0" location="files" actions={{{ [<dashUploadActions>addsuffix<dashExpandAction>] }}}>
+<$file-dropzone class="rr-dash-collapsed-droptarget-fz" tabindex="0" location={{{ [<fzTarget>function[dash.fz-location],<fzTarget>] ~[[files]] }}} subfolder={{{ [<fzTarget>function[dash.fz-subfolder],<fzTarget>] }}} actions={{{ [<dashTilePasteActions>addsuffix<dashExpandAction>] }}}>
 <<dash-group-handle>>
+<<dash-paste-btn>>
 </$file-dropzone>
 <%else%>
 <<dash-group-handle>>
@@ -525,10 +548,12 @@ Link
 \procedure dash-canvas(containerId)
 <$droppable tag="div" class="rr-dash-canvas" data-dash-parent=<<containerId>> data-dash-id=<<dashId>> actions=<<dashAddChildActions>>>
 <%if [<hasFileUpload>match[yes]] %>
-<$file-dropzone class="rr-dash-filezone" tabindex="0" location="files" actions=<<dashUploadActions>>>
-<div class="rr-dash-filehint rr-dash-no-drag">Drop an image here, or click and paste (Ctrl+V), to add it as a tile</div>
+<$let fzTarget={{{ [<containerId>get[dash-context]] }}} fzContainer=<<containerId>>>
+<$file-dropzone class="rr-dash-filezone" tabindex="0" location={{{ [<fzTarget>function[dash.fz-location],<fzTarget>] ~[[files]] }}} subfolder={{{ [<fzTarget>function[dash.fz-subfolder],<fzTarget>] }}} actions=<<dashTilePasteActions>>>
+<div class="rr-dash-filehint rr-dash-no-drag">Drop an image here — or <<dash-paste-btn>> and press Ctrl+V — to add it as a tile</div>
 <$transclude $variable="dash-tiles" containerId=<<containerId>> $mode="block"/>
 </$file-dropzone>
+</$let>
 <%else%>
 <$transclude $variable="dash-tiles" containerId=<<containerId>> $mode="block"/>
 <%endif%>
@@ -543,11 +568,8 @@ Link
 	fitEnabled={{{ [<fitStateTid>get[text]match[yes]then[yes]] ~[[no]] }}}
 	fitContentW={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>!has[dash-parent]] :map[get[x]add{!!w}] +[nsort[]last[]add[24]] ~[[0]] }}}
 	fitContentH={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>!has[dash-parent]] :map[get[y]add{!!h}] +[nsort[]last[]add[24]] ~[[0]] }}}
-	dashUploadActions="""<$action-createtiddler $basetitle=<<filename>> _canonical_uri=<<canonical-uri>> _thumbnail_uri=<<generated-uri>> _content_hash=<<content-hash>> type=<<type>>>
-<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" dashboard=<<dashId>> dash-parent=<<containerId>> target=<<createTiddler-title>> x="24" y="24" w="320" h="220" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>
-</$action-createtiddler>"""
-	dashWorkUploadActions="""<$action-createtiddler $basetitle={{{ [<tileTarget>addsuffix[/]addsuffix<filename>] }}} _canonical_uri=<<canonical-uri>> _thumbnail_uri=<<generated-uri>> _content_hash=<<content-hash>> type=<<type>>>
-<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" dashboard=<<dashId>> dash-parent=<<containerId>> target=<<createTiddler-title>> x="24" y="24" w="320" h="220" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>
+	dashTilePasteActions="""<$action-createtiddler $basetitle={{{ [<fzTarget>function[dash.fz-title],<fzTarget>,<filename>] ~[<filename>] }}} _canonical_uri=<<canonical-uri>> _thumbnail_uri=<<generated-uri>> _content_hash=<<content-hash>> type=<<type>>>
+<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" dashboard=<<dashId>> dash-parent=<<fzContainer>> target=<<createTiddler-title>> x="24" y="24" w="320" h="220" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>
 </$action-createtiddler>"""
 	dashGeomActions="""<$action-setfield $tiddler=<<currentTiddler>> x=<<new-x>> y=<<new-y>> w=<<new-w>> h=<<new-h>> z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/>"""
 	dashReparentActions="""<$action-setfield $tiddler=<<currentTiddler>> dash-parent=<<new-parent>> x=<<new-x>> y=<<new-y>> w=<<new-w>> h=<<new-h>> z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/>"""

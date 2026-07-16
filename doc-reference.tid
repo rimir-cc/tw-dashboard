@@ -46,7 +46,7 @@ A group may also be ''linked to a tiddler'' as its //implicit context// (its `da
 
 Tiles — including whole groups — are re-parented by ''dragging'' them onto another container: on release the drop point is hit-tested for the topmost `.rr-dash-canvas`, and if it differs from the tile's current container (and is the same dashboard, and not the tile's own descendant) the tile's `dash-parent`, position and `z` are rewritten. Holding ''Ctrl''/''Cmd'' at the start of the drag ''duplicates'' a content tile instead of moving it — a new tile with the same `target` is created at the drop point and the original is left untouched, so a tiddler may appear on any number of tiles.
 
-A //collapsed// tile has no canvas/body to drop into, so its header itself is wrapped as the drop surface (a `<$droppable>` for a group, a `<$file-dropzone>` for a group or a `work/`-target content tile; both are `display: contents`, so they add no layout). Dropping a tiddler or file on a collapsed ''group'' adds it as a child and expands the group; dropping a file on a collapsed ''content tile'' under `work/` uploads it into that item's folder. Only a highlight (`outline`) is drawn around the box while a drag is over it — via `.rr-dash-box:has(… .rr-dash-collapsed-droptarget… .tc-dragover)` — so there is no permanent drop chrome.
+A //collapsed// tile has no canvas/body to drop into, so its header itself is wrapped as the drop surface (a `<$droppable>` for a group, a `<$file-dropzone>` for a group or a content tile; both are `display: contents`, so they add no layout). Dropping a tiddler or file on a collapsed ''group'' adds it as a child and expands the group; dropping (or pasting) a file on a collapsed ''content tile'' uploads it into the tile's derived location (see //Attaching files//). Only a highlight (`outline`) is drawn around the box while a drag is over it — via `.rr-dash-box:has(… .rr-dash-collapsed-droptarget… .tc-dragover)` — so there is no permanent drop chrome.
 
 !! Tile title scheme
 
@@ -55,6 +55,20 @@ $:/config/rimir/dashboard/<dashId>/tiles/<uid>
 ```
 
 Tiles live under `$:/config/…`, so they sync to disk but stay out of the default tiddler lists.
+
+!! Attaching files (drop &amp; paste)
+
+With [[rimir/file-upload|$:/plugins/rimir/file-upload]] installed, every content tile's body (its header when collapsed), every group, and every canvas is wrapped in a `<$file-dropzone>`. Dropping a media file — or arming the tile's 📋 corner button and pressing Ctrl+V to paste one — uploads it and adds a new tile (a sibling of a content tile, a child of a group/canvas).
+
+The upload's filesystem location is derived from the tile's `target` (a group's `dash-context`; the canvas's container-group context) by four filter functions, all reading the configured locations tagged `$:/tags/rimir/file-upload/location`:
+
+|!Function |!Returns |
+|`dash.fz-name(t)` |`t`'s first path segment iff it names a configured location, else empty |
+|`dash.fz-location(t)` |that location name, else the default `files` |
+|`dash.fz-subfolder(t)` |the path below that location (empty for `files`) |
+|`dash.fz-title(t,f)` |the media tiddler's title: `<t>/<f>` when scattered, else bare `<f>` |
+
+So a target under `work/…` files into the `work` location alongside that item; anything else falls back to `files`. Paste works because the dropzone inherits TW-core's `paste` handler and the 📋 button (a focusable `.rr-dash-no-drag` element inside the dropzone) lets you put focus there without triggering a drag or click-to-open; nested dropzones resolve innermost-first.
 
 !! `<$dashboard-drag>` widget
 

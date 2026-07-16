@@ -163,6 +163,16 @@ tags: $:/tags/Stylesheet
 	background-color: rgba(80,140,220,0.06);
 }
 
+/* Armed for paste: while the canvas's own paste button (in the hint, a direct
+   child) holds focus, ring the whole canvas so it's clear Ctrl+V lands here.
+   The `> .rr-dash-filehint` scoping excludes tile-level paste buttons nested
+   deeper inside the filezone. */
+.rr-dash-filezone:has(> .rr-dash-filehint .rr-dash-paste-btn:focus) {
+	outline: 2px solid rgba(80,140,220,0.75);
+	outline-offset: -4px;
+	background-color: rgba(80,140,220,0.06);
+}
+
 .rr-dash-filehint {
 	position: absolute;
 	left: 50%;
@@ -176,20 +186,23 @@ tags: $:/tags/Stylesheet
 	background-color: rgba(128,128,128,0.12);
 	padding: 2px 10px;
 	border-radius: 10px;
-	opacity: 0;
+	opacity: .45;
 	transition: opacity .12s ease;
 }
 
 .rr-dash-filezone:hover .rr-dash-filehint,
-.rr-dash-filezone:focus .rr-dash-filehint,
+.rr-dash-filezone:focus-within .rr-dash-filehint,
 .rr-dash-filezone.tc-dragover .rr-dash-filehint {
 	opacity: 1;
 }
 
-/* Per-tile drop zone: only rendered for content tiles whose target is under
-   work/. Dropping (or pasting when focused) an image on such a tile stores the
-   file in the work location alongside that item, instead of the default /files/. */
+/* Per-tile drop zone: rendered for every content tile. Dropping (or arming +
+   pasting) an image on a tile stores the file in the fs location derived from
+   that tile's target (a configured file-upload scattered location when the
+   target's namespace matches one, otherwise the default files location) and
+   adds it as a new sibling tile. */
 .rr-dash-tile-filezone {
+	position: relative;
 	height: 100%;
 }
 
@@ -206,6 +219,68 @@ tags: $:/tags/Stylesheet
 	outline: 2px dashed rgba(80,140,220,0.8);
 	outline-offset: -4px;
 	background-color: rgba(80,140,220,0.06);
+}
+
+/* Arm-paste affordance. A small focusable button that lives inside a dropzone;
+   clicking it focuses it (the drag widget ignores .rr-dash-no-drag) so a
+   following Ctrl+V bubbles a paste event up to the enclosing dropzone. Must be
+   clickable even inside a pointer-events:none hint or bare-tile body. */
+.rr-dash-paste-btn {
+	pointer-events: auto;
+	cursor: pointer;
+	border: 1px solid rgba(128,128,128,0.4);
+	border-radius: 6px;
+	background-color: <<colour tiddler-background>>;
+	color: inherit;
+	font-size: .85em;
+	line-height: 1;
+	padding: 1px 6px;
+	vertical-align: middle;
+}
+
+.rr-dash-paste-btn:hover {
+	border-color: rgba(80,140,220,0.85);
+}
+
+.rr-dash-paste-btn:focus {
+	outline: 2px solid rgba(80,140,220,0.9);
+	outline-offset: 1px;
+}
+
+/* On tiles the paste button floats in the top-LEFT corner, revealed on hover or
+   while focused. Top-left keeps it clear of the top-right tile controls and of
+   the right-aligned ⋮ dropdown, so it never sits under a menu entry. */
+.rr-dash-tile-filezone > .rr-dash-paste-btn,
+.rr-dash-collapsed-droptarget-fz > .rr-dash-paste-btn {
+	position: absolute;
+	top: 4px;
+	left: 4px;
+	z-index: 3;
+	opacity: 0;
+	transition: opacity .12s ease;
+}
+
+.rr-dash-tile-filezone:hover > .rr-dash-paste-btn,
+.rr-dash-tile-filezone:focus-within > .rr-dash-paste-btn,
+.rr-dash-collapsed-droptarget-fz:hover > .rr-dash-paste-btn,
+.rr-dash-collapsed-droptarget-fz:focus-within > .rr-dash-paste-btn {
+	opacity: 1;
+}
+
+/* While a tile's ⋮ menu is open, the dropdown expands over the tile body. Fully
+   suppress the corner paste button so it can never intercept a click meant for a
+   menu entry (which would steal focus and collapse the menu). */
+.rr-dash-box:has(.rr-dash-menu:hover) .rr-dash-paste-btn,
+.rr-dash-box:has(.rr-dash-menu:focus-within) .rr-dash-paste-btn {
+	opacity: 0;
+	pointer-events: none;
+}
+
+/* Armed for paste: ring the tile whose paste button holds focus. (A nested
+   group also matches when one of its children is armed — a harmless extra ring.) */
+.rr-dash-box:has(.rr-dash-paste-btn:focus) {
+	outline: 2px solid rgba(80,140,220,0.75);
+	outline-offset: 1px;
 }
 
 .rr-dash-box {

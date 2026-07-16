@@ -68,7 +68,13 @@ Yes — window tiles have a ▸/▾ toggle in their title bar. Collapsing shrink
 
 !! Can I drop something onto a //collapsed// tile or group?
 
-Yes. A collapsed tile renders no body, but its header still acts as a drop surface — you don't have to expand it first. Drop a tiddler //or// a file onto a collapsed ''group'' and it is added as a child of that group, which then expands so you can see it land. Drop a file onto a collapsed ''content tile'' whose `target` is under `work/` and the file is uploaded into that item's folder (exactly as dropping on the open tile would). There is no permanent drop band — the box is simply outlined while a drag hovers over it. (A collapsed content tile with a non-`work/` target has no attach point, so it doesn't take a drop — the same as when it is expanded; drop on the canvas instead to add it as a new tile.)
+Yes. A collapsed tile renders no body, but its header still acts as a drop surface — you don't have to expand it first. Drop a tiddler //or// a file onto a collapsed ''group'' and it is added as a child of that group, which then expands so you can see it land. Drop (or paste) a file onto a collapsed ''content tile'' and it is uploaded into that tile's derived location (exactly as on the open tile — see the paste question below). There is no permanent drop band — the box is simply outlined while a drag hovers over it.
+
+!! Can I paste an image from the clipboard onto the dashboard?
+
+Yes (with [[rimir/file-upload|$:/plugins/rimir/file-upload]] installed). Because a `paste` event is delivered to whatever holds focus, every tile, group and canvas shows a small ''📋 paste button'' in its corner on hover: click it to //arm// the target (a blue ring appears), then press ''Ctrl+V''. The clipboard image is uploaded and added as a new tile — a sibling when you arm a content tile, a child when you arm a group or its canvas. Dropping an image file has the same effect.
+
+Where the file lands on disk is //derived from the tile's target// (or a group's context): if the target's namespace matches a configured file-upload location it is filed there (e.g. a `work/…` target → the `work` location, alongside that item); otherwise it goes to the default `files` location. So each tile effectively //defines// where its pasted binaries are stored. The plain root canvas uses `files`.
 
 !! How do I switch a tile between window and bare?
 
