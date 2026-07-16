@@ -309,8 +309,17 @@ tags: $:/tags/Stylesheet
 	overflow: visible;
 }
 
+/* Only un-clip the parent GROUP chain (box body + the group's own nested canvas)
+   so an escaping nested group is visible where it goes. The ROOT canvas is the
+   scroll container and is deliberately NOT included: flipping a scrolled element
+   to `overflow: visible` forces its scrollLeft/scrollTop to 0, which on a board
+   wider/taller than the screen made the whole canvas jump to the origin the
+   moment a drag/resize started (the dragged tile then rendered far off to the
+   side). A nested group escaping its parent still lands inside the root canvas's
+   own box, which `overflow: auto` does not clip — so the root scroller can stay
+   put. */
 .rr-dash-box:has(.rr-dash-box.rr-dash-dragging) > .rr-dash-body,
-.rr-dash-canvas:has(.rr-dash-box.rr-dash-dragging) {
+.rr-dash-group .rr-dash-canvas:has(.rr-dash-box.rr-dash-dragging) {
 	overflow: visible;
 }
 
