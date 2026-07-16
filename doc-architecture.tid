@@ -81,6 +81,8 @@ Tiles (and whole groups) move between containers by dragging. The pointer-based 
 
 Hiding the tile during the hit-test also gives cycle-safety for free: a group dropped onto its own contents resolves to the canvas behind it — its current container — so it simply does not reparent.
 
+While a move is in progress the box is allowed //negative// positions so it follows the pointer freely out of its container in every direction — left and up as well as right and down (the parent group chain is un-clipped via CSS during the drag, so the box stays visible where it goes). The position is clamped back to `&gt;= 0` only at commit time, and only when the tile stays in its container; a reparent recomputes coordinates relative to the drop canvas. Clamping the live position instead would pin the box at its container's top-left edge, so out-dragging a nested group would only ever work toward the right or bottom.
+
 !! The `<$dashboard-drag>` widget
 
 Free-form pointer dragging is the one thing wikitext cannot express, so a single JS widget owns it. It renders an absolutely-positioned box from `x`/`y`/`w`/`h`/`z` attributes and handles pointer interaction:

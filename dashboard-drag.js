@@ -212,8 +212,16 @@ DashboardDragWidget.prototype.handlePointerMove = function(event) {
 			}
 			this.moved = true;
 		}
-		this.geoX = Math.max(0,Math.round(this.startGeoX + dx));
-		this.geoY = Math.max(0,Math.round(this.startGeoY + dy));
+		// Allow negative positions DURING the drag so the box follows the pointer
+		// freely out of its container in every direction (left / up as well as
+		// right / down) — the parent group chain is un-clipped via CSS while a box
+		// is dragging, so it stays visible where it goes. The value is clamped to
+		// >= 0 only at commit time, and only when the tile stays in its container
+		// (a reparent recomputes coords relative to the drop canvas). Clamping here
+		// would stick the box at the container's top-left edge and make out-dragging
+		// only ever work toward the right / bottom.
+		this.geoX = Math.round(this.startGeoX + dx);
+		this.geoY = Math.round(this.startGeoY + dy);
 		this.applyGeometry();
 	} else if(this.dragMode === "resize-icon") {
 		this.moved = true;
@@ -279,8 +287,8 @@ DashboardDragWidget.prototype.handlePointerUp = function(event) {
 		var sameDash = dropCanvas && dropCanvas.dashId === this.dashId;
 		this.invokeActionString(this.copyActions,this,event,{
 			"new-parent": sameDash ? dropCanvas.parent : this.containerId,
-			"new-x": String(sameDash ? dropCanvas.x : this.geoX),
-			"new-y": String(sameDash ? dropCanvas.y : this.geoY),
+			"new-x": String(sameDash ? dropCanvas.x : Math.max(0,this.geoX)),
+			"new-y": String(sameDash ? dropCanvas.y : Math.max(0,this.geoY)),
 			"new-w": String(this.geoW),
 			"new-h": String(this.geoH)
 		});
@@ -307,9 +315,11 @@ DashboardDragWidget.prototype.handlePointerUp = function(event) {
 		}
 	}
 	if(!reparented && this.dragActions) {
+		// Staying in the same container: clamp back to the canvas' own coordinate
+		// space (the box was allowed to follow the pointer negative during the drag).
 		this.invokeActionString(this.dragActions,this,event,{
-			"new-x": String(this.geoX),
-			"new-y": String(this.geoY),
+			"new-x": String(Math.max(0,this.geoX)),
+			"new-y": String(Math.max(0,this.geoY)),
 			"new-w": String(this.geoW),
 			"new-h": String(this.geoH)
 		});
