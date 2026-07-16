@@ -260,6 +260,16 @@ tags: $:/tags/Stylesheet
 	transition: opacity .12s ease;
 }
 
+/* On a COLLAPSED tile/group the paste button's box is the whole header (the
+   dropzone is display:contents, so the button positions against the tile box),
+   whose left edge holds the ▸ expand ("open") toggle. At left:4px the hover-only
+   button lands on top of that toggle and blocks it. Shift it clear of the toggle;
+   it may overlap the caption instead, which is fine — it only shows on hover, and
+   it still stays well left of the right-hand controls / ⋮ menu. */
+.rr-dash-collapsed-droptarget-fz > .rr-dash-paste-btn {
+	left: 34px;
+}
+
 .rr-dash-tile-filezone:hover > .rr-dash-paste-btn,
 .rr-dash-tile-filezone:focus-within > .rr-dash-paste-btn,
 .rr-dash-collapsed-droptarget-fz:hover > .rr-dash-paste-btn,
