@@ -752,6 +752,39 @@ tags: $:/tags/Stylesheet
 	border-style: dashed;
 }
 
+/* Group references: a second (third, …) tile mirroring a source group — same
+   contents, caption and icon, with edits reflecting across every copy. Drawn in a
+   brighter, greyer key (lighter frame + faint grey wash, slightly muted) so it
+   reads as a linked copy rather than the original. Its own position, size and
+   collapse state are independent; only the content is shared. */
+.rr-dash-box.rr-dash-ref {
+	border-color: rgba(128,128,128,0.55);
+	background-color: rgba(128,128,128,0.07);
+	opacity: .93;
+}
+
+.rr-dash-box.rr-dash-ref > .rr-dash-handle {
+	background-color: rgba(128,128,128,0.10);
+}
+
+/* 🔗 marker in a reference's header, before the name. */
+.rr-dash-ref-badge {
+	flex: 0 0 auto;
+	opacity: .6;
+	cursor: help;
+	font-size: .9em;
+	line-height: 1;
+}
+
+/* Shown in place of a reference's contents when rendering it here would nest the
+   group inside itself (a cycle). */
+.rr-dash-ref-cycle {
+	padding: 1em;
+	color: rgba(128,128,128,0.9);
+	font-style: italic;
+	font-size: .82em;
+}
+
 .rr-dash-group-name {
 	flex: 0 1 auto;
 	min-width: 4em;

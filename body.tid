@@ -95,7 +95,7 @@ icon
      tiddler as its "implicit context". Empty = a faint link glyph inviting a
      drop; linked = the context's kind icon (or a link glyph) — click to open the
      tiddler in the story river, drop another tiddler to relink. Dropping copies
-     the tiddler's caption to the group (see dashContextActions). Lives inside the
+     the tiddler's caption to the group (see dashGroupContextActions). Lives inside the
      move handle but is rr-dash-no-drag so a click opens rather than moving. Reads
      <<groupContext>> from the group tile's scope. -->
 \procedure dash-group-context()
@@ -122,11 +122,23 @@ icon
 <button type="button" class="rr-dash-ctl rr-dash-menu-trigger" title="Group actions" aria-label="Group actions">⋮</button>
 <span class="rr-dash-menu-items">
 <$button class="rr-dash-ctl" tooltip="Add a nested group inside this one" aria-label="Add nested group">
-<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" role="group" dashboard=<<dashId>> dash-parent=<<currentTiddler>> collapsed="no" x="24" y="24" w="280" h="200" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}>
+<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" role="group" dashboard=<<dashId>> dash-parent=<<groupId>> collapsed="no" x="24" y="24" w="280" h="200" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}>
 <$action-setfield $tiddler="$:/state/rimir/dashboard/focus-group" text=<<createTiddler-title>>/>
 </$action-createtiddler>
 ＋
 </$button>
+<%if [<isRef>match[yes]] %>
+<$button class="rr-dash-ctl" tooltip="Remove this reference (the original group and its other copies stay)" aria-label="Remove reference">
+<$action-deletetiddler $tiddler=<<currentTiddler>>/>
+×
+</$button>
+<%else%>
+<%if [<hasRefs>match[yes]] %>
+<$button class="rr-dash-ctl" tooltip="Remove this group and all its references; contents move up to the parent" aria-label="Remove group">
+<$action-setfield $tiddler="$:/state/rimir/dashboard/group-delete-confirm" text=<<currentTiddler>>/>
+×
+</$button>
+<%else%>
 <$button class="rr-dash-ctl" tooltip="Remove this group; its contents move up to the parent container" aria-label="Remove group">
 <$list filter="[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>field:dash-parent<currentTiddler>]" variable="dashChild">
 <$action-setfield $tiddler=<<dashChild>> dash-parent={{!!dash-parent}}/>
@@ -134,14 +146,16 @@ icon
 <$action-deletetiddler $tiddler=<<currentTiddler>>/>
 ×
 </$button>
+<%endif%>
+<%endif%>
 <span class="rr-dash-menu-sep"></span>
 <$button class="rr-dash-ctl" tooltip="Set or change this group's icon" aria-label="Edit group icon">
-<$action-setfield $tiddler="$:/state/rimir/dashboard/icon-edit" text=<<currentTiddler>>/>
+<$action-setfield $tiddler="$:/state/rimir/dashboard/icon-edit" text=<<groupId>>/>
 Icon…
 </$button>
 <$button class="rr-dash-ctl" tooltip="Link this group to a tiddler as its context (adopts its caption, shows its kind icon, and enables entity actions)" aria-label="Edit group context">
-<$action-setfield $tiddler="$:/state/rimir/dashboard/context-input" text={{{ [<currentTiddler>get[dash-context]] }}}/>
-<$action-setfield $tiddler="$:/state/rimir/dashboard/context-edit" text=<<currentTiddler>>/>
+<$action-setfield $tiddler="$:/state/rimir/dashboard/context-input" text={{{ [<groupId>get[dash-context]] }}}/>
+<$action-setfield $tiddler="$:/state/rimir/dashboard/context-edit" text=<<groupId>>/>
 Context…
 </$button>
 </span>
@@ -399,6 +413,52 @@ Link
 </$reveal>
 \end
 
+<!-- Confirmation before deleting an ORIGINAL group that has references elsewhere:
+     the group vanishes everywhere, so we show how many reference tiles will also be
+     removed before committing. A plain group with no references deletes without this
+     (see dash-group-controls). -->
+\procedure dash-group-delete-confirm()
+<$reveal type="nomatch" state="$:/state/rimir/dashboard/group-delete-confirm" text="">
+<$let gdTarget={{$:/state/rimir/dashboard/group-delete-confirm}}
+	gdRefCount={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>field:dash-ref<gdTarget>count[]] }}}>
+<div class="rr-dash-overlay rr-dash-no-drag">
+<$button class="rr-dash-overlay-backdrop" tooltip="Cancel" aria-label="Cancel">
+<$action-setfield $tiddler="$:/state/rimir/dashboard/group-delete-confirm" text=""/>
+</$button>
+<div class="rr-dash-modal rr-dash-icon-modal">
+<div class="rr-dash-modal-bar">
+<span class="rr-dash-icon-modal-title">Remove group — <$text text={{{ [<gdTarget>get[caption]!is[blank]] ~[[Group]] }}}/></span>
+<$button class="rr-dash-ctl" tooltip="Cancel" aria-label="Cancel">
+<$action-setfield $tiddler="$:/state/rimir/dashboard/group-delete-confirm" text=""/>
+×
+</$button>
+</div>
+<div class="rr-dash-modal-body">
+<div class="rr-dash-rules-hint">This group has&#32;<<gdRefCount>>&#32;reference(s) elsewhere on the dashboard. Removing it deletes&#32;''all of them''&#32;too, and moves its contents up to its parent container. This cannot be undone.</div>
+<div class="rr-dash-icon-actions">
+<$button class="rr-dash-clean-go" aria-label="Confirm removal">
+<$list filter="[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>field:dash-parent<gdTarget>]" variable="dashChild">
+<$action-setfield $tiddler=<<dashChild>> dash-parent={{{ [<gdTarget>get[dash-parent]] }}}/>
+</$list>
+<$list filter="[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>field:dash-ref<gdTarget>]" variable="dashRefTile">
+<$action-deletetiddler $tiddler=<<dashRefTile>>/>
+</$list>
+<$action-deletetiddler $tiddler=<<gdTarget>>/>
+<$action-setfield $tiddler="$:/state/rimir/dashboard/group-delete-confirm" text=""/>
+Remove group and&#32;<<gdRefCount>>&#32;reference(s)
+</$button>
+<$button class="rr-dash-clean-cancel" aria-label="Cancel removal">
+<$action-setfield $tiddler="$:/state/rimir/dashboard/group-delete-confirm" text=""/>
+Cancel
+</$button>
+</div>
+</div>
+</div>
+</div>
+</$let>
+</$reveal>
+\end
+
 \procedure dash-collapse-toggle()
 <$button class="rr-dash-ctl rr-dash-no-drag" tooltip="Collapse / expand this tile" aria-label="Collapse or expand tile">
 <$action-setfield $tiddler=<<currentTiddler>> collapsed={{{ [<collapsed>match[yes]then[no]] ~[[yes]] }}}/>
@@ -412,23 +472,26 @@ Link
 \procedure dash-group-handle()
 <div class="rr-dash-handle">
 <%if [<iconOnly>match[yes]] %>
-<span class="rr-dash-title rr-dash-group-icononly" title={{{ [{!!caption}!is[blank]] ~[[Group]] }}}>
+<span class="rr-dash-title rr-dash-group-icononly" title={{{ [<groupId>get[caption]!is[blank]] ~[[Group]] }}}>
 <span class="rr-dash-group-icon rr-dash-group-icon-lg" style=<<iconStyle>>><<dash-value>></span>
 </span>
 <%else%>
-<$droppable tag="div" class="rr-dash-ctx-drop" actions=<<dashContextActions>>>
+<$droppable tag="div" class="rr-dash-ctx-drop" actions=<<dashGroupContextActions>>>
 <span class="rr-dash-title">
 <<dash-collapse-toggle>>
+<$list filter="[<isRef>match[yes]]" variable="ignore">
+<span class="rr-dash-ref-badge" title="Reference — its contents, name and icon mirror the original group; edits here reflect on the original and every reference">🔗</span>
+</$list>
 <<dash-group-context>>
 <$list filter="[<groupIcon>!is[blank]]" variable="ignore">
 <span class="rr-dash-group-icon rr-dash-group-icon-sm"><<dash-value>></span>
 </$list>
-<$edit-text tiddler=<<currentTiddler>> field="caption" tag="input" default="" placeholder="Group" focus={{{ [{$:/state/rimir/dashboard/focus-group}match<currentTiddler>then[yes]] }}} class="rr-dash-group-name rr-dash-no-drag tc-edit-texteditor"/>
-<span class="rr-dash-count">(<$count filter="[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>field:dash-parent<currentTiddler>]"/>)</span>
+<$edit-text tiddler=<<groupId>> field="caption" tag="input" default="" placeholder="Group" focus={{{ [{$:/state/rimir/dashboard/focus-group}match<currentTiddler>then[yes]] }}} class="rr-dash-group-name rr-dash-no-drag tc-edit-texteditor"/>
+<span class="rr-dash-count">(<$count filter="[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>field:dash-parent<groupId>]"/>)</span>
 </span>
 </$droppable>
 <%endif%>
-<span class="rr-dash-controls"><$let emenuEntity=<<groupContext>> emenuCtxB=<<currentTiddler>>><<dash-emenu>></$let><<dash-group-controls>></span>
+<span class="rr-dash-controls"><$let emenuEntity=<<groupContext>> emenuCtxB=<<groupId>>><<dash-emenu>></$let><<dash-group-controls>></span>
 </div>
 \end
 
@@ -488,21 +551,27 @@ Link
 \end
 
 \procedure dash-group-tile()
-<$let collapsed={{{ [{!!collapsed}match[yes]then[yes]] ~[[no]] }}}
-	groupContext={{!!dash-context}}
-	groupIcon={{!!icon}}
+<$let groupId={{{ [<currentTiddler>get[dash-ref]!is[blank]] ~[<currentTiddler>] }}}
+	isRef={{{ [<currentTiddler>has[dash-ref]then[yes]] ~[[no]] }}}
+	isCycle={{{ [enlist<chain>match<groupId>] +[first[]then[yes]] ~[[no]] }}}
+	nextChain={{{ [enlist<chain>] [<groupId>] +[format:titlelist[]join[ ]] }}}
+	hasRefs={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>field:dash-ref<groupId>] +[first[]then[yes]] ~[[no]] }}}
+	collapsed={{{ [{!!collapsed}match[yes]then[yes]] ~[[no]] }}}
+	groupContext={{{ [<groupId>get[dash-context]] }}}
+	groupIcon={{{ [<groupId>get[icon]] }}}
 	iconOnly={{{ [<collapsed>match[yes]] :filter[<groupIcon>!is[blank]] +[first[]then[yes]] ~[[no]] }}}
 	iconW={{{ [{!!icon-w}trim[]!is[blank]] ~[{$:/config/rimir/dashboard/group-icon-max-width}trim[]!is[blank]] ~[[64]] }}}
 	iconH={{{ [{!!icon-h}trim[]!is[blank]] ~[{$:/config/rimir/dashboard/group-icon-max-height}trim[]!is[blank]] ~[[64]] }}}
 	iconStyle={{{ [<iconW>addprefix[width:]addsuffix[px; height:]addsuffix<iconH>addsuffix[px;]] }}}
-	dvTid=<<currentTiddler>> dvField="icon" dvMode="inline" dvImg="no" dvVal={{!!icon}}
-	dashGroupExpand="""<$list filter="[<currentTiddler>get[collapsed]match[yes]]" variable="ignore"><$action-setfield $tiddler=<<currentTiddler>> collapsed="no" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/></$list>""">
-<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} icon-w=<<iconW>> icon-h=<<iconH>> move-selector=".rr-dash-handle" class="rr-dash-box rr-dash-group" container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> open-actions=<<dashGroupExpand>> size-actions=<<dashSizeActions>> fit-width={{{ [<collapsed>match[yes]then[yes]] }}} fit-height={{{ [<collapsed>match[yes]then[yes]] }}}>
+	dvTid=<<groupId>> dvField="icon" dvMode="inline" dvImg="no" dvVal={{{ [<groupId>get[icon]] }}}
+	dashGroupExpand="""<$list filter="[<currentTiddler>get[collapsed]match[yes]]" variable="ignore"><$action-setfield $tiddler=<<currentTiddler>> collapsed="no" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/></$list>"""
+	dashGroupContextActions="""<$action-setfield $tiddler=<<groupId>> dash-context=<<actionTiddler>> caption={{{ [<actionTiddler>get[caption]!is[blank]] ~[<actionTiddler>] }}}/>""">
+<$dashboard-drag tile=<<currentTiddler>> x={{!!x}} y={{!!y}} w={{!!w}} h={{!!h}} z={{!!z}} icon-w=<<iconW>> icon-h=<<iconH>> move-selector=".rr-dash-handle" class={{{ [<isRef>match[yes]then[rr-dash-box rr-dash-group rr-dash-ref]] ~[[rr-dash-box rr-dash-group]] }}} container={{{ [<currentTiddler>get[dash-parent]] }}} dash-id=<<dashId>> actions=<<dashGeomActions>> reparent-actions=<<dashReparentActions>> copy-actions=<<dashRefActions>> open-actions=<<dashGroupExpand>> size-actions=<<dashSizeActions>> fit-width={{{ [<collapsed>match[yes]then[yes]] }}} fit-height={{{ [<collapsed>match[yes]then[yes]] }}}>
 <%if [<collapsed>match[yes]] %>
-<$let containerId=<<currentTiddler>> fzTarget=<<groupContext>> fzContainer=<<currentTiddler>>>
-<$droppable tag="div" class="rr-dash-collapsed-droptarget" actions={{{ [<dashAddChildActions>addsuffix<dashExpandAction>] }}}>
+<$let containerId=<<groupId>> fzTarget=<<groupContext>> fzContainer=<<groupId>>>
+<$droppable tag="div" class="rr-dash-collapsed-droptarget" actions={{{ [<dashAddChildActions>addsuffix<dashGroupExpand>] }}}>
 <%if [<hasFileUpload>match[yes]] %>
-<$file-dropzone class="rr-dash-collapsed-droptarget-fz" tabindex="0" location={{{ [<fzTarget>function[dash.fz-location],<fzTarget>] ~[[files]] }}} subfolder={{{ [<fzTarget>function[dash.fz-subfolder],<fzTarget>] }}} actions={{{ [<dashTilePasteActions>addsuffix<dashExpandAction>] }}}>
+<$file-dropzone class="rr-dash-collapsed-droptarget-fz" tabindex="0" location={{{ [<fzTarget>function[dash.fz-location],<fzTarget>] ~[[files]] }}} subfolder={{{ [<fzTarget>function[dash.fz-subfolder],<fzTarget>] }}} actions={{{ [<dashTilePasteActions>addsuffix<dashGroupExpand>] }}}>
 <<dash-group-handle>>
 <<dash-paste-btn>>
 </$file-dropzone>
@@ -518,7 +587,13 @@ Link
 <div class="rr-dash-resize rr-dash-resize-icon" title="Drag to resize this icon"></div>
 <%endif%>
 <%if [<collapsed>match[no]] %>
-<div class="rr-dash-body rr-dash-group-body"><$transclude $variable="dash-canvas" containerId=<<currentTiddler>> $mode="block"/></div>
+<div class="rr-dash-body rr-dash-group-body">
+<%if [<isCycle>match[yes]] %>
+<div class="rr-dash-ref-cycle rr-dash-no-drag">↺ This reference isn't shown here — it would place the group inside itself.</div>
+<%else%>
+<$transclude $variable="dash-canvas" containerId=<<groupId>> chain=<<nextChain>> $mode="block"/>
+<%endif%>
+</div>
 <div class="rr-dash-resize"></div>
 <%endif%>
 </$dashboard-drag>
@@ -533,7 +608,7 @@ Link
 <%endif%>
 \end
 
-\procedure dash-tiles(containerId)
+\procedure dash-tiles(containerId, chain)
 <%if [<containerId>is[blank]] %>
 <$list filter="[all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>!has[dash-parent]nsort[z]]" variable="currentTiddler" emptyMessage=<<dashEmptyHint>>>
 <<dash-tile>>
@@ -545,17 +620,22 @@ Link
 <%endif%>
 \end
 
-\procedure dash-canvas(containerId)
+<!-- chain = space-separated list of group ids already open in this branch's
+     ancestry, threaded down so a group REFERENCE whose source is one of its own
+     ancestors renders as a stub instead of recursing forever (see dash-group-tile
+     isCycle). Group tile ids are generated $:/config/… titles with no spaces, so
+     the titlelist round-trips cleanly. -->
+\procedure dash-canvas(containerId, chain)
 <$droppable tag="div" class="rr-dash-canvas" data-dash-parent=<<containerId>> data-dash-id=<<dashId>> actions=<<dashAddChildActions>>>
 <%if [<hasFileUpload>match[yes]] %>
 <$let fzTarget={{{ [<containerId>get[dash-context]] }}} fzContainer=<<containerId>>>
 <$file-dropzone class="rr-dash-filezone" tabindex="0" location={{{ [<fzTarget>function[dash.fz-location],<fzTarget>] ~[[files]] }}} subfolder={{{ [<fzTarget>function[dash.fz-subfolder],<fzTarget>] }}} actions=<<dashTilePasteActions>>>
 <div class="rr-dash-filehint rr-dash-no-drag">Drop an image here — or <<dash-paste-btn>> and press Ctrl+V — to add it as a tile</div>
-<$transclude $variable="dash-tiles" containerId=<<containerId>> $mode="block"/>
+<$transclude $variable="dash-tiles" containerId=<<containerId>> chain=<<chain>> $mode="block"/>
 </$file-dropzone>
 </$let>
 <%else%>
-<$transclude $variable="dash-tiles" containerId=<<containerId>> $mode="block"/>
+<$transclude $variable="dash-tiles" containerId=<<containerId>> chain=<<chain>> $mode="block"/>
 <%endif%>
 </$droppable>
 \end
@@ -574,11 +654,10 @@ Link
 	dashGeomActions="""<$action-setfield $tiddler=<<currentTiddler>> x=<<new-x>> y=<<new-y>> w=<<new-w>> h=<<new-h>> z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/>"""
 	dashReparentActions="""<$action-setfield $tiddler=<<currentTiddler>> dash-parent=<<new-parent>> x=<<new-x>> y=<<new-y>> w=<<new-w>> h=<<new-h>> z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/>"""
 	dashCopyActions="""<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" dashboard=<<dashId>> dash-parent=<<new-parent>> target={{!!target}} style={{!!style}} x=<<new-x>> y=<<new-y>> w=<<new-w>> h=<<new-h>> z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/>"""
+	dashRefActions="""<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" role="group" dashboard=<<dashId>> dash-parent=<<new-parent>> dash-ref={{{ [<currentTiddler>get[dash-ref]!is[blank]] ~[<currentTiddler>] }}} collapsed="no" x=<<new-x>> y=<<new-y>> w=<<new-w>> h=<<new-h>> z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard{!!dashboard}get[z]nsort[]last[]add[1]] ~[[1]] }}}/>"""
 	dashOpenActions="""<$action-navigate $to={{!!target}}/>"""
 	dashAddChildActions="""<$action-createtiddler $basetitle={{{ [<dashId>addprefix[$:/config/rimir/dashboard/]addsuffix[/tiles/tile]] }}} tags="$:/tags/rimir/dashboard/tile" dashboard=<<dashId>> dash-parent=<<containerId>> target=<<actionTiddler>> x="24" y="24" w="320" h="220" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>"""
-	dashExpandAction="""<$action-setfield $tiddler=<<containerId>> collapsed="no" z={{{ [all[tiddlers]tag[$:/tags/rimir/dashboard/tile]field:dashboard<dashId>get[z]nsort[]last[]add[1]] ~[[1]] }}}/>"""
 	dashSizeActions="""<$action-setfield $tiddler=<<currentTiddler>> icon-w=<<new-icon-w>> icon-h=<<new-icon-h>>/>"""
-	dashContextActions="""<$action-setfield $tiddler=<<currentTiddler>> dash-context=<<actionTiddler>> caption={{{ [<actionTiddler>get[caption]!is[blank]] ~[<actionTiddler>] }}}/>"""
 	dashEmptyHint="""<div class="rr-dash-hint">Empty. Drop tiddlers here from the wiki, or drag a tile in from another container.</div>"""
 >
 <div class="rr-dash-root">
@@ -635,10 +714,11 @@ Display rules
 </div>
 <<dash-rules-editor>>
 <$dashboard-fit enabled=<<fitEnabled>> content-width=<<fitContentW>> content-height=<<fitContentH>>>
-<$transclude $variable="dash-canvas" containerId="" $mode="block"/>
+<$transclude $variable="dash-canvas" containerId="" chain="" $mode="block"/>
 </$dashboard-fit>
 <<dash-popup>>
 <<dash-icon-editor>>
 <<dash-context-editor>>
+<<dash-group-delete-confirm>>
 </div>
 </$let>
